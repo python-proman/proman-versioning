@@ -11,3 +11,20 @@ Project Manager Versioning tool.
 ## Install
 
 `pip install proman_versions`
+
+## Setup
+
+```
+[tool.proman.release]
+enable_devreleases = true
+enable_prereleases = true
+enable_postreleases = true
+
+[[tool.proman.release.files]]
+filepath = "example/__init__.py"
+pattern = "__version__ = '${version}'"
+
+[[tool.proman.release.files]]
+filepath = "pyproject.toml"
+pattern = "version = \"${version}\""
+```
