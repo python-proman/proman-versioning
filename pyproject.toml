@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "proman_versions"
+version = "0.1.0"
+description = "Project Manager Versioning tool."
+authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+jinja2 = "^2.11.2"
+lark-parser = "^0.10.0"
+argufy = "^0.1.1-alpha.12"
+transitions = "^0.8.4"
+GitPython = "^3.1.17"
+compendium = "^0.1.1-dev.82"
+packaging = "^20.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+flake8 = "^3.8.3"
+pydocstyle = "^5.0.2"
+docstr-coverage = "^1.2.0"
+pytest-cov = "^2.10.0"
+isort = "^4.3.21"
+bandit = "^1.6.2"
+safety = "^1.9.0"
+mkdocs = "^1.1.2"
+bump2version = "^1.0.0"
+invoke = "^1.4.1"
+mkdocs-material = "^5.4.0"
+flit = "^2.3.0"
+mkdocstrings = "^0.13.2"
+
+[tool.flit.metadata]
+module = "proman_versions"
+author = "Jesse P. Johnson"
+author-email = "jpj6652@gmail.com"
+home-page = "https://github.com/kuwv/proman-versions"
+requires = ["argufy", "jinja2", "GitPython", "lark-parser", "transitions"]
+classifiers = ["License :: OSI Approved :: Apache Software License"]
+
+[tool.flit.scripts]
+bumper = "proman_versions.__main__:main"
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+    | \.git
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.vagrant
+    | _build
+    | dist
+  )
+)
+'''

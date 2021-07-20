@@ -1,0 +1,29 @@
+#!{{ python_executable }}
+# -*- coding: utf-8 -*-
+# copyright: (c) 2020 by Jesse Johnson.
+# license: Apache 2.0, see LICENSE for more details.
+'''Invocation for git hooks pipelines.'''
+
+from typing import Any, Dict
+
+from invoke import Collection, Executor
+from stevedore.extension import ExtensionManager
+
+
+def load_collections(extension: ExtensionManager, data: Dict[str, Any]) -> None:
+    '''Load invoke collections using stevedore.'''
+    namespace.add_collection(extension.plugin, name=extension.name)
+    namespace.configure(data)
+
+
+# tasks configuration
+data = {'package': 'override-package'}
+
+# load tasks collection
+namespace = Collection()
+extension_manager = ExtensionManager(namespace={{ proman_namespace }})
+extension_manager.map(load_collections, data)
+
+# execute tasks group
+ns = Executor(collection=namespace)
+ns.execute({{ proman_command }})

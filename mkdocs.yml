@@ -1,0 +1,37 @@
+---
+site_name: Proman Versions
+site_author: Jesse P. Johnson
+copyright: copywright (c) 2020 by Jesse P. Johnson.
+repo_url: https://github.com/kuwv/proman-versions
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+  features:
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.critic
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
