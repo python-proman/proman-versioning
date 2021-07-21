@@ -26,7 +26,7 @@ pypackages_dir = os.path.join(basedir, '__pypackages__')
 grammar: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
 )
-# 'proman_versions/templates/gitmessage.j2'
+# 'proman_releases/templates/gitmessage.j2'
 
 
 @dataclass

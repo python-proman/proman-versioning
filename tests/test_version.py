@@ -1,4 +1,4 @@
-# from proman_versions import __version__
+# from proman_releases import __version__
 # 
 # 
 # def test_version():

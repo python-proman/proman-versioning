@@ -41,13 +41,13 @@ def unit_test(ctx, capture=None):  # type: ignore
 def static_analysis(ctx):  # type: ignore
     '''Perform static code analysis on imports.'''
     ctx.run('safety check')
-    ctx.run('bandit -r proman_versions')
+    ctx.run('bandit -r proman_releases')
 
 
 @task
 def coverage(ctx, report=None):  # type: ignore
     '''Perform coverage checks for tests.'''
-    args = ['--cov=proman_versions']
+    args = ['--cov=proman_releases']
     if report:
         args.append('--cov-report={}'.format(report))
     ctx.run("pytest {} ./tests/".format(' '.join(args)))

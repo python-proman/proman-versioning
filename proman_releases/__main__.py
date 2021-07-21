@@ -4,7 +4,7 @@
 '''Provide CLI management.'''
 
 from argufy import Parser
-from proman_versions.cli import release, version
+from proman_releases.cli import release, version
 
 
 def main() -> None:

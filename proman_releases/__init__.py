@@ -8,18 +8,18 @@ import os
 from typing import Any, List, Union
 
 from git import Repo
-from proman_versions import config, exception
-from proman_versions.config import Config
-from proman_versions.controller import IntegrationController
-from proman_versions.grammars.conventional_commits import CommitMessageParser
-from proman_versions.vcs import Git
-from proman_versions.version import PythonVersion
+from proman_releases import config, exception
+from proman_releases.config import Config
+from proman_releases.controller import IntegrationController
+from proman_releases.grammars.conventional_commits import CommitMessageParser
+from proman_releases.vcs import Git
+from proman_releases.version import PythonVersion
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
-__title__ = 'proman-versions'
+__title__ = 'proman-releases'
 __description__ = 'Convenience module to manage VCS tools with Python.'
 __version__ = '0.1.0'
 __license__ = 'Apache-2.0'
