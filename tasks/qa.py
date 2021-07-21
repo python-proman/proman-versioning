@@ -7,7 +7,7 @@ from invoke import task
 
 
 @task
-def autoformat(ctx, check=True):  # type: ignore
+def style(ctx, check=True):  # type: ignore
     '''Format project source code to PEP-8 standard.'''
     args = ['--skip-string-normalization']
     if check:
@@ -53,7 +53,7 @@ def coverage(ctx, report=None):  # type: ignore
     ctx.run("pytest {} ./tests/".format(' '.join(args)))
 
 
-@task(pre=[autoformat, lint, unit_test, static_analysis, coverage])
+@task(pre=[style, lint, unit_test, static_analysis, coverage])
 def test(ctx):  # type: ignore
     '''Run all tests.'''
     pass

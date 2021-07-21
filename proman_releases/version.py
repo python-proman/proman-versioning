@@ -6,12 +6,7 @@
 # import logging
 from typing import Any, List, Optional, Tuple
 
-from packaging.version import (
-    _cmpkey,
-    _parse_local_version,
-    _Version,
-    Version,
-)
+from packaging.version import Version, _cmpkey, _parse_local_version, _Version
 from transitions import Machine
 
 

@@ -3,8 +3,8 @@
 # license: Apache 2.0, see LICENSE for more details.
 '''Provide CLI for git-tools.'''
 
-from dataclasses import dataclass, field
 import os
+from dataclasses import dataclass, field
 # from pprint import pprint
 from typing import Optional, Tuple
 from urllib.parse import urljoin, urlparse

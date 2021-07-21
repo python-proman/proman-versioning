@@ -8,7 +8,6 @@ import os
 from typing import Any, List, Union
 
 from git import Repo
-
 from proman_versions import config, exception
 from proman_versions.config import Config
 from proman_versions.controller import IntegrationController

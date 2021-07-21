@@ -11,14 +11,15 @@ from copy import deepcopy
 from string import Template
 from typing import Any
 
-# from packaging.version import Version
-# from transitions import Machine
-
 from proman_versions import exception
 from proman_versions.config import Config
 from proman_versions.grammars.conventional_commits import CommitMessageParser
 from proman_versions.vcs import Git
 from proman_versions.version import PythonVersion
+
+# from packaging.version import Version
+# from transitions import Machine
+
 
 # TODO: version comparison against previous version
 # has API spec been modified?
