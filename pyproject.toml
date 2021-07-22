@@ -5,7 +5,7 @@ description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.6.2"
 jinja2 = "^2.11.2"
 lark-parser = "^0.10.0"
 argufy = "^0.1.1-alpha.12"
@@ -29,6 +29,7 @@ mkdocstrings = "^0.13.2"
 flit = "^3.2.0"
 isort = "^5.9.2"
 tox = "^3.24.0"
+black = "^21.7b0"
 
 [tool.proman.release]
 enable_devreleases = true
