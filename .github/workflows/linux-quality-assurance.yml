@@ -24,6 +24,8 @@ jobs:
           poetry install
           pwd
           ls -al
+          ls ~/.local
+          echo $PATH
       - name: Lint
         run: |
           poetry run invoke qa.style --check
