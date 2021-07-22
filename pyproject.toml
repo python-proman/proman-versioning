@@ -24,12 +24,12 @@ bandit = "^1.6.2"
 safety = "^1.9.0"
 mkdocs = "^1.1.2"
 invoke = "^1.4.1"
-mkdocs-material = "^5.4.0"
 mkdocstrings = "^0.13.2"
 flit = "^3.2.0"
 isort = "^5.9.2"
 tox = "^3.24.0"
 black = "^21.7b0"
+mkdocs-material = "^7.2.0"
 
 [tool.proman.release]
 enable_devreleases = true
