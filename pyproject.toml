@@ -59,13 +59,8 @@ bump = "proman_releases.__main__:main"
 profile = "black"
 line_length = 80
 
-[tool.mypy]
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_untyped_defs = true
-ignore_missing_imports = true
-
 [tool.black]
+line-length = 80
 include = '\.pyi?$'
 exclude = '''
 
@@ -80,3 +75,9 @@ exclude = '''
   )
 )
 '''
+
+[tool.mypy]
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true

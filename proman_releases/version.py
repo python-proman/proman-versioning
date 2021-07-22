@@ -23,7 +23,9 @@ class PythonVersion(Version):
         self.enable_prereleases = kwargs.get('enable_prereleases', False)
         self.enable_postreleases = kwargs.get('enable_postreleases', False)
 
-        self.machine = Machine(self, states=self.states, initial=self.get_state())
+        self.machine = Machine(
+            self, states=self.states, initial=self.get_state()
+        )
 
         self.machine.add_transition(
             trigger='start_local',

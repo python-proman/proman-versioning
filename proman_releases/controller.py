@@ -88,7 +88,9 @@ class IntegrationController(CommitMessageParser):
                 filepaths = self.config.retrieve('/tool/proman/release/files')
                 for filepath in filepaths:
                     self.__update_config(
-                        filepath=os.path.join(os.getcwd(), filepath['filepath']),
+                        filepath=os.path.join(
+                            os.getcwd(), filepath['filepath']
+                        ),
                         version=(
                             Template(filepath['pattern']).substitute(
                                 version=str(self.version)
@@ -116,9 +118,13 @@ class IntegrationController(CommitMessageParser):
                             force=False,
                         )
             else:
-                raise exception.PromanWorkflowException('no new version available')
+                raise exception.PromanWorkflowException(
+                    'no new version available'
+                )
         else:
-            raise exception.PromanWorkflowException('git repository is not clean')
+            raise exception.PromanWorkflowException(
+                'git repository is not clean'
+            )
 
     def start_release(self, kind: str = 'dev', **kwargs: Any) -> str:
         '''Start a release.'''
