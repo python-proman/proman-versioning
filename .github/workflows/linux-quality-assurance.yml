@@ -22,10 +22,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install poetry
           poetry install
-          pwd
-          ls -al
-          ls ~/.local
-          echo $PATH
       - name: Lint
         run: |
           poetry run invoke qa.style --check
@@ -33,6 +29,8 @@ jobs:
       - name: Unit-Test
         run: |
           poetry run invoke qa.unit-test
+      - name: SAST
+        run: |
           poetry run invoke qa.static-analysis
       - name: Lint documentation
         run: |
