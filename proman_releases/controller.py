@@ -80,7 +80,9 @@ class IntegrationController(CommitMessageParser):
             else:
                 print(file_contents, file=sys.stdout)
 
-    def update_configs(self, new_version: PythonVersion, **kwargs: Any) -> None:
+    def update_configs(
+        self, new_version: PythonVersion, **kwargs: Any
+    ) -> None:
         '''Update version within config files.'''
         if not self.vcs.repo.is_dirty():
             if str(self.version) != str(new_version):
@@ -108,7 +110,9 @@ class IntegrationController(CommitMessageParser):
                     if kwargs.pop('commit', True):
                         self.vcs.commit(
                             filepaths=[f['filepath'] for f in filepaths],
-                            message=f"ci(version): apply {new_version} updates",
+                            message=(
+                                f"ci(version): apply {new_version} updates"
+                            ),
                         )
                     if kwargs.get('tag', False):
                         self.vcs.tag(

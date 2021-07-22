@@ -57,10 +57,10 @@ bump = "proman_releases.__main__:main"
 
 [tool.isort]
 profile = "black"
-line_length = 80
+line_length = 79
 
 [tool.black]
-line-length = 80
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 
