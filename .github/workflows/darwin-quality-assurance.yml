@@ -7,16 +7,16 @@ on:
     branches: [master]
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: "Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "${{ matrix.python-version }}"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -30,11 +30,3 @@ jobs:
         run: |
           poetry run inv qa.unit-test
           poetry run inv qa.static-analysis
-      - name: Lint documentation
-        run: |
-          poetry run inv doc.lint
-          poetry run inv doc.test
-      - name: Perform documentation tests
-        run: |
-          poetry run inv doc.coverage
-          poetry run inv doc.build
