@@ -44,6 +44,7 @@ def get_source_tree(
 
 
 def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
+    '''Get python version from configurations.'''
     if isinstance(cfg, Config):
         if cfg.retrieve('/tool/proman'):
             if 'version' in cfg['tool']['proman']['release']:
