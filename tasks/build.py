@@ -23,11 +23,7 @@ def build(ctx, format=None):  # type: (Context, Optional[str]) -> None
 
 
 @task
-def install(
-    ctx,
-    symlink=True,
-    dev=False
-):  # type: (Context, bool, bool) -> None
+def install(ctx, symlink=True, dev=False):  # type: (Context, bool, bool) -> None
     '''Install within environment.'''
     args = []
     if symlink:

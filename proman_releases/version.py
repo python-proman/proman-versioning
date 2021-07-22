@@ -23,17 +23,13 @@ class PythonVersion(Version):
         self.enable_prereleases = kwargs.get('enable_prereleases', False)
         self.enable_postreleases = kwargs.get('enable_postreleases', False)
 
-        self.machine = Machine(
-            self,
-            states=self.states,
-            initial=self.get_state()
-        )
+        self.machine = Machine(self, states=self.states, initial=self.get_state())
 
         self.machine.add_transition(
             trigger='start_local',
             source=['final', 'release', 'development', 'post'],
             dest='local',
-            before='new_local'
+            before='new_local',
         )
 
         # dev-releases
@@ -42,7 +38,7 @@ class PythonVersion(Version):
             source=['final', 'release', 'post'],
             dest='development',
             before='new_devrelease',
-            conditions=['devreleases_enabled']
+            conditions=['devreleases_enabled'],
         )
 
         self.machine.add_transition(
@@ -50,21 +46,21 @@ class PythonVersion(Version):
             source=['final', 'development', 'post'],
             dest='alpha',
             before='new_prerelease',
-            conditions=['prereleases_enabled']
+            conditions=['prereleases_enabled'],
         )
         self.machine.add_transition(
             trigger='start_prerelease',
             source='alpha',
             dest='beta',
             before='new_prerelease',
-            conditions=['prereleases_enabled']
+            conditions=['prereleases_enabled'],
         )
         self.machine.add_transition(
             trigger='start_prerelease',
             source='beta',
             dest='release',
             before='new_prerelease',
-            conditions=['prereleases_enabled']
+            conditions=['prereleases_enabled'],
         )
 
         # final release
@@ -72,7 +68,7 @@ class PythonVersion(Version):
             trigger='finish_release',
             source=['local', 'development', 'release'],
             dest='final',
-            before='finalize_release'
+            before='finalize_release',
         )
 
         # post-releases
@@ -81,7 +77,7 @@ class PythonVersion(Version):
             source='final',
             dest='post',
             before='new_postrelease',
-            conditions=['postreleases_enabled']
+            conditions=['postreleases_enabled'],
         )
 
     @property

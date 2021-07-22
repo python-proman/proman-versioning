@@ -5,6 +5,7 @@
 
 import os
 from dataclasses import dataclass, field
+
 # from pprint import pprint
 from typing import Optional, Tuple
 from urllib.parse import urljoin, urlparse
@@ -48,34 +49,34 @@ class HooksConfig(TaskRunner):
 
     hooks_dir: str = os.path.join(basedir, '.git', 'hooks')
     hooks: Tuple[str, ...] = (
-            'applypatch-msg',
-            'pre-applypatch',
-            'post-applypatch',
-            'pre-commit',
-            'pre-merge-commit',
-            'prepare-commit-msg',
-            'post-commit',
-            'pre-rebase',
-            'post-checkout',
-            'post-merge',
-            'pre-push',
-            'pre-recieve',
-            'update',
-            'post-recieve',
-            'post-update',
-            'reference-transaction',
-            'push-to-checkout',
-            'pre-auto-gc',
-            'post-rewrite',
-            'rebase',
-            'sendemail-validate',
-            'fsmonitor-watchman',
-            'p4-changelist',
-            'p4-prepare-changelist',
-            'p4-post-changelist',
-            'p4-pre-submit',
-            'post-index-change',
-        )
+        'applypatch-msg',
+        'pre-applypatch',
+        'post-applypatch',
+        'pre-commit',
+        'pre-merge-commit',
+        'prepare-commit-msg',
+        'post-commit',
+        'pre-rebase',
+        'post-checkout',
+        'post-merge',
+        'pre-push',
+        'pre-recieve',
+        'update',
+        'post-recieve',
+        'post-update',
+        'reference-transaction',
+        'push-to-checkout',
+        'pre-auto-gc',
+        'post-rewrite',
+        'rebase',
+        'sendemail-validate',
+        'fsmonitor-watchman',
+        'p4-changelist',
+        'p4-prepare-changelist',
+        'p4-post-changelist',
+        'p4-pre-submit',
+        'post-index-change',
+    )
 
 
 @dataclass

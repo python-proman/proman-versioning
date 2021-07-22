@@ -8,6 +8,7 @@ import os
 from typing import Any, List, Union
 
 from git import Repo
+
 from proman_releases import config, exception
 from proman_releases.config import Config
 from proman_releases.controller import IntegrationController
@@ -32,8 +33,7 @@ def get_repo(path: str = os.getcwd()) -> Git:
 
 
 def get_source_tree(
-    basepath: str = os.getcwd(),
-    filenames: List[str] = config.filenames
+    basepath: str = os.getcwd(), filenames: List[str] = config.filenames
 ) -> Config:
     '''Get source tree from path.'''
     for filename in filenames:
@@ -66,7 +66,7 @@ def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
             ),
             enable_postreleases=cfg.retrieve(
                 '/tool/proman/release/enable_postreleases', False
-            )
+            ),
         )
     else:
         version = PythonVersion(cfg)

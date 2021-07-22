@@ -43,7 +43,7 @@ class IntegrationController(CommitMessageParser):
         config: Config,
         repo: Git,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         '''Initialize commit message action object.'''
         self.version = version
@@ -80,11 +80,7 @@ class IntegrationController(CommitMessageParser):
             else:
                 print(file_contents, file=sys.stdout)
 
-    def update_configs(
-        self,
-        new_version: PythonVersion,
-        **kwargs: Any
-    ) -> None:
+    def update_configs(self, new_version: PythonVersion, **kwargs: Any) -> None:
         '''Update version within config files.'''
         if not self.vcs.repo.is_dirty():
             if str(self.version) != str(new_version):
@@ -92,16 +88,16 @@ class IntegrationController(CommitMessageParser):
                 filepaths = self.config.retrieve('/tool/proman/release/files')
                 for filepath in filepaths:
                     self.__update_config(
-                        filepath=os.path.join(
-                            os.getcwd(), filepath['filepath']
-                        ),
+                        filepath=os.path.join(os.getcwd(), filepath['filepath']),
                         version=(
-                            Template(filepath['pattern'])
-                            .substitute(version=str(self.version))
+                            Template(filepath['pattern']).substitute(
+                                version=str(self.version)
+                            )
                         ),
                         new_version=(
-                            Template(filepath['pattern'])
-                            .substitute(version=new_version)
+                            Template(filepath['pattern']).substitute(
+                                version=new_version
+                            )
                         ),
                         dry_run=dry_run,
                     )
@@ -110,7 +106,7 @@ class IntegrationController(CommitMessageParser):
                     if kwargs.pop('commit', True):
                         self.vcs.commit(
                             filepaths=[f['filepath'] for f in filepaths],
-                            message=f"ci(version): apply {new_version} updates"
+                            message=f"ci(version): apply {new_version} updates",
                         )
                     if kwargs.get('tag', False):
                         self.vcs.tag(
@@ -120,13 +116,9 @@ class IntegrationController(CommitMessageParser):
                             force=False,
                         )
             else:
-                raise exception.PromanWorkflowException(
-                    'no new version available'
-                )
+                raise exception.PromanWorkflowException('no new version available')
         else:
-            raise exception.PromanWorkflowException(
-                'git repository is not clean'
-            )
+            raise exception.PromanWorkflowException('git repository is not clean')
 
     def start_release(self, kind: str = 'dev', **kwargs: Any) -> str:
         '''Start a release.'''

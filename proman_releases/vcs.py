@@ -8,11 +8,11 @@ import os
 from typing import Any, List, Optional
 
 from git import Repo
+
 from proman_releases import exception
 
 # from git.types import PathLike
 # from transitions import Machine
-
 
 
 class Git:
@@ -45,9 +45,7 @@ class Git:
         if not os.path.exists(path):
             Repo.clone_from(url, path, branch=branch)
         else:
-            raise exception.PromanWorkflowException(
-                'cloned repository alreaady exists'
-            )
+            raise exception.PromanWorkflowException('cloned repository alreaady exists')
 
     def add_remote(
         self,
@@ -108,6 +106,4 @@ class Git:
         **kwargs: Any
     ) -> None:
         '''Tag commit message.'''
-        self.repo.create_tag(
-            path=path, ref=ref, message=message, force=force, **kwargs
-        )
+        self.repo.create_tag(path=path, ref=ref, message=message, force=force, **kwargs)

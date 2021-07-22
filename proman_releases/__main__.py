@@ -4,6 +4,7 @@
 '''Provide CLI management.'''
 
 from argufy import Parser
+
 from proman_releases.cli import release, version
 
 
