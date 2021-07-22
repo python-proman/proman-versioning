@@ -47,7 +47,10 @@ def static_analysis(ctx):  # type: (Context) -> None
 
 
 @task
-def coverage(ctx, reports=None):  # type: (Context, Optional[str]) -> None
+def coverage(
+    ctx,
+    reports=None
+):  # type: (Context, Optional[List[str]]) -> None
     '''Perform coverage checks for tests.'''
     args = ['--cov=proman_releases']
     if reports:
