@@ -91,7 +91,7 @@ class IntegrationController(CommitMessageParser):
                 for filepath in filepaths:
                     self.__update_config(
                         filepath=os.path.join(
-                            os.getcwd(), filepath['filepath']
+                            self.vcs.repo.working_dir, filepath['filepath']
                         ),
                         version=(
                             Template(filepath['pattern']).substitute(
@@ -116,7 +116,7 @@ class IntegrationController(CommitMessageParser):
                         )
                     if kwargs.get('tag', False):
                         self.vcs.tag(
-                            path='.',
+                            path=self.vcs.repo.working_dir,
                             ref='HEAD',
                             message=None,
                             force=False,
