@@ -7,7 +7,7 @@ import logging
 import sys
 from typing import Optional
 
-from proman_releases import get_release_controller
+from proman_versioning import get_release_controller
 
 log = logging.getLogger(__name__)
 

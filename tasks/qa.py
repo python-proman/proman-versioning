@@ -43,7 +43,7 @@ def unit_test(ctx, capture=None):  # type: (Context, Optional[str]) -> None
 def static_analysis(ctx):  # type: (Context) -> None
     '''Perform static code analysis on imports.'''
     ctx.run('safety check')
-    ctx.run('bandit -r proman_releases')
+    ctx.run('bandit -r proman_versioning')
 
 
 @task
@@ -51,7 +51,7 @@ def coverage(
     ctx, reports=None
 ):  # type: (Context, Optional[List[str]]) -> None
     '''Perform coverage checks for tests.'''
-    args = ['--cov=proman_releases']
+    args = ['--cov=proman_versioning']
     if reports:
         for report in reports:
             args.append(f"--cov-report={report}")

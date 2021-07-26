@@ -9,12 +9,12 @@ from typing import Any, List, Union
 
 from git import Repo
 
-from proman_releases import config, exception
-from proman_releases.config import Config
-from proman_releases.controller import IntegrationController
-from proman_releases.grammars.conventional_commits import CommitMessageParser
-from proman_releases.vcs import Git
-from proman_releases.version import PythonVersion
+from proman_versioning import config, exception
+from proman_versioning.config import Config
+from proman_versioning.controller import IntegrationController
+from proman_versioning.grammars.conventional_commits import CommitMessageParser
+from proman_versioning.vcs import Git
+from proman_versioning.version import PythonVersion
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 

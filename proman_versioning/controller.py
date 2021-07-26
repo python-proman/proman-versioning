@@ -11,11 +11,11 @@ from copy import deepcopy
 from string import Template
 from typing import Any
 
-from proman_releases import exception
-from proman_releases.config import Config
-from proman_releases.grammars.conventional_commits import CommitMessageParser
-from proman_releases.vcs import Git
-from proman_releases.version import PythonVersion
+from proman_versioning import exception
+from proman_versioning.config import Config
+from proman_versioning.grammars.conventional_commits import CommitMessageParser
+from proman_versioning.vcs import Git
+from proman_versioning.version import PythonVersion
 
 # from packaging.version import Version
 # from transitions import Machine

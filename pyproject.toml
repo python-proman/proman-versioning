@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "proman_releases"
+name = "proman-versioning"
 version = "0.1.0"
 description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
@@ -30,30 +30,32 @@ black = "^21.7b0"
 mkdocs-material = "^7.2.0"
 mkdocs = "^1.2.2"
 mkdocstrings = "^0.15.2"
+mypy = "^0.910"
+pylint = "^2.9.5"
 
-[tool.proman.release]
+[tool.proman.versioning]
 enable_devreleases = true
 enable_prereleases = true
 enable_postreleases = true
 
-[[tool.proman.release.files]]
-filepath = "proman_releases/__init__.py"
+[[tool.proman.versioning.files]]
+filepath = "proman_versioning/__init__.py"
 pattern = "__version__ = '${version}'"
 
-[[tool.proman.release.files]]
+[[tool.proman.versioning.files]]
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
 
 [tool.flit.metadata]
-module = "proman_releases"
+module = "proman_versioning"
 author = "Jesse P. Johnson"
 author-email = "jpj6652@gmail.com"
-home-page = "https://github.com/kuwv/proman-releases"
+home-page = "https://github.com/kuwv/proman-versioning"
 requires = ["argufy", "jinja2", "GitPython", "lark-parser", "transitions"]
 classifiers = ["License :: OSI Approved :: Apache Software License"]
 
 [tool.flit.scripts]
-bump = "proman_releases.__main__:main"
+bump = "proman_versioning.__main__:main"
 
 [tool.isort]
 profile = "black"

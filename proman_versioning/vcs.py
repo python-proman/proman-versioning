@@ -9,7 +9,7 @@ from typing import Any, List, Optional
 
 from git import Repo
 
-# from proman_releases import exception
+# from proman_versioning import exception
 
 # from git.types import PathLike
 # from transitions import Machine

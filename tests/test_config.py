@@ -3,8 +3,8 @@
 # license: Apache 2.0, see LICENSE for more details.
 '''Test configuration file.'''
 
-import os
-from proman_releases.config import GitConfig
+# import os
+# from proman_versioning.config import GitConfig
 
 
 # def test_create_config():
