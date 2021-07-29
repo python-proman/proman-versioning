@@ -105,22 +105,21 @@ class IntegrationController(CommitMessageParser):
                         ),
                         dry_run=dry_run,
                     )
-                if not dry_run:
-                    self.version = new_version
-                    if kwargs.pop('commit', True):
-                        self.vcs.commit(
-                            filepaths=[f['filepath'] for f in filepaths],
-                            message=(
-                                f"ci(version): apply {new_version} updates"
-                            ),
-                        )
-                    if kwargs.get('tag', False):
-                        self.vcs.tag(
-                            path=self.vcs.repo.working_dir,
-                            ref='HEAD',
-                            message=None,
-                            force=False,
-                        )
+                self.version = new_version
+                if kwargs.pop('commit', True):
+                    self.vcs.commit(
+                        filepaths=[f['filepath'] for f in filepaths],
+                        message=(
+                            f"ci(version): apply {new_version} updates"
+                        ),
+                        dry_run=dry_run,
+                    )
+                if kwargs.get('tag', False):
+                    self.vcs.tag(
+                        ref='HEAD',
+                        message=None,
+                        dry_run=dry_run,
+                    )
             else:
                 raise exception.PromanWorkflowException(
                     'no new version available'

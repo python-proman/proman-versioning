@@ -7,10 +7,10 @@ import logging
 import os
 from typing import Any, List, Union
 
-from git import Repo
+from pygit2 import Repository
 
 from proman_versioning import config, exception
-from proman_versioning.config import Config
+# from proman_versioning.config import Config
 from proman_versioning.controller import IntegrationController
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
@@ -29,23 +29,23 @@ __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
 def get_repo(path: str = os.getcwd()) -> Git:
     '''Load the repository object.'''
-    return Git(Repo(os.path.join(path)))
+    return Git(Repository(os.path.join(path)))
 
 
 def get_source_tree(
     basepath: str = os.getcwd(), filenames: List[str] = config.filenames
-) -> Config:
+) -> config.Config:
     '''Get source tree from path.'''
     for filename in filenames:
         filepath = os.path.join(basepath, filename)
         if os.path.isfile(filepath):
-            return Config(filepath=filepath)
+            return config.Config(filepath=filepath)
     raise exception.PromanWorkflowException('no configuration found')
 
 
-def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
+def get_python_version(cfg: Union[config.Config, str]) -> PythonVersion:
     '''Get python version from configurations.'''
-    if isinstance(cfg, Config):
+    if isinstance(cfg, config.Config):
         if (
             cfg['tool']['proman']['release']
             and 'version' in cfg['tool']['proman']['release']

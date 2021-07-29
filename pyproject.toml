@@ -12,7 +12,7 @@ argufy = "^0.1.1-alpha.12"
 transitions = "^0.8.4"
 compendium = "^0.1.1-dev.82"
 packaging = "^20.9"
-GitPython = "^3.1.19"
+pygit2 = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -32,6 +32,9 @@ mkdocs = "^1.2.2"
 mkdocstrings = "^0.15.2"
 mypy = "^0.910"
 pylint = "^2.9.5"
+
+[tool.poetry.scripts]
+bump = "proman_versioning.__main__:main"
 
 [tool.proman.versioning]
 enable_devreleases = true
