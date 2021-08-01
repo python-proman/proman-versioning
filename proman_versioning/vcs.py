@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 '''Parse Git commit messages.'''
 
 # import logging
 import os
 from typing import Any, List, Optional
 
-from pygit2 import (
-    Commit,
-    GIT_OBJ_COMMIT,
-    Repository,
-    Tag,
-    Signature
-)
+from pygit2 import GIT_OBJ_COMMIT, Commit, Repository, Signature, Tag
 
 # from proman_versioning import exception
 
@@ -82,12 +76,7 @@ class Git:
             )
         return commit
 
-    def tag(
-        self,
-        name: str,
-        ref: str = 'HEAD',
-        **kwargs: Any
-    ) -> Tag:
+    def tag(self, name: str, ref: str = 'HEAD', **kwargs: Any) -> Tag:
         '''Create tag.'''
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 '''Parse Git commit messages.'''
 
 # import logging
@@ -109,9 +109,7 @@ class IntegrationController(CommitMessageParser):
                 if kwargs.pop('commit', True):
                     self.vcs.commit(
                         filepaths=[f['filepath'] for f in filepaths],
-                        message=(
-                            f"ci(version): apply {new_version} updates"
-                        ),
+                        message=(f"ci(version): apply {new_version} updates"),
                         dry_run=dry_run,
                     )
                 if kwargs.get('tag', False):

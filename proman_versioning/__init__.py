@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 '''Convenience tools to manage Git projects with Python.'''
 
 import logging
@@ -10,6 +10,7 @@ from typing import Any, List, Union
 from pygit2 import Repository
 
 from proman_versioning import config, exception
+
 # from proman_versioning.config import Config
 from proman_versioning.controller import IntegrationController
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
@@ -23,7 +24,7 @@ __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-releases'
 __description__ = 'Convenience module to manage VCS tools with Python.'
 __version__ = '0.1.0'
-__license__ = 'Apache-2.0'
+__license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
 
@@ -51,10 +52,7 @@ def get_python_version(cfg: Union[config.Config, str]) -> PythonVersion:
             and 'version' in cfg['tool']['proman']['release']
         ):
             v = cfg.retrieve('/tool/proman/release/version')
-        elif (
-            cfg['tool']['proman']
-            and 'version' in cfg['tool']['proman']
-        ):
+        elif cfg['tool']['proman'] and 'version' in cfg['tool']['proman']:
             v = cfg.retrieve('/tool/proman/version')
         elif 'version' in cfg['tool']['poetry']:
             v = cfg.retrieve('/tool/poetry/version')
