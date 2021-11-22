@@ -87,7 +87,7 @@ class IntegrationController(CommitMessageParser):
         if not self.vcs.repo.is_dirty():
             if str(self.version) != str(new_version):
                 dry_run = kwargs.pop('dry_run', False)
-                filepaths = self.config.retrieve('/tool/proman/release/files')
+                filepaths = self.config['tool']['proman']['release']['files']
                 for filepath in filepaths:
                     self.__update_config(
                         filepath=os.path.join(

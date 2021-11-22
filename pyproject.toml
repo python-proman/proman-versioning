@@ -23,7 +23,6 @@ pytest-cov = "^2.10.0"
 bandit = "^1.6.2"
 safety = "^1.9.0"
 invoke = "^1.4.1"
-flit = "^3.2.0"
 isort = "^5.9.2"
 tox = "^3.24.0"
 black = "^21.7b0"
@@ -31,6 +30,9 @@ mkdocs-material = "^7.2.0"
 mkdocs = "^1.2.2"
 mypy = "^0.910"
 pylint = "^2.9.5"
+
+[tool.poetry.scripts]
+bump = "proman_versioning.__main__:main"
 
 [tool.proman.versioning]
 enable_devreleases = true
@@ -42,19 +44,12 @@ filepath = "proman_versioning/__init__.py"
 pattern = "__version__ = '${version}'"
 
 [[tool.proman.versioning.files]]
+filepath = "tests/test_version.py"
+pattern = "__version__ == '${version}'"
+
+[[tool.proman.versioning.files]]
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
-
-[tool.flit.metadata]
-module = "proman_versioning"
-author = "Jesse P. Johnson"
-author-email = "jpj6652@gmail.com"
-home-page = "https://github.com/kuwv/proman-versioning"
-requires = ["argufy", "jinja2", "GitPython", "lark-parser", "transitions"]
-classifiers = ["License :: OSI Approved :: Apache Software License"]
-
-[tool.flit.scripts]
-bump = "proman_versioning.__main__:main"
 
 [tool.isort]
 profile = "black"

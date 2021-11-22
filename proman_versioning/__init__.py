@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
 # license: Apache 2.0, see LICENSE for more details.
-'''Convenience tools to manage Git projects with Python.'''
+"""Convenience tools to manage Git projects with Python."""
 
 import logging
 import os
@@ -28,14 +28,14 @@ __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
 
 def get_repo(path: str = os.getcwd()) -> Git:
-    '''Load the repository object.'''
+    """Load the repository object."""
     return Git(Repo(os.path.join(path)))
 
 
 def get_source_tree(
     basepath: str = os.getcwd(), filenames: List[str] = config.filenames
 ) -> Config:
-    '''Get source tree from path.'''
+    """Get source tree from path."""
     for filename in filenames:
         filepath = os.path.join(basepath, filename)
         if os.path.isfile(filepath):
@@ -44,7 +44,7 @@ def get_source_tree(
 
 
 def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
-    '''Get python version from configurations.'''
+    """Get python version from configurations."""
     if isinstance(cfg, Config):
         version = (
             cfg.retrieve('/tool/proman/release/version')
@@ -72,8 +72,10 @@ def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
     return version
 
 
-def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
-    '''Create and return a release controller.'''
+def get_release_controller(
+    *args: Any, **kwargs: Any
+) -> 'IntegrationController':
+    """Create and return a release controller."""
     basepath = kwargs.get('basepath', os.getcwd())
     filenames = kwargs.get('filenames', config.filenames)
     cfg = get_source_tree(basepath=basepath, filenames=filenames)
