@@ -46,24 +46,17 @@ def get_source_tree(
 def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
     '''Get python version from configurations.'''
     if isinstance(cfg, Config):
-        if (
-            cfg['tool']['proman']['release']
-            and 'version' in cfg['tool']['proman']['release']
-        ):
-            v = cfg.retrieve('/tool/proman/release/version')
-        elif (
-            cfg['tool']['proman']
-            and 'version' in cfg['tool']['proman']
-        ):
-            v = cfg.retrieve('/tool/proman/version')
-        elif 'version' in cfg['tool']['poetry']:
-            v = cfg.retrieve('/tool/poetry/version')
-        elif cfg.retrieve('/metadata'):
-            v = cfg.retrieve('/metadata/version')
-        else:
+        version = (
+            cfg.retrieve('/tool/proman/release/version')
+            or cfg.retrieve('/tool/proman/version')
+            or cfg.retrieve('/tool/poetry/version')
+            or cfg.retrieve('/metadata/version')
+        )
+        if version is None:
             raise exception.PromanWorkflowException('no version found')
+
         version = PythonVersion(
-            version=v,
+            version=version,
             enable_devreleases=cfg.retrieve(
                 '/tool/proman/release/enable_devreleases', False
             ),
