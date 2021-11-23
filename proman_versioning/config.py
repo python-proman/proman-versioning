@@ -5,7 +5,7 @@
 
 import os
 from dataclasses import dataclass, field
-from typing import Optional, Tuple
+from typing import Optional
 from urllib.parse import urljoin, urlparse
 
 from compendium.loader import ConfigFile
@@ -19,8 +19,8 @@ INDEX_URL = urlparse('https://pypi.org')
 # TODO check VCS for paths
 CURRENT_DIR = os.getcwd()
 BASE_DIR = discover_repository(CURRENT_DIR)
-WORKING_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))  
-FILENAMES = ['pyproject.toml', 'setup.self']
+WORKING_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
+SPECFILE_PATH = os.path.join(WORKING_DIR, 'pyproject.toml')
 
 GRAMMAR_PATH: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
@@ -60,7 +60,6 @@ class Config(ConfigFile):
                 self.retrieve('/tool/proman/versioning/version')
                 or self.retrieve('/tool/proman/version')
                 or self.retrieve('/tool/poetry/version')
-                or self.retrieve('/metadata/version')
             )
             if config_version is None:
                 raise exception.PromanWorkflowException('no version found')
