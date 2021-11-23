@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Manage version numbers.'''
+"""Manage version numbers."""
 
 # import logging
 from typing import Any, List, Optional, Tuple
@@ -11,10 +11,10 @@ from transitions import Machine
 
 
 class PythonVersion(Version):
-    '''Provide PEP440 compliant versioning.'''
+    """Provide PEP440 compliant versioning."""
 
     def __init__(self, version: str, **kwargs: Any) -> None:
-        '''Initialize version object.'''
+        """Initialize version object."""
         # self.kind = kwargs.pop('version_system', 'semver')
         super().__init__(version=version)
 
@@ -84,7 +84,7 @@ class PythonVersion(Version):
 
     @property
     def states(self) -> List[str]:
-        '''List all states.'''
+        """List all states."""
         states = ['local', 'final']
         if self.enable_prereleases:
             states += ['alpha', 'beta', 'release']
@@ -96,21 +96,21 @@ class PythonVersion(Version):
 
     @property
     def devreleases_enabled(self) -> bool:
-        '''Check if devreleases are enabled.'''
+        """Check if devreleases are enabled."""
         return self.enable_devreleases
 
     @property
     def prereleases_enabled(self) -> bool:
-        '''Check if prereleases are enabled.'''
+        """Check if prereleases are enabled."""
         return self.enable_prereleases
 
     @property
     def postreleases_enabled(self) -> bool:
-        '''Check if postreleases are enabled.'''
+        """Check if postreleases are enabled."""
         return self.enable_postreleases
 
     def get_prerelease(self) -> Optional[str]:
-        '''Get current prerelease state.'''
+        """Get current prerelease state."""
         if self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
@@ -121,7 +121,7 @@ class PythonVersion(Version):
         return None
 
     def get_state(self) -> str:
-        '''Get the current state of package release.'''
+        """Get the current state of package release."""
         if self.is_devrelease:
             state = 'development'
         elif self.is_prerelease:
@@ -141,7 +141,7 @@ class PythonVersion(Version):
         dev: Optional[Tuple[str, int]] = None,
         local: Optional[str] = None,
     ) -> None:
-        '''Update the internal version state.'''
+        """Update the internal version state."""
         if not (epoch or release):
             pre = pre or self.pre
             post = post or self.post
@@ -167,23 +167,23 @@ class PythonVersion(Version):
         )
 
     def bump_epoch(self) -> None:
-        '''Update epoch releaes for version system changes.'''
+        """Update epoch releaes for version system changes."""
         self.__update_version(epoch=self.epoch + 1)
 
     def bump_major(self) -> None:
-        '''Update major release to next version number.'''
+        """Update major release to next version number."""
         self.__update_version(release=(self.major + 1, 0, 0))
 
     def bump_minor(self) -> None:
-        '''Update minor release to next version number.'''
+        """Update minor release to next version number."""
         self.__update_version(release=(self.major, self.minor + 1, 0))
 
     def bump_micro(self) -> None:
-        '''Update micro release to next version number.'''
+        """Update micro release to next version number."""
         self.__update_version(release=(self.major, self.minor, self.micro + 1))
 
     def __bump_version(self, kind: str) -> None:
-        '''Bump version based on version kind.'''
+        """Bump version based on version kind."""
         if kind == 'major':
             self.bump_major()
         if kind == 'minor':
@@ -192,23 +192,23 @@ class PythonVersion(Version):
             self.bump_micro()
 
     def new_devrelease(self, kind: str = 'minor') -> None:
-        '''Update to the next development release version number.'''
+        """Update to the next development release version number."""
         if not self.dev:
             self.__bump_version(kind)
             self.__update_version(dev=('dev', 0))
 
     def bump_devrelease(self) -> None:
-        '''Update to the next development release version number.'''
+        """Update to the next development release version number."""
         if self.dev:
             dev = (self.dev[0], self.dev[1] + 1)
             self.__update_version(dev=dev)
 
     def new_local(self, name: str = 'build') -> None:
-        '''Create new local version instance number.'''
+        """Create new local version instance number."""
         self.__update_version(local=f"{name}.0")
 
     def bump_local(self) -> None:
-        '''Update local version instance number.'''
+        """Update local version instance number."""
         if self.local:
             local = self.local.split('.')
             if local[-1].isdigit():
@@ -216,7 +216,7 @@ class PythonVersion(Version):
             self.__update_version(local='.'.join(local))
 
     def new_prerelease(self, kind: str = 'major') -> None:
-        '''Update to next prerelease version type.'''
+        """Update to next prerelease version type."""
         if self.pre:
             if self.pre[0] == 'a':
                 pre = ('b', 0)
@@ -228,23 +228,23 @@ class PythonVersion(Version):
         self.__update_version(pre=pre)
 
     def bump_prerelease(self) -> None:
-        '''Update the prerelease version number.'''
+        """Update the prerelease version number."""
         if self.pre:
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
 
     def new_postrelease(self, kind: str = 'major') -> None:
-        '''Update to next prerelease version type.'''
+        """Update to next prerelease version type."""
         if self.get_state() == 'final':
             self.__update_version(post=('post', 0))
 
     def bump_postrelease(self) -> None:
-        '''Update the post release version number.'''
+        """Update the post release version number."""
         if self.post:
             post = (self.post[0], self.post[1] + 1)
             self.__update_version(post=post)
 
     def finalize_release(self) -> None:
-        '''Update to next prerelease version type.'''
+        """Update to next prerelease version type."""
         if self.is_devrelease or self.is_prerelease:
             self.__update_version(release=(self.major, self.minor, self.micro))
