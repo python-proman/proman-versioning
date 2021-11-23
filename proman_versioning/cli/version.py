@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
-'''Control project versions.'''
+# license: MPL-2.0, see LICENSE for more details.
+"""Control project versions."""
 
 import logging
 import sys
 from typing import Optional
 
-from proman_versioning import get_release_controller
+from . import controller
 
 log = logging.getLogger(__name__)
-
-controller = get_release_controller()
 
 
 def bump(
@@ -22,7 +20,7 @@ def bump(
     sign: bool = False,
     dry_run: bool = False,
 ) -> None:
-    '''Manage project versions.'''
+    """Manage project versions."""
     controller.bump_version(
         commit=commit,
         tag=tag,
@@ -35,5 +33,5 @@ def bump(
 
 
 def view() -> None:
-    '''Get the current version of project.'''
+    """Get the current version of project."""
     print(controller.version, file=sys.stdout)

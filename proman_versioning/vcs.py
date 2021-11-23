@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 '''Parse Git commit messages.'''
 
 # import logging
 import os
 from typing import Any, List, Optional
 
-from git import Repo
+from pygit2 import GIT_OBJ_COMMIT, Commit, Repository, Signature, Tag
 
 # from proman_versioning import exception
 
-# from git.types import PathLike
 # from transitions import Machine
 
 
@@ -21,33 +20,69 @@ class Git:
     system_config: str = os.path.join(os.sep, 'etc', 'gitconfig')
     global_config: str = os.path.join(os.path.expanduser('~'), '.gitconfig')
 
-    def __init__(self, repo: Repo) -> None:
+    def __init__(self, repo: Repository) -> None:
         '''Initialize git object.'''
         self.repo = repo
-        self.branch = 'master'
-        self.hooks_dir = os.path.join(self.repo.git_dir, 'hooks')
-        self.config = os.path.join(self.repo.git_dir, 'config')
+        self.ref = 'HEAD'
+        self.hooks_dir = os.path.join(self.repo.path, 'hooks')
+        self.config = os.path.join(self.repo.path, 'config')
+
+    @property
+    def branch(self) -> str:
+        '''Retrieve the current branch.'''
+        return self.repo.head.name
 
     def commit(
         self,
-        basedir: str = os.getcwd(),
-        filepaths: List[str] = ['*'],
-        message: str = 'initial commit',
-    ) -> None:
-        '''Commit changes in a Git repository.'''
-        for filepath in filepaths:
-            self.repo.index.add(os.path.join(basedir, filepath))
-        self.repo.index.commit(message)
+        name: Optional[str] = None,
+        filepaths: List[str] = [],
+        **kwargs: Any,
+    ) -> Commit:
+        '''Create commit.'''
+        if not name:
+            name = f"refs/heads/{self.ref}"
+        author = Signature('Jesse P. Johson', 'jpj6652@gmail.com')
+        committer = kwargs.get('commiter', author)
+        message: str = kwargs.get('message', 'ci: generated commit')
 
-    def tag(
-        self,
-        path: str,
-        ref: str = 'HEAD',
-        message: Optional[str] = None,
-        force: bool = False,
-        **kwargs: Any
-    ) -> None:
-        '''Tag commit message.'''
-        self.repo.create_tag(
-            path=path, ref=ref, message=message, force=force, **kwargs
-        )
+        # populate index
+        index = self.repo.index
+        if filepaths == []:
+            index.add_all()
+        else:
+            for filepath in filepaths:
+                index.add(
+                    os.path.relpath(
+                        filepath, os.path.join(self.repo.path, '..')
+                    )
+                )
+        index.write()
+        tree = index.write_tree()
+
+        # get parent
+        parents = kwargs.get('parents', [self.repo.head.target])
+        encoding = kwargs.get('encoding', 'utf-8')
+
+        # commit
+        if not kwargs.get('dry_run', False):
+            commit = self.repo.create_commit(
+                name,
+                author,
+                committer,
+                message,
+                tree,
+                parents,
+                encoding,
+            )
+        return commit
+
+    def tag(self, name: str, ref: str = 'HEAD', **kwargs: Any) -> Tag:
+        '''Create tag.'''
+        commit = self.repo.resolve_refish(ref)[0]
+        oid = commit.hex
+        kind = kwargs.get('kind', GIT_OBJ_COMMIT)
+        signature = kwargs.get('signature', commit.signature)
+        message = kwargs.get('message', f"ci: {name}")
+        if not kwargs.get('dry_run', False):
+            tag = self.repo.create_tag(name, oid, kind, signature, message)
+        return tag

@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 """Manage releases with VCS."""
 
 import logging
 import sys
 from typing import Optional
 
-from proman_versioning import get_release_controller
+from . import controller
 
 log = logging.getLogger(__name__)
-
-controller = get_release_controller()
 
 
 def start(

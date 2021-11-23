@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
+# license: MPL-2.0, see LICENSE for more details.
 """Convenience tools to manage Git projects with Python."""
 
 import logging
 import os
 from typing import Any, List, Union
 
-from git import Repo
+from pygit2 import Repository
 
 from proman_versioning import config, exception
-from proman_versioning.config import Config
+
+# from proman_versioning.config import Config
 from proman_versioning.controller import IntegrationController
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
@@ -22,30 +23,30 @@ __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-releases'
 __description__ = 'Convenience module to manage VCS tools with Python.'
-__version__ = '0.1.1-alpha.0'
-__license__ = 'Apache-2.0'
+__version__ = '0.1.1-alpha.1'
+__license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
 
 def get_repo(path: str = os.getcwd()) -> Git:
     """Load the repository object."""
-    return Git(Repo(os.path.join(path)))
+    return Git(Repository(os.path.join(path)))
 
 
 def get_source_tree(
     basepath: str = os.getcwd(), filenames: List[str] = config.filenames
-) -> Config:
+) -> config.Config:
     """Get source tree from path."""
     for filename in filenames:
         filepath = os.path.join(basepath, filename)
         if os.path.isfile(filepath):
-            return Config(filepath=filepath)
+            return config.Config(filepath=filepath)
     raise exception.PromanWorkflowException('no configuration found')
 
 
-def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
+def get_python_version(cfg: Union[config.Config, str]) -> PythonVersion:
     """Get python version from configurations."""
-    if isinstance(cfg, Config):
+    if isinstance(cfg, config.Config):
         version = (
             cfg.retrieve('/tool/proman/release/version')
             or cfg.retrieve('/tool/proman/version')
@@ -72,9 +73,7 @@ def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
     return version
 
 
-def get_release_controller(
-    *args: Any, **kwargs: Any
-) -> 'IntegrationController':
+def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     """Create and return a release controller."""
     basepath = kwargs.get('basepath', os.getcwd())
     filenames = kwargs.get('filenames', config.filenames)

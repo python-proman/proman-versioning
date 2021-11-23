@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: Apache 2.0, see LICENSE for more details.
-'''Provide CLI for git-tools.'''
+# license: MPL-2.0, see LICENSE for more details.
+"""Provide configuration for versioning tools."""
 
 import os
 from dataclasses import dataclass, field
@@ -32,20 +32,20 @@ grammar: str = os.path.join(
 
 @dataclass
 class TaskRunner:
-    '''Manager task runner setup.'''
+    """Manager task runner setup."""
 
     name: str = 'invoke'
     template: str = field(init=False)
     templates_dir: str = os.path.join(os.path.dirname(__file__), 'templates')
 
     def __post_init__(self) -> None:
-        '''Run post initialization.'''
+        """Run post initialization."""
         self.template = f"{self.name}_hooks.j2"
 
 
 @dataclass
 class HooksConfig(TaskRunner):
-    '''Manage hooks config.'''
+    """Manage hooks config."""
 
     hooks_dir: str = os.path.join(basedir, '.git', 'hooks')
     hooks: Tuple[str, ...] = (
@@ -81,17 +81,17 @@ class HooksConfig(TaskRunner):
 
 @dataclass
 class GitConfig:
-    '''Manage git config.'''
+    """Manage git config."""
 
     system_config: str = os.path.join(os.sep, 'etc', 'gitconfig')
     global_config: str = os.path.join(os.path.expanduser('~'), '.gitconfig')
 
     def __post_init__(self) -> None:
-        '''Run post initiation.'''
+        """Run post initiation."""
         self.load()
 
     def load(self) -> None:
-        '''Load git configuration.'''
+        """Load git configuration."""
         with GitConfigParser(self.global_config, read_only=True) as cfg:
             cfg.read()
             if not cfg.has_section('commit'):
@@ -99,7 +99,7 @@ class GitConfig:
             # pprint(cfg.__dict__)  # ._sections)
 
     def save(self) -> None:
-        '''Save git configuration.'''
+        """Save git configuration."""
         with GitConfigParser(self.global_config, read_only=False) as cfg:
             if not cfg.has_section('commit'):
                 cfg.add_section('commit')
@@ -108,7 +108,7 @@ class GitConfig:
 
 @dataclass
 class Config(ConfigFile):
-    '''Manage settings from configuration file.'''
+    """Manage settings from configuration file."""
 
     filepath: str
     index_url: str = urljoin(INDEX_URL.geturl(), 'simple')
@@ -119,7 +119,7 @@ class Config(ConfigFile):
     writable: bool = True
 
     def __post_init__(self) -> None:
-        '''Initialize settings from configuration.'''
+        """Initialize settings from configuration."""
         super().__init__(self.filepath)
         if os.path.isfile(self.filepath):
             self.load()
