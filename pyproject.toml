@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proman-versioning"
-version = "0.1.0"
+version = "0.1.1"
 description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
 
@@ -44,6 +44,10 @@ enable_postreleases = true
 [[tool.proman.versioning.files]]
 filepath = "proman_versioning/__init__.py"
 pattern = "__version__ = '${version}'"
+
+[[tool.proman.versioning.files]]
+filepath = "test/test_version.py"
+pattern = "__version__ == '${version}'"
 
 [[tool.proman.versioning.files]]
 filepath = "pyproject.toml"

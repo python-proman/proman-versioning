@@ -23,7 +23,7 @@ __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-releases'
 __description__ = 'Convenience module to manage VCS tools with Python.'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
