@@ -3,6 +3,21 @@ name = "proman-versioning"
 version = "0.1.1"
 description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
+license = "MPL-2.0"
+readme = "README.md"
+keywords = ["configuration management"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
