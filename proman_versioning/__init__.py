@@ -9,9 +9,8 @@ from typing import Any, List, Union
 
 from pygit2 import Repository
 
-from proman_versioning import config, exception
-
-# from proman_versioning.config import Config
+from proman_versioning import exception
+from proman_versioning.config import Config, filenames
 from proman_versioning.controller import IntegrationController
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
@@ -21,8 +20,8 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
-__title__ = 'proman-releases'
-__description__ = 'Convenience module to manage VCS tools with Python.'
+__title__ = 'proman-versioning'
+__description__ = 'Manage project versioing with Python.'
 __version__ = '0.1.1-alpha.1'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
@@ -34,19 +33,19 @@ def get_repo(path: str = os.getcwd()) -> Git:
 
 
 def get_source_tree(
-    basepath: str = os.getcwd(), filenames: List[str] = config.filenames
-) -> config.Config:
+    basepath: str = os.getcwd(), filenames: List[str] = filenames
+) -> Config:
     """Get source tree from path."""
     for filename in filenames:
         filepath = os.path.join(basepath, filename)
         if os.path.isfile(filepath):
-            return config.Config(filepath=filepath)
+            return Config(filepath=filepath)
     raise exception.PromanWorkflowException('no configuration found')
 
 
-def get_python_version(cfg: Union[config.Config, str]) -> PythonVersion:
+def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
     """Get python version from configurations."""
-    if isinstance(cfg, config.Config):
+    if isinstance(cfg, Config):
         version = (
             cfg.retrieve('/tool/proman/release/version')
             or cfg.retrieve('/tool/proman/version')
@@ -76,7 +75,7 @@ def get_python_version(cfg: Union[config.Config, str]) -> PythonVersion:
 def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     """Create and return a release controller."""
     basepath = kwargs.get('basepath', os.getcwd())
-    filenames = kwargs.get('filenames', config.filenames)
+    filenames = kwargs.get('filenames', filenames)
     cfg = get_source_tree(basepath=basepath, filenames=filenames)
     version = get_python_version(kwargs.pop('version', cfg))
     return IntegrationController(

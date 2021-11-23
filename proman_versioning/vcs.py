@@ -28,6 +28,16 @@ class Git:
         self.config = os.path.join(self.repo.path, 'config')
 
     @property
+    def base_dir(self) -> str:
+        """Return working directory of project."""
+        return self.vcs.repo.path
+
+    @property
+    def working_dir(self) -> str:
+        """Return working directory of project."""
+        return os.path.abspath(os.path.join(self.vcs.repo.path, '..'))
+
+    @property
     def branch(self) -> str:
         '''Retrieve the current branch.'''
         return self.repo.head.name
@@ -41,6 +51,8 @@ class Git:
         '''Create commit.'''
         if not name:
             name = f"refs/heads/{self.ref}"
+
+        # TODO: pull from gitconfig or prompt
         author = Signature('Jesse P. Johson', 'jpj6652@gmail.com')
         committer = kwargs.get('commiter', author)
         message: str = kwargs.get('message', 'ci: generated commit')
