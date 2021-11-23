@@ -37,35 +37,6 @@ def get_source_tree(
     raise exception.PromanWorkflowException('no configuration found')
 
 
-def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
-    """Get python version from configurations."""
-    if isinstance(cfg, Config):
-        version = (
-            cfg.retrieve('/tool/proman/versioning/version')
-            or cfg.retrieve('/tool/proman/version')
-            or cfg.retrieve('/tool/poetry/version')
-            or cfg.retrieve('/metadata/version')
-        )
-        if version is None:
-            raise exception.PromanWorkflowException('no version found')
-
-        version = PythonVersion(
-            version=version,
-            enable_devreleases=cfg.retrieve(
-                '/tool/proman/versioning/enable_devreleases', False
-            ),
-            enable_prereleases=cfg.retrieve(
-                '/tool/proman/versioning/enable_prereleases', False
-            ),
-            enable_postreleases=cfg.retrieve(
-                '/tool/proman/versioning/enable_postreleases', False
-            ),
-        )
-    else:
-        version = PythonVersion(cfg)
-    return version
-
-
 def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     """Create and return a release controller."""
     base_dir = kwargs.get('base_dir', BASE_DIR)
@@ -74,11 +45,10 @@ def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     working_dir = kwargs.get('working_dir', WORKING_DIR)
     filenames = kwargs.get('filenames', FILENAMES)
     cfg = get_source_tree(working_dir=working_dir, filenames=filenames)
-
-    version = get_python_version(kwargs.pop('version', cfg))
+    # version = get_python_version(kwargs.pop('version', cfg))
 
     return IntegrationController(
-        version=version,
+        version=cfg.version,
         config=cfg,
         repo=repo,
         **kwargs,

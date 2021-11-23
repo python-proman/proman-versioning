@@ -141,7 +141,7 @@ class IntegrationController(CommitMessageParser):
         return str(new_version)
 
     def finish_release(self, **kwargs: Any) -> str:
-        """Start a release."""
+        """Finish a release."""
         new_version = deepcopy(self.version)
         new_version.finish_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
@@ -161,7 +161,7 @@ class IntegrationController(CommitMessageParser):
         return version
 
     def bump_version(self, **kwargs: Any) -> str:
-        """Update the version of the application."""
+        """Update the version of the project."""
         new_version = deepcopy(self.version)
 
         # local number depends on metadata / fork / conflict existing vers

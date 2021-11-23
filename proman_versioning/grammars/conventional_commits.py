@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Any, Callable, Dict, List, Optional
 
 from lark import Lark
-from proman_versioning import config
+from proman_versioning.config import GRAMMAR_PATH
 
 
 class CommitMessageParser:
@@ -16,13 +16,13 @@ class CommitMessageParser:
 
     def __init__(
         self,
-        grammar: str = config.grammar,
+        grammar_path: str = GRAMMAR_PATH,
         start: str = 'message',
         **kwargs: Any
     ) -> None:
         '''Initialize commit message parser.'''
         # TODO: need to limit messages to 100 characters
-        self.__parser = Lark.open(grammar, start=start, **kwargs)
+        self.__parser = Lark.open(grammar_path, start=start, **kwargs)
 
     def parse(
         self,

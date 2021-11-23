@@ -28,7 +28,7 @@ class Git:
     @property
     def base_dir(self) -> str:
         """Return base directory of repository."""
-        return self.vcs.repo.path
+        return self.repo.path
 
     @property
     def working_dir(self) -> str:
