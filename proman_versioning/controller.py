@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Parse Git commit messages.'''
+"""Parse Git commit messages."""
 
 # import logging
 import os
@@ -20,7 +20,6 @@ from proman_versioning.version import PythonVersion
 # from packaging.version import Version
 # from transitions import Machine
 
-
 # TODO: version comparison against previous version
 # has API spec been modified?
 # has Python version changed?
@@ -29,7 +28,7 @@ from proman_versioning.version import PythonVersion
 
 # TODO determine relation with state and git hooks
 class IntegrationController(CommitMessageParser):
-    '''Control version releases.'''
+    """Control version releases."""
 
     # kinds = ['rolling', 'sustainment']
     # Trunk Based Development (TBD) - GitHub flow
@@ -45,7 +44,7 @@ class IntegrationController(CommitMessageParser):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        '''Initialize commit message action object.'''
+        """Initialize commit message action object."""
         self.version = version
         self.config = config
         parse_current_repo = kwargs.pop('parse_current_repo', True)
@@ -53,9 +52,9 @@ class IntegrationController(CommitMessageParser):
 
         self.vcs = repo
         if parse_current_repo:
-            branch = str(self.vcs.repo.active_branch)
-            ref = self.vcs.repo.refs[branch].commit
-            self.parse(ref.message)
+            head = self.vcs.repo.head
+            target = self.vcs.repo[head.target]
+            self.parse(target.message)
 
     @staticmethod
     def __update_config(
@@ -64,7 +63,7 @@ class IntegrationController(CommitMessageParser):
         new_version: str,
         dry_run: bool = False,
     ) -> None:
-        '''Update config file with new file.'''
+        """Update config file with new file."""
         # TODO: if file does not exist
         with open(filepath, 'r+') as f:
             file_contents = f.read()
@@ -83,11 +82,12 @@ class IntegrationController(CommitMessageParser):
     def update_configs(
         self, new_version: PythonVersion, **kwargs: Any
     ) -> None:
-        '''Update version within config files.'''
-        if not self.vcs.repo.is_dirty():
+        """Update version within config files."""
+        stats = self.vcs.repo.diff('HEAD').stats
+        if stats.files_changed == 0:
             if str(self.version) != str(new_version):
                 dry_run = kwargs.pop('dry_run', False)
-                filepaths = self.config.retrieve('/tool/proman/release/files')
+                filepaths = self.config['tool']['proman']['release']['files']
                 for filepath in filepaths:
                     self.__update_config(
                         filepath=os.path.join(
@@ -114,6 +114,7 @@ class IntegrationController(CommitMessageParser):
                     )
                 if kwargs.get('tag', False):
                     self.vcs.tag(
+                        name=str(new_version),
                         ref='HEAD',
                         message=None,
                         dry_run=dry_run,
@@ -128,7 +129,7 @@ class IntegrationController(CommitMessageParser):
             )
 
     def start_release(self, kind: str = 'dev', **kwargs: Any) -> str:
-        '''Start a release.'''
+        """Start a release."""
         new_version = deepcopy(self.version)
         if kind == 'dev':
             new_version.start_devrelease()  # type: ignore
@@ -138,7 +139,7 @@ class IntegrationController(CommitMessageParser):
         return str(new_version)
 
     def finish_release(self, **kwargs: Any) -> str:
-        '''Start a release.'''
+        """Start a release."""
         new_version = deepcopy(self.version)
         new_version.finish_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
@@ -146,7 +147,7 @@ class IntegrationController(CommitMessageParser):
 
     @staticmethod
     def __bump_release(version: PythonVersion) -> PythonVersion:
-        '''Update release number.'''
+        """Update release number."""
         if version.is_devrelease:
             version.bump_devrelease()
         elif version.is_prerelease:
@@ -158,7 +159,7 @@ class IntegrationController(CommitMessageParser):
         return version
 
     def bump_version(self, **kwargs: Any) -> str:
-        '''Update the version of the application.'''
+        """Update the version of the application."""
         new_version = deepcopy(self.version)
 
         # local number depends on metadata / fork / conflict existing vers

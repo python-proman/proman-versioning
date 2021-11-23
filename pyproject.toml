@@ -10,9 +10,9 @@ jinja2 = "^2.11.2"
 lark-parser = "^0.10.0"
 argufy = "^0.1.1-alpha.12"
 transitions = "^0.8.4"
-compendium = "^0.1.1-dev.82"
 packaging = "^20.9"
 pygit2 = "^1.6.1"
+compendium = "^0.1.1-alpha.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -34,7 +34,7 @@ mypy = "^0.910"
 pylint = "^2.9.5"
 
 [tool.poetry.scripts]
-bump = "proman_versioning.__main__:main"
+proman-version = "proman_versioning.__main__:main"
 
 [tool.proman.versioning]
 enable_devreleases = true
@@ -48,17 +48,6 @@ pattern = "__version__ = '${version}'"
 [[tool.proman.versioning.files]]
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
-
-[tool.flit.metadata]
-module = "proman_versioning"
-author = "Jesse P. Johnson"
-author-email = "jpj6652@gmail.com"
-home-page = "https://github.com/kuwv/proman-versioning"
-requires = ["argufy", "jinja2", "GitPython", "lark-parser", "transitions"]
-classifiers = ["License :: OSI Approved :: Apache Software License"]
-
-[tool.flit.scripts]
-bump = "proman_versioning.__main__:main"
 
 [tool.isort]
 profile = "black"

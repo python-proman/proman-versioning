@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Manage releases with VCS.'''
+"""Manage releases with VCS."""
 
 import logging
 import sys
 from typing import Optional
 
-from proman_versioning import get_release_controller
+from . import controller
 
 log = logging.getLogger(__name__)
-
-controller = get_release_controller()
 
 
 def start(
@@ -19,7 +17,7 @@ def start(
     commit: bool = True,
     dry_run: bool = False,
 ) -> None:
-    '''Start a release.
+    """Start a release.
 
     Paramters
     ----------
@@ -27,7 +25,7 @@ def start(
         Choose the kind of release to be performed.
     commit: bool
         Commit release changes to project.
-    '''
+    """
     controller.start_release(kind=kind, commit=commit, dry_run=dry_run)
     print(f"project version is now: {controller.version}", file=sys.stdout)
 
@@ -40,7 +38,7 @@ def finish(
     sign_tag: bool = False,
     dry_run: bool = False,
 ) -> None:
-    '''Finish a release.
+    """Finish a release.
 
     Paramters
     ----------
@@ -54,7 +52,7 @@ def finish(
         Annotation of tag commit.
     sign_tag: bool
         Sign tag.
-    '''
+    """
     controller.finish_release(
         commit=commit,
         tag=tag,
