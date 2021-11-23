@@ -87,7 +87,7 @@ class IntegrationController(CommitMessageParser):
         if stats.files_changed == 0:
             if str(self.version) != str(new_version):
                 dry_run = kwargs.pop('dry_run', False)
-                filepaths = self.config['tool']['proman']['release']['files']
+                filepaths = self.config['tool']['proman']['version']['files']
                 for filepath in filepaths:
                     self.__update_config(
                         filepath=os.path.join(
