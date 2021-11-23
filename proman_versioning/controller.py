@@ -93,7 +93,7 @@ class IntegrationController(CommitMessageParser):
                 for filepath in filepaths:
                     self.__update_config(
                         filepath=os.path.join(
-                            self.vcs.repo.working_dir, filepath['filepath']
+                            self.vcs.repo.path, filepath['filepath']
                         ),
                         version=(
                             Template(filepath['pattern']).substitute(
