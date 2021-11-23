@@ -49,6 +49,18 @@ def get_python_version(cfg: Union[Config, str]) -> PythonVersion:
         if version is None:
             raise exception.PromanWorkflowException('no version found')
 
+        print(
+            cfg.retrieve(
+                '/tool/proman/versioning/enable_devreleases', False
+            ),
+            cfg.retrieve(
+                '/tool/proman/versioning/enable_prereleases', False
+            ),
+            cfg.retrieve(
+                '/tool/proman/versioning/enable_postreleases', False
+            )
+        )
+
         version = PythonVersion(
             version=version,
             enable_devreleases=cfg.retrieve(
