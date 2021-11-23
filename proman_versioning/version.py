@@ -16,6 +16,7 @@ class PythonVersion(Version):
     def __init__(self, version: str, **kwargs: Any) -> None:
         """Initialize version object."""
         # self.kind = kwargs.pop('version_system', 'semver')
+        self.original = version
         super().__init__(version=version)
 
         # TODO: transitions here should be populated by VCS workflow

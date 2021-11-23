@@ -65,6 +65,7 @@ class IntegrationController(CommitMessageParser):
     ) -> None:
         """Update config file with new file."""
         # TODO: if file does not exist
+        # XXX: template does not handle various pep440 formats
         with open(filepath, 'r+') as f:
             file_contents = f.read()
             pattern = re.compile(re.escape(version), flags=0)
@@ -102,7 +103,7 @@ class IntegrationController(CommitMessageParser):
                         ),
                         new_version=(
                             Template(filepath['pattern']).substitute(
-                                version=new_version
+                                version=str(new_version)
                             )
                         ),
                         dry_run=dry_run,
