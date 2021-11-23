@@ -83,10 +83,10 @@ class IntegrationController(CommitMessageParser):
         self, new_version: PythonVersion, **kwargs: Any
     ) -> None:
         """Update version within config files."""
+        dry_run = kwargs.pop('dry_run', False)
         stats = self.vcs.repo.diff('HEAD').stats
-        if stats.files_changed == 0:
+        if stats.files_changed == 0 or dry_run:
             if str(self.version) != str(new_version):
-                dry_run = kwargs.pop('dry_run', False)
                 filepaths = (
                     self.config['tool']['proman']['versioning']['files']
                 )

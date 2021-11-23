@@ -19,7 +19,7 @@ __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
 __description__ = 'Convenience tools to manage project versioning.'
-__version__ = '0.1.1-alpha.1'
+__version__ = '0.1.1a1'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
