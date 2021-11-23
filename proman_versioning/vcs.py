@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Parse Git commit messages.'''
+"""Parse Git commit messages."""
 
 # import logging
 import os
@@ -11,17 +11,15 @@ from pygit2 import GIT_OBJ_COMMIT, Commit, Repository, Signature, Tag
 
 # from proman_versioning import exception
 
-# from transitions import Machine
-
 
 class Git:
-    '''Provide settings for git repositories.'''
+    """Provide settings for git repositories."""
 
     system_config: str = os.path.join(os.sep, 'etc', 'gitconfig')
     global_config: str = os.path.join(os.path.expanduser('~'), '.gitconfig')
 
     def __init__(self, repo: Repository) -> None:
-        '''Initialize git object.'''
+        """Initialize git object."""
         self.repo = repo
         self.ref = 'HEAD'
         self.hooks_dir = os.path.join(self.repo.path, 'hooks')
@@ -29,7 +27,7 @@ class Git:
 
     @property
     def base_dir(self) -> str:
-        """Return working directory of project."""
+        """Return base directory of repository."""
         return self.vcs.repo.path
 
     @property
@@ -39,7 +37,7 @@ class Git:
 
     @property
     def branch(self) -> str:
-        '''Retrieve the current branch.'''
+        """Retrieve the current branch."""
         return self.repo.head.name
 
     def commit(
@@ -48,7 +46,7 @@ class Git:
         filepaths: List[str] = [],
         **kwargs: Any,
     ) -> Commit:
-        '''Create commit.'''
+        """Create commit."""
         if not name:
             name = f"refs/heads/{self.ref}"
 
@@ -89,7 +87,7 @@ class Git:
         return commit
 
     def tag(self, name: str, ref: str = 'HEAD', **kwargs: Any) -> Tag:
-        '''Create tag.'''
+        """Create tag."""
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)

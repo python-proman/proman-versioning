@@ -27,6 +27,7 @@ transitions = "^0.8.4"
 packaging = "^20.9"
 compendium = {version = "^0.1.1-alpha.2", allow-prereleases = true}
 pygit2 = "^1.6.1"
+cffi = "^1.15.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

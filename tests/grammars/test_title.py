@@ -1,5 +1,5 @@
 # type: ignore
-'''Test git hooks pipeline.'''
+"""Test git hooks pipeline."""
 
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 
