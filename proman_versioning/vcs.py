@@ -33,7 +33,7 @@ class Git:
     @property
     def working_dir(self) -> str:
         """Return working directory of project."""
-        return os.path.abspath(os.path.join(self.vcs.repo.path, '..'))
+        return os.path.abspath(os.path.join(self.repo.path, '..'))
 
     @property
     def branch(self) -> str:
