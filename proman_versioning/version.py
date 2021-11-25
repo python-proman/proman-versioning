@@ -43,6 +43,7 @@ class PythonVersion(Version):
             conditions=['devreleases_enabled'],
         )
 
+        # pre-release
         self.machine.add_transition(
             trigger='start_prerelease',
             source=['final', 'development', 'post'],
@@ -86,10 +87,10 @@ class PythonVersion(Version):
     def states(self) -> List[str]:
         """List all states."""
         states = ['local', 'final']
-        if self.enable_prereleases:
-            states += ['alpha', 'beta', 'release']
         if self.enable_devreleases:
             states += ['development']
+        if self.enable_prereleases:
+            states += ['alpha', 'beta', 'release']
         if self.enable_postreleases:
             states += ['post']
         return states

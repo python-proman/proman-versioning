@@ -50,7 +50,4 @@ def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     )
 
 
-__all__ = [
-    'get_source_tree',
-    'get_release_controller',
-]
+__all__ = ('get_source_tree', 'get_release_controller')
