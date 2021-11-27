@@ -15,7 +15,7 @@ from proman_versioning import exception
 from proman_versioning.config import Config
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
-from proman_versioning.version import PythonVersion
+from proman_versioning.version import Version
 
 # from packaging.version import Version
 # from transitions import Machine
@@ -38,7 +38,7 @@ class IntegrationController(CommitMessageParser):
 
     def __init__(
         self,
-        version: PythonVersion,
+        version: Version,
         config: Config,
         repo: Git,
         *args: Any,
@@ -81,7 +81,7 @@ class IntegrationController(CommitMessageParser):
                 print(file_contents, file=sys.stdout)
 
     def update_configs(
-        self, new_version: PythonVersion, **kwargs: Any
+        self, new_version: Version, **kwargs: Any
     ) -> None:
         """Update version within config files."""
         dry_run = kwargs.pop('dry_run', False)
@@ -149,7 +149,7 @@ class IntegrationController(CommitMessageParser):
         return str(new_version)
 
     @staticmethod
-    def __bump_release(version: PythonVersion) -> PythonVersion:
+    def __bump_release(version: Version) -> Version:
         """Update release number."""
         if version.is_devrelease:
             version.bump_devrelease()

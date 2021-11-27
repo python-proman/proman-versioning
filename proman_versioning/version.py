@@ -6,11 +6,13 @@
 # import logging
 from typing import Any, List, Optional, Tuple
 
-from packaging.version import Version, _cmpkey, _parse_local_version, _Version
+from packaging.version import (
+    Version as PackageVersion, _cmpkey, _parse_local_version, _Version
+)
 from transitions import Machine
 
 
-class PythonVersion(Version):
+class Version(PackageVersion):
     """Provide PEP440 compliant versioning."""
 
     def __init__(self, version: str, **kwargs: Any) -> None:
@@ -19,9 +21,9 @@ class PythonVersion(Version):
         super().__init__(version=version)
 
         # TODO: transitions here should be populated by VCS workflow
-        self.enable_devreleases = kwargs.get('enable_devreleases', False)
-        self.enable_prereleases = kwargs.get('enable_prereleases', False)
-        self.enable_postreleases = kwargs.get('enable_postreleases', False)
+        self.enable_devreleases = kwargs.get('enable_devreleases', True)
+        self.enable_prereleases = kwargs.get('enable_prereleases', True)
+        self.enable_postreleases = kwargs.get('enable_postreleases', True)
 
         self.machine = Machine(
             self, states=self.states, initial=self.get_state()

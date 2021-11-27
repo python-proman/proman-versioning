@@ -45,6 +45,7 @@ mkdocs = "^1.2.2"
 mypy = "^0.910"
 pylint = "^2.9.5"
 black = {version = "^21.11b1", allow-prereleases = true}
+pyfakefs = "^4.5.3"
 
 [tool.poetry.scripts]
 proman-version = "proman_versioning.__main__:main"

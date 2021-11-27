@@ -12,7 +12,7 @@ from compendium.loader import ConfigFile
 from pygit2 import discover_repository
 
 from proman_versioning import exception
-from proman_versioning.version import PythonVersion
+from proman_versioning.version import Version
 
 INDEX_URL = urlparse('https://pypi.org')
 
@@ -20,7 +20,7 @@ INDEX_URL = urlparse('https://pypi.org')
 CURRENT_DIR = os.getcwd()
 BASE_DIR = discover_repository(CURRENT_DIR)
 WORKING_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
-SPECFILE_PATH = os.path.join(WORKING_DIR, 'pyproject.toml')
+CONFIG_PATH = os.path.join(WORKING_DIR, 'pyproject.toml')
 
 GRAMMAR_PATH: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
@@ -47,7 +47,7 @@ class Config(ConfigFile):
     include_prereleases: bool = False
     lookup_memory: Optional[str] = None
     writable: bool = True
-    version: PythonVersion = field(init=False)
+    version: Version = field(init=False)
 
     def __post_init__(self) -> None:
         """Initialize settings from configuration."""
@@ -64,15 +64,15 @@ class Config(ConfigFile):
             if config_version is None:
                 raise exception.PromanWorkflowException('no version found')
 
-            self.version = PythonVersion(
+            self.version = Version(
                 version=config_version,
                 enable_devreleases=self.retrieve(
-                    '/tool/proman/versioning/enable_devreleases', False
+                    '/tool/proman/versioning/enable_devreleases', True
                 ),
                 enable_prereleases=self.retrieve(
-                    '/tool/proman/versioning/enable_prereleases', False
+                    '/tool/proman/versioning/enable_prereleases', True
                 ),
                 enable_postreleases=self.retrieve(
-                    '/tool/proman/versioning/enable_postreleases', False
+                    '/tool/proman/versioning/enable_postreleases', True
                 ),
             )
