@@ -18,7 +18,7 @@ __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
 __description__ = 'Convenience tools to manage project versioning.'
-__version__ = '0.1.1a3'
+__version__ = '0.1.1a4'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 
@@ -27,7 +27,6 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
     """Get source tree from path."""
-    print(config_files)
     try:
         config = Config(filepaths=config_files)
         return config
@@ -41,7 +40,6 @@ def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     repo = Git(Repository(repo_dir))
 
     config_files = kwargs.pop('config_files', CONFIG_FILES)
-    print('wtf', config_files)
     cfg = get_source_tree(config_files=config_files)
     # version = get_python_version(kwargs.pop('version', cfg))
 
