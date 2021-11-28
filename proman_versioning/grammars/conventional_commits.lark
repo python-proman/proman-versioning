@@ -21,28 +21,28 @@ break: "!"
 scope: "(" CNAME ")"
 description: DESCRIPTION
 TYPES: "fix"
-     | "feat"
-     | "build"
-     | "chore"
-     | "ci"
-     | "docs"
-     | "perf"
-     | "refactor"
-     | "style"
-     | "test"
+    | "feat"
+    | "build"
+    | "chore"
+    | "ci"
+    | "docs"
+    | "perf"
+    | "refactor"
+    | "style"
+    | "test"
 
 // footer
 breaking_change: "BREAKING CHANGE: " DESCRIPTION
 issue: ISSUES " #" [CNAME "-"] INT
 ISSUES: "Refs"
-      | "Fix"
+    | "Fix"
 trailer: TOKENS ": " NAME ["<" EMAIL ">"]
 TOKENS: "Acked-by"
-      | "Cc"
-      | "Reviewed-by"
-      | "Reported-by"
-      | "Signed-off-by"
-      | "Tested-by"
+    | "Cc"
+    | "Reviewed-by"
+    | "Reported-by"
+    | "Signed-off-by"
+    | "Tested-by"
 NAME: LETTER [DOMAIN_CHAR | " "]+ "."? [DOMAIN_CHAR | " "]+ LETTER "."?
 
 // email

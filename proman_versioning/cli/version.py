@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# copyright: (c) 2020 by Jesse Johnson.
+# copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
 """Control project versions."""
 
@@ -21,7 +21,7 @@ def bump(
     dry_run: bool = False,
 ) -> None:
     """Manage project versions."""
-    controller.bump_version(
+    version = controller.bump_version(
         commit=commit,
         tag=tag,
         tag_name=name,
@@ -29,9 +29,13 @@ def bump(
         sign_tag=sign,
         dry_run=dry_run,
     )
-    print(controller.version, file=sys.stdout)
+    print(str(version), file=sys.stdout)
 
 
-def view() -> None:
+def view(files: bool = False) -> None:
     """Get the current version of project."""
-    print(controller.version, file=sys.stdout)
+    if files:
+        for x in controller.filepaths:
+            print(x['filepath'], file=sys.stdout)
+    else:
+        print(controller.version, file=sys.stdout)

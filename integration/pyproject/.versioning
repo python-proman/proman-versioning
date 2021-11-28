@@ -1,0 +1,15 @@
+[proman]
+version = "0.1.1a3"
+
+[proman.versioning]
+enable_devreleases = true
+enable_prereleases = true
+enable_postreleases = true
+
+[[proman.versioning.files]]
+filepath = ".versioning"
+pattern = "version = \"${version}\""
+
+[[proman.versioning.files]]
+filepath = "pyproject.toml"
+pattern = "version = \"${version}\""

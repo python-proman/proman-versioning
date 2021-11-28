@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "versioning"
+version = "1.2.3"
+
+[tool.proman]
+name = "versioning"
+version = "1.2.3"
+
+[tool.proman.versioning]
+enable_devreleases = true
+enable_prereleases = true
+enable_postreleases = true
+
+[[tool.proman.versioning.files]]
+filepath = "pyproject.toml"
+pattern = "version = \"${version}\""

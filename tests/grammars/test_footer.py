@@ -1,19 +1,19 @@
 # type: ignore
-'''Test git hooks pipeline.'''
+"""Test git hooks pipeline."""
 
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 
-message = '''fix(example): test a message
+message = """fix(example): test a message
 
 Reviewed-by: Jim H. Henson Jr. <jim.henson1@email.com>
 Refs #123
 Fix #124
 BREAKING CHANGE: This could change things
-'''
+"""
 
 
 def test_footer_trailer():
-    '''Test footer trailer.'''
+    """Test footer trailer."""
     parser = CommitMessageParser()
     parser.parse(message)
     assert parser.footer['trailer']['token'] == 'Reviewed-by'
@@ -22,7 +22,7 @@ def test_footer_trailer():
 
 
 def test_footer_issues():
-    '''Test footer issues.'''
+    """Test footer issues."""
     parser = CommitMessageParser()
     parser.parse(message)
     assert parser.footer['issues'][0]['Refs'] == '123'
@@ -30,7 +30,7 @@ def test_footer_issues():
 
 
 def test_footer_breaking_change():
-    '''test footer breaking change.'''
+    """test footer breaking change."""
     parser = CommitMessageParser()
     parser.parse(message)
     assert parser.footer['breaking_change'] == 'This could change things'

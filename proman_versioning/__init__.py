@@ -4,13 +4,12 @@
 """Convenience tools to manage project versioning."""
 
 import logging
-import os
-from typing import Any
+from typing import Any, List
 
 from pygit2 import Repository
 
 from proman_versioning import exception
-from proman_versioning.config import BASE_DIR, CONFIG_PATH, Config
+from proman_versioning.config import REPO_DIR, CONFIG_FILES, Config
 from proman_versioning.controller import IntegrationController
 from proman_versioning.vcs import Git
 from proman_versioning.version import Version  # noqa
@@ -26,20 +25,24 @@ __copyright__ = 'Copyright 2021 Jesse Johnson.'
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
-def get_source_tree(config_path: str = CONFIG_PATH) -> Config:
+def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
     """Get source tree from path."""
-    if os.path.isfile(config_path):
-        return Config(filepath=config_path)
-    raise exception.PromanWorkflowException('no configuration found')
+    print(config_files)
+    try:
+        config = Config(filepaths=config_files)
+        return config
+    except Exception as err:
+        raise exception.PromanWorkflowException(err)
 
 
 def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     """Create and return a release controller."""
-    base_dir = kwargs.get('base_dir', BASE_DIR)
-    repo = Git(Repository(base_dir))
+    repo_dir = kwargs.pop('repo_dir', REPO_DIR)
+    repo = Git(Repository(repo_dir))
 
-    config_path = kwargs.get('config_path', CONFIG_PATH)
-    cfg = get_source_tree(config_path=config_path)
+    config_files = kwargs.pop('config_files', CONFIG_FILES)
+    print('wtf', config_files)
+    cfg = get_source_tree(config_files=config_files)
     # version = get_python_version(kwargs.pop('version', cfg))
 
     return IntegrationController(

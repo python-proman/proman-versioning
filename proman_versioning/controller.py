@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# copyright: (c) 2020 by Jesse Johnson.
+# copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
 """Parse Git commit messages."""
 
@@ -9,7 +9,7 @@ import re
 import sys
 from copy import deepcopy
 from string import Template
-from typing import Any
+from typing import Any, Dict, List
 
 from proman_versioning import exception
 from proman_versioning.config import Config
@@ -56,20 +56,38 @@ class IntegrationController(CommitMessageParser):
             target = self.vcs.repo[head.target]
             self.parse(target.message)
 
+    @property
+    def filepaths(self) -> List[Dict[str, Any]]:
+        """List templated filepaths."""
+        filepaths = (
+            self.config.retrieve('/proman/versioning/files')
+            or self.config.retrieve('/tool/proman/versioning/files')
+        )
+        return filepaths
+
     @staticmethod
     def __update_config(
         filepath: str,
-        version: str,
-        new_version: str,
+        pattern: str,
+        version: Version,
+        new_version: Version,
         dry_run: bool = False,
     ) -> None:
         """Update config file with new file."""
-        # TODO: if file does not exist
-        # XXX: template does not handle various pep440 formats
+        # TODO: handle when file does not exist
         with open(filepath, 'r+') as f:
             file_contents = f.read()
-            pattern = re.compile(re.escape(version), flags=0)
-            file_contents = pattern.sub(new_version, file_contents)
+            # XXX: template alone does not handle various pep440 formats
+            match = re.compile(
+                re.escape(
+                    Template(pattern).substitute(version=str(version))
+                ),
+                flags=0,
+            )
+            file_contents = match.sub(
+                Template(pattern).substitute(version=str(new_version)),
+                file_contents,
+            )
             if not dry_run:
                 try:
                     f.seek(0)
@@ -88,31 +106,23 @@ class IntegrationController(CommitMessageParser):
         stats = self.vcs.repo.diff('HEAD').stats
         if stats.files_changed == 0 or dry_run:
             if str(self.version) != str(new_version):
-                filepaths = (
-                    self.config['tool']['proman']['versioning']['files']
-                )
-                for filepath in filepaths:
+                for filepath in self.filepaths:
                     self.__update_config(
                         filepath=os.path.join(
                             self.vcs.working_dir, filepath['filepath']
                         ),
-                        version=(
-                            Template(filepath['pattern']).substitute(
-                                version=str(self.version)
-                            )
-                        ),
-                        new_version=(
-                            Template(filepath['pattern']).substitute(
-                                version=str(new_version)
-                            )
-                        ),
+                        pattern=filepath['pattern'],
+                        version=self.version,
+                        new_version=new_version,
                         dry_run=dry_run,
                     )
                 self.version = new_version
                 if kwargs.pop('commit', True):
+                    # TODO: tie scope to release types or version ranges
+                    scope = 'version'
                     self.vcs.commit(
-                        filepaths=[f['filepath'] for f in filepaths],
-                        message=(f"ci(version): apply {new_version} updates"),
+                        filepaths=[f['filepath'] for f in self.filepaths],
+                        message=(f"ci({scope}): apply {new_version} updates"),
                         dry_run=dry_run,
                     )
                 if kwargs.get('tag', False):
@@ -131,7 +141,7 @@ class IntegrationController(CommitMessageParser):
                 'git repository is not clean'
             )
 
-    def start_release(self, kind: str = 'dev', **kwargs: Any) -> str:
+    def start_release(self, kind: str = 'dev', **kwargs: Any) -> Version:
         """Start a release."""
         new_version = deepcopy(self.version)
         if kind == 'dev':
@@ -139,14 +149,14 @@ class IntegrationController(CommitMessageParser):
         elif kind == 'pre':
             new_version.start_prerelease()  # type: ignore
         self.update_configs(new_version, **kwargs)
-        return str(new_version)
+        return new_version
 
-    def finish_release(self, **kwargs: Any) -> str:
+    def finish_release(self, **kwargs: Any) -> Version:
         """Finish a release."""
         new_version = deepcopy(self.version)
         new_version.finish_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
-        return str(new_version)
+        return new_version
 
     @staticmethod
     def __bump_release(version: Version) -> Version:
@@ -161,7 +171,7 @@ class IntegrationController(CommitMessageParser):
             version.start_postrelease()  # type: ignore
         return version
 
-    def bump_version(self, **kwargs: Any) -> str:
+    def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.version)
 
@@ -173,7 +183,6 @@ class IntegrationController(CommitMessageParser):
                 new_version.bump_minor()
             elif self.title['type'] == 'fix':
                 new_version.bump_micro()
-
             # update release instance
             elif self.title['type'] == 'build':
                 new_version = self.__bump_release(new_version)
@@ -193,4 +202,4 @@ class IntegrationController(CommitMessageParser):
                 new_version = self.__bump_release(new_version)
 
         self.update_configs(new_version, **kwargs)
-        return str(new_version)
+        return new_version

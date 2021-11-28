@@ -1,26 +1,30 @@
 # -*- coding: utf-8 -*-
-# copyright: (c) 2020 by Jesse Johnson.
+# copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
 """Provide configuration for versioning tools."""
 
 import os
-from dataclasses import dataclass, field
-from typing import Optional
-from urllib.parse import urljoin, urlparse
+from dataclasses import dataclass, field, InitVar
+from typing import List
+# from urllib.parse import urljoin, urlparse
 
-from compendium.loader import ConfigFile
+from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
 
-from proman_versioning import exception
+from proman_versioning.exception import PromanWorkflowException
 from proman_versioning.version import Version
-
-INDEX_URL = urlparse('https://pypi.org')
 
 # TODO check VCS for paths
 CURRENT_DIR = os.getcwd()
-BASE_DIR = discover_repository(CURRENT_DIR)
-WORKING_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
-CONFIG_PATH = os.path.join(WORKING_DIR, 'pyproject.toml')
+REPO_DIR = discover_repository(CURRENT_DIR)
+if REPO_DIR is None:
+    raise PromanWorkflowException('Unable to locate git repository.')
+PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, '..'))
+CONFIG_FILES = [
+    os.path.join(PROJECT_DIR, '.versioning'),
+    os.path.join(PROJECT_DIR, 'pyproject.toml'),
+    # TODO: add setup.cfg
+]
 
 GRAMMAR_PATH: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
@@ -28,51 +32,54 @@ GRAMMAR_PATH: str = os.path.join(
 # 'proman_versioning/templates/gitmessage.j2'
 
 
+# @dataclass
+# class GitConfig:
+#     """Manage git config."""
+#
+#     system_config: str = os.path.join(os.sep, 'etc', 'gitconfig')
+#     global_config: str = os.path.join(os.path.expanduser('~'), '.gitconfig')
+
+
 @dataclass
-class GitConfig:
-    """Manage git config."""
-
-    system_config: str = os.path.join(os.sep, 'etc', 'gitconfig')
-    global_config: str = os.path.join(os.path.expanduser('~'), '.gitconfig')
-
-
-@dataclass
-class Config(ConfigFile):
+class Config(ConfigManager):
     """Manage settings from configuration file."""
 
-    filepath: str
-    index_url: str = urljoin(INDEX_URL.geturl(), 'simple')
-    python_versions: tuple = ()
-    digest_algorithm: str = 'sha256'
-    include_prereleases: bool = False
-    lookup_memory: Optional[str] = None
+    filepaths: InitVar[List[str]]
     writable: bool = True
     version: Version = field(init=False)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self, filepaths: List[str]) -> None:
         """Initialize settings from configuration."""
-        super().__init__(self.filepath)
-        if os.path.isfile(self.filepath):
-            self.load()
+        super().__init__(filepaths=filepaths)
+        super().load_configs()
 
         if not hasattr(self, 'version'):
             config_version = (
-                self.retrieve('/tool/proman/versioning/version')
+                self.retrieve('/proman/version')
                 or self.retrieve('/tool/proman/version')
                 or self.retrieve('/tool/poetry/version')
             )
             if config_version is None:
-                raise exception.PromanWorkflowException('no version found')
+                raise PromanWorkflowException('no version found')
 
             self.version = Version(
                 version=config_version,
-                enable_devreleases=self.retrieve(
-                    '/tool/proman/versioning/enable_devreleases', True
+                enable_devreleases=(
+                    self.retrieve('/proman/versioning/enable_devreleases')
+                    or self.retrieve(
+                        '/tool/proman/versioning/enable_devreleases'
+                    )
                 ),
-                enable_prereleases=self.retrieve(
-                    '/tool/proman/versioning/enable_prereleases', True
+                enable_prereleases=(
+                    self.retrieve('/proman/versioning/enable_prereleases')
+                    or self.retrieve(
+                        '/tool/proman/versioning/enable_prereleases'
+                    )
                 ),
-                enable_postreleases=self.retrieve(
-                    '/tool/proman/versioning/enable_postreleases', True
+                enable_postreleases=(
+                    self.retrieve('/proman/versioning/enable_postreleases')
+                    or self.retrieve(
+                        '/tool/proman/versioning/enable_postreleases'
+                    )
                 ),
             )

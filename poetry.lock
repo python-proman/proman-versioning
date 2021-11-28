@@ -171,7 +171,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "compendium"
-version = "0.1.1a2"
+version = "0.1.1a3"
 description = "Simple layered configuraion tool"
 category = "main"
 optional = false
@@ -1126,8 +1126,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 compendium = [
-    {file = "compendium-0.1.1a2-py3-none-any.whl", hash = "sha256:7d69e0e15a3dd27e714a55a5fa57407d22e5f31348a80707ce96e53c5ca6235f"},
-    {file = "compendium-0.1.1a2.tar.gz", hash = "sha256:6e754fa75d182d501a72caafcfd348ba8e1c82d96a07b43ec24b4c1612e91438"},
+    {file = "compendium-0.1.1a3-py3-none-any.whl", hash = "sha256:c35f3ca50330f9d04a4ca9cc50015fa711fe09102caa30986733eec929e0763c"},
+    {file = "compendium-0.1.1a3.tar.gz", hash = "sha256:45ddb903083b5d33d82196b40c9006e1d10426d1a0bf8dfaceaf067025deb6e3"},
 ]
 coverage = [
     {file = "coverage-6.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:675adb3b3380967806b3cbb9c5b00ceb29b1c472692100a338730c1d3e59c8b9"},
