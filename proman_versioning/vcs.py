@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-"""Parse Git commit messages."""
+"""Parse git commit messages."""
 
 # import logging
 import os

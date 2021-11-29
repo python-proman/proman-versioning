@@ -66,6 +66,27 @@ class IntegrationController(CommitMessageParser):
         return filepaths
 
     @staticmethod
+    def __get_version_regex(version: Version) -> str:
+        """Get PEP-440 compliant regex for version."""
+        if version.pre:
+            v = '.'.join([str(x) for x in version.release])
+            if version.epoch > 0:
+                v = f"{version.epoch}!{v}"
+            pre = version.pre[0]
+            if pre == 'a' or pre == 'alpha':
+                v = f"{v}[-_\\.]?(a|alpha)[-_\\.]?{version.pre[1] or ''}"
+            if pre == 'b' or pre == 'beta':
+                v = f"{v}[-_\\.]?(b|beta)[-_\\.]?{version.pre[1] or ''}"
+            if pre == 'rc' or pre == 'release':
+                v = f"{v}[-_\\.]?(rc|release)[-_\\.]?{version.pre[1] or ''}"
+            if version.dev:
+                v = f"{v}{version.dev[0]}{version.dev[1]}"
+            print(v)
+            return v
+        else:
+            return str(version)
+
+    @staticmethod
     def __update_config(
         filepath: str,
         pattern: str,
@@ -77,10 +98,12 @@ class IntegrationController(CommitMessageParser):
         # TODO: handle when file does not exist
         with open(filepath, 'r+') as f:
             file_contents = f.read()
-            # XXX: template alone does not handle various pep440 formats
+            version_str = (
+                IntegrationController.__get_version_regex(version=version)
+            )
             match = re.compile(
                 re.escape(
-                    Template(pattern).substitute(version=str(version))
+                    Template(pattern).substitute(version=version_str)
                 ),
                 flags=0,
             )
@@ -97,6 +120,7 @@ class IntegrationController(CommitMessageParser):
                     print(err, file=sys.stderr)
             else:
                 print(file_contents, file=sys.stdout)
+                print(version, match)
 
     def update_configs(
         self, new_version: Version, **kwargs: Any
