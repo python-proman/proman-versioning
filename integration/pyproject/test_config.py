@@ -71,5 +71,10 @@ def test_proman_release_controller(fs):
         dry_run=False,
     )
 
+    config = get_source_tree(config_files=[VERSIONING_PATH, PYPROJECT_PATH])
+
     # TODO: need to compare version with commit
-    print(version)
+    assert version == Version('1.2.3.post0')
+    assert Version(config.retrieve('/proman/version')) == version
+    assert Version(config.retrieve('/tool/proman/version')) == version
+    assert Version(config.retrieve('/tool/poetry/version')) == version
