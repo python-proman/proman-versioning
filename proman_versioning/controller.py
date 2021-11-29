@@ -11,7 +11,7 @@ from copy import deepcopy
 from string import Template
 from typing import Any, Dict, List
 
-from proman_versioning import exception
+from proman_versioning.exception import PromanWorkflowException
 from proman_versioning.config import Config
 from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
@@ -59,14 +59,18 @@ class IntegrationController(CommitMessageParser):
     @property
     def filepaths(self) -> List[Dict[str, Any]]:
         """List templated filepaths."""
-        filepaths = self.config.retrieve(
-            '/proman/versioning/files'
-        ) or self.config.retrieve('/tool/proman/versioning/files')
+        filepaths = (
+            self.config.retrieve('/proman/versioning/files')
+            or self.config.retrieve('/tool/proman/versioning/files')
+        )
+        if not filepaths:
+            raise PromanWorkflowException('no files for templating foundd')
         return filepaths
 
     @staticmethod
     def __get_version_regex(version: Version) -> str:
         """Get PEP-440 compliant regex for version."""
+        print(version.release)
         if version.pre:
             v = '.'.join([str(x) for x in version.release])
             if version.epoch > 0:
@@ -80,6 +84,9 @@ class IntegrationController(CommitMessageParser):
                 v = f"{v}[-_\\.]?(?:rc|release)[-_\\.]?{version.pre[1] or ''}"
             if version.dev:
                 v = f"{v}{version.dev[0]}{version.dev[1]}"
+            return v
+        if version.post:
+            v = f"{v}[-_\\.]?(?:post[-_\\.]?)?{version.post[1]}"
             return v
         else:
             return str(version)
@@ -132,6 +139,11 @@ class IntegrationController(CommitMessageParser):
         if stats.files_changed == 0 or dry_run:
             if str(self.version) != str(new_version):
                 for filepath in self.filepaths:
+                    if 'release_only' in filepath and filepath['release_only']:
+                        release = '.'.join(
+                            [str(x) for x in new_version.release]
+                        )
+                        new_version = Version(release)
                     self.__update_config(
                         filepath=os.path.join(
                             self.vcs.working_dir, filepath['filepath']
@@ -158,13 +170,9 @@ class IntegrationController(CommitMessageParser):
                         dry_run=dry_run,
                     )
             else:
-                raise exception.PromanWorkflowException(
-                    'no new version available'
-                )
+                raise PromanWorkflowException('no new version available')
         else:
-            raise exception.PromanWorkflowException(
-                'git repository is not clean'
-            )
+            raise PromanWorkflowException('git repository is not clean')
 
     def start_release(self, kind: str = 'dev', **kwargs: Any) -> Version:
         """Start a release."""
