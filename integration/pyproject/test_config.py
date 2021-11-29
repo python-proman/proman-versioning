@@ -68,7 +68,7 @@ def test_proman_release_controller(fs):
         tag_name='version',
         tag_message='this is a test',
         sign_tag=False,
-        dry_run=True,
+        dry_run=False,
     )
 
     # TODO: need to compare version with commit
