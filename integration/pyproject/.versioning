@@ -1,5 +1,5 @@
 [proman]
-version = "0.1.1a3"
+version = "1.2.3"
 
 [proman.versioning]
 enable_devreleases = true

@@ -59,10 +59,9 @@ class IntegrationController(CommitMessageParser):
     @property
     def filepaths(self) -> List[Dict[str, Any]]:
         """List templated filepaths."""
-        filepaths = (
-            self.config.retrieve('/proman/versioning/files')
-            or self.config.retrieve('/tool/proman/versioning/files')
-        )
+        filepaths = self.config.retrieve(
+            '/proman/versioning/files'
+        ) or self.config.retrieve('/tool/proman/versioning/files')
         return filepaths
 
     @staticmethod
@@ -99,8 +98,8 @@ class IntegrationController(CommitMessageParser):
             file_contents = f.read()
 
             # prepare source expression match pattern
-            version_str = (
-                IntegrationController.__get_version_regex(version=version)
+            version_str = IntegrationController.__get_version_regex(
+                version=version
             )
             template = Template(pattern).substitute(version=version_str)
             match = re.compile(
@@ -126,9 +125,7 @@ class IntegrationController(CommitMessageParser):
                 # print the file
                 print(file_contents, file=sys.stdout)
 
-    def update_configs(
-        self, new_version: Version, **kwargs: Any
-    ) -> None:
+    def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
         dry_run = kwargs.pop('dry_run', False)
         stats = self.vcs.repo.diff('HEAD').stats

@@ -4,15 +4,17 @@
 """Provide configuration for versioning tools."""
 
 import os
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
 from typing import List
-# from urllib.parse import urljoin, urlparse
 
 from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
 
 from proman_versioning.exception import PromanWorkflowException
 from proman_versioning.version import Version
+
+# from urllib.parse import urljoin, urlparse
+
 
 # TODO check VCS for paths
 CURRENT_DIR = os.getcwd()

@@ -9,7 +9,7 @@ from typing import Any, List
 from pygit2 import Repository
 
 from proman_versioning import exception
-from proman_versioning.config import REPO_DIR, CONFIG_FILES, Config
+from proman_versioning.config import CONFIG_FILES, REPO_DIR, Config
 from proman_versioning.controller import IntegrationController
 from proman_versioning.vcs import Git
 from proman_versioning.version import Version  # noqa
