@@ -74,14 +74,13 @@ class IntegrationController(CommitMessageParser):
                 v = f"{version.epoch}!{v}"
             pre = version.pre[0]
             if pre == 'a' or pre == 'alpha':
-                v = f"{v}[-_\\.]?(a|alpha)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{v}[-_\\.]?(?:a|alpha)[-_\\.]?{version.pre[1] or ''}"
             if pre == 'b' or pre == 'beta':
-                v = f"{v}[-_\\.]?(b|beta)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{v}[-_\\.]?(?:b|beta)[-_\\.]?{version.pre[1] or ''}"
             if pre == 'rc' or pre == 'release':
-                v = f"{v}[-_\\.]?(rc|release)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{v}[-_\\.]?(?:rc|release)[-_\\.]?{version.pre[1] or ''}"
             if version.dev:
                 v = f"{v}{version.dev[0]}{version.dev[1]}"
-            print(v)
             return v
         else:
             return str(version)
@@ -98,20 +97,25 @@ class IntegrationController(CommitMessageParser):
         # TODO: handle when file does not exist
         with open(filepath, 'r+') as f:
             file_contents = f.read()
+
+            # prepare source expression match pattern
             version_str = (
                 IntegrationController.__get_version_regex(version=version)
             )
+            template = Template(pattern).substitute(version=version_str)
             match = re.compile(
-                re.escape(
-                    Template(pattern).substitute(version=version_str)
-                ),
+                template,  # re.escape(template),
                 flags=0,
             )
+
+            # substitute the expression in file
             file_contents = match.sub(
                 Template(pattern).substitute(version=str(new_version)),
                 file_contents,
             )
+
             if not dry_run:
+                # save the file
                 try:
                     f.seek(0)
                     f.truncate()
@@ -119,8 +123,8 @@ class IntegrationController(CommitMessageParser):
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
+                # print the file
                 print(file_contents, file=sys.stdout)
-                print(version, match)
 
     def update_configs(
         self, new_version: Version, **kwargs: Any
