@@ -8,9 +8,9 @@ from typing import Any, List
 
 from pygit2 import Repository
 
-from proman_versioning import exception
 from proman_versioning.config import CONFIG_FILES, REPO_DIR, Config
 from proman_versioning.controller import IntegrationController
+from proman_versioning.exception import PromanWorkflowException
 from proman_versioning.vcs import Git
 from proman_versioning.version import Version  # noqa
 
@@ -31,7 +31,7 @@ def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
         config = Config(filepaths=config_files)
         return config
     except Exception as err:
-        raise exception.PromanWorkflowException(err)
+        raise PromanWorkflowException(err)
 
 
 def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
