@@ -15,18 +15,20 @@ log = logging.getLogger(__name__)
 def bump(
     commit: bool = False,
     tag: bool = False,
-    name: Optional[str] = None,
-    message: Optional[str] = None,
+    tag_name: Optional[str] = None,
+    tag_message: Optional[str] = None,
     sign: bool = False,
+    build: Optional[str] = None,
     dry_run: bool = False,
 ) -> None:
     """Manage project versions."""
     version = controller.bump_version(
         commit=commit,
         tag=tag,
-        tag_name=name,
-        tag_message=message,
+        tag_name=tag_name,
+        tag_message=tag_message,
         sign_tag=sign,
+        build=build,
         dry_run=dry_run,
     )
     print(str(version), file=sys.stdout)
