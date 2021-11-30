@@ -5,12 +5,13 @@
 
 from argufy import Parser
 
+from proman_versioning import __version__
 from proman_versioning.cli import release, version
 
 
 def main() -> None:
     """Provide CLI for git-tools."""
-    parser = Parser()
+    parser = Parser(version=__version__)
     parser.add_commands(release, command_type='subcommand')
     parser.add_commands(version)
     parser.dispatch()

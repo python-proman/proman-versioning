@@ -43,17 +43,39 @@ GRAMMAR_PATH: str = os.path.join(
 
 
 @dataclass
+class Parser:
+    """Configure parser operation."""
+
+    types: List[str] = field(default_factory=list)
+    scopes: List[str] = field(default_factory=list)
+
+
+@dataclass
 class Config(ConfigManager):
     """Manage settings from configuration file."""
 
     filepaths: InitVar[List[str]]
-    writable: bool = True
+    parser: Parser = field(init=False)
     version: Version = field(init=False)
+    writable: bool = True
 
     def __post_init__(self, filepaths: List[str]) -> None:
         """Initialize settings from configuration."""
         super().__init__(filepaths=filepaths)
         super().load_configs()
+
+        if not hasattr(self, 'parser'):
+            types = (
+                self.retrieve('/proman/versioning/parser/types')
+                or self.retrieve('/tool/proman/versioning/parser/types')
+            )
+            scopes = (
+                self.retrieve('/proman/versioning/parser/scopes')
+                or self.retrieve('/tool/proman/versioning/parser/scopes')
+            )
+
+            if types is not None:
+                self.parser = Parser(types=types, scopes=scopes)
 
         if not hasattr(self, 'version'):
             config_version = (

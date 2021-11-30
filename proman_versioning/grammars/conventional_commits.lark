@@ -9,27 +9,17 @@
 //
 message: title [body] [footer]
 
-title: type scope? break? ": " description
+title: [type scope? break? ": "] description
 
 ?body: (_NL | DESCRIPTION)+
 
 ?footer: (_NL [trailer | issue | breaking_change])+
 
 // title
-type: TYPES
+type: ":"? CNAME ":"?
 break: "!"
 scope: "(" CNAME ")"
 description: DESCRIPTION
-TYPES: "fix"
-    | "feat"
-    | "build"
-    | "chore"
-    | "ci"
-    | "docs"
-    | "perf"
-    | "refactor"
-    | "style"
-    | "test"
 
 // footer
 breaking_change: "BREAKING CHANGE: " DESCRIPTION
@@ -54,7 +44,8 @@ DOMAIN_CHAR: LETTER | "-" | INT
 TLD: LETTER ~ 3
 
 // body
-DESCRIPTION: (CNAME | WS_INLINE | NUMBER)+
+SPECIAL_CHAR: "'" | ":" | "/" | "."
+DESCRIPTION: (CNAME | WS_INLINE | NUMBER | SPECIAL_CHAR)+
 
 %import common.CNAME
 %import common.INT

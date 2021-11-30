@@ -4,7 +4,7 @@
 """Manage version numbers."""
 
 # import logging
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Union
 
 from packaging.version import Version as PackageVersion
 from packaging.version import _cmpkey, _parse_local_version, _Version
@@ -139,7 +139,7 @@ class Version(PackageVersion):
         epoch: Optional[int] = None,
         release: Optional[Tuple[Any, ...]] = None,
         pre: Optional[Tuple[str, int]] = None,
-        post: Optional[Tuple[str, int]] = None,
+        post: Optional[Union[Tuple[str, int], str]] = None,
         dev: Optional[Tuple[str, int]] = None,
         local: Optional[str] = None,
     ) -> None:
@@ -195,13 +195,13 @@ class Version(PackageVersion):
 
     def new_devrelease(self, kind: str = 'minor') -> None:
         """Update to the next development release version number."""
-        if not self.dev:
+        if self.dev is None:
             self.__bump_version(kind)
             self.__update_version(dev=('dev', 0))
 
     def bump_devrelease(self) -> None:
         """Update to the next development release version number."""
-        if self.dev:
+        if self.dev is not None:
             dev = (self.dev[0], self.dev[1] + 1)
             self.__update_version(dev=dev)
 
@@ -219,7 +219,7 @@ class Version(PackageVersion):
 
     def new_prerelease(self, kind: str = 'major') -> None:
         """Update to next prerelease version type."""
-        if self.pre:
+        if self.pre is not None:
             if self.pre[0] == 'a':
                 pre = ('b', 0)
             elif self.pre[0] == 'b':
@@ -231,7 +231,7 @@ class Version(PackageVersion):
 
     def bump_prerelease(self) -> None:
         """Update the prerelease version number."""
-        if self.pre:
+        if self.pre is not None:
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
 
@@ -242,8 +242,11 @@ class Version(PackageVersion):
 
     def bump_postrelease(self) -> None:
         """Update the post release version number."""
-        if self.post:
-            post = (self.post[0], self.post[1] + 1)
+        if self.post is not None:
+            if type(self.post) is tuple:
+                post = (self.post[0], self.post[1] + 1)
+            else:
+                post = ('post', self.post + 1)  # type: ignore
             self.__update_version(post=post)
 
     def finalize_release(self) -> None:

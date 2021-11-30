@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Parse Git commit messages.'''
+"""Parse Git commit messages."""
 
 # import logging
 from collections import defaultdict
@@ -12,7 +12,7 @@ from proman_versioning.config import GRAMMAR_PATH
 
 
 class CommitMessageParser:
-    '''Parse commit messages.'''
+    """Parse commit messages."""
 
     def __init__(
         self,
@@ -20,8 +20,10 @@ class CommitMessageParser:
         start: str = 'message',
         **kwargs: Any
     ) -> None:
-        '''Initialize commit message parser.'''
+        """Initialize commit message parser."""
         # TODO: need to limit messages to 100 characters
+        self.types = kwargs.pop('types', ['feat', 'fix'])
+        self.scopes = kwargs.pop('scopes', [])
         self.__parser = Lark.open(grammar_path, start=start, **kwargs)
 
     def parse(
@@ -30,13 +32,13 @@ class CommitMessageParser:
         start: Optional[str] = None,
         on_error: Optional[Callable] = None
     ) -> None:
-        '''Parse commit message.'''
+        """Parse commit message."""
         self.__tree = self.__parser.parse(  # type: ignore
             text, start=start, on_error=on_error
         )
 
     def _get_section(self, name: str) -> Optional[Any]:
-        '''Get commit message section.'''
+        """Get commit message section."""
         for arg in self.__tree.children:
             if arg.data == name:  # type: ignore
                 return arg
@@ -44,7 +46,7 @@ class CommitMessageParser:
 
     @property
     def title(self) -> Dict[str, Any]:
-        '''Get title section of commit message.'''
+        """Get title section of commit message."""
         title: Dict[str, Any] = defaultdict(lambda: None)
         section = self._get_section('title')
         if section:
@@ -54,7 +56,7 @@ class CommitMessageParser:
 
     @property
     def body(self) -> List[str]:
-        '''Get body section of commit message.'''
+        """Get body section of commit message."""
         section = self._get_section('body')
         if section:
             return [arg.value for arg in section.children]
@@ -63,7 +65,7 @@ class CommitMessageParser:
 
     @property
     def footer(self) -> Dict[str, Any]:
-        '''Get footer section of commit message.'''
+        """Get footer section of commit message."""
         footer: Dict[str, Any] = defaultdict(lambda: None)
         footer['issues'] = []
 

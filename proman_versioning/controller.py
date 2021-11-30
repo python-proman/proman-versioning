@@ -70,8 +70,8 @@ class IntegrationController(CommitMessageParser):
     @staticmethod
     def __get_version_regex(version: Version) -> str:
         """Get PEP-440 compliant regex for version."""
+        v = '.'.join([str(x) for x in version.release])
         if version.pre:
-            v = '.'.join([str(x) for x in version.release])
             if version.epoch > 0:
                 v = f"{version.epoch}!{v}"
             pre = version.pre[0]
@@ -206,6 +206,9 @@ class IntegrationController(CommitMessageParser):
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.version)
+        build = kwargs.pop('build', None)
+        if build is not None:
+            new_version = Version(f"{new_version}+{build}")
 
         # local number depends on metadata / fork / conflict existing vers
         if self.title['break'] or self.footer['breaking_change']:
