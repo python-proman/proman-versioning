@@ -206,8 +206,8 @@ class IntegrationController(CommitMessageParser):
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.version)
-        build = kwargs.pop('build', None)
-        if build:
+        if 'build' in kwargs:
+            build = kwargs.pop('build', None)
             new_version = Version(f"{new_version}+{build}")
 
         # local number depends on metadata / fork / conflict existing vers
