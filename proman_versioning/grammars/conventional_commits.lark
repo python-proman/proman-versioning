@@ -44,8 +44,22 @@ DOMAIN_CHAR: LETTER | "-" | INT
 TLD: LETTER ~ 3
 
 // body
-SPECIAL_CHAR: "'" | ":" | "/" | "."
 DESCRIPTION: (CNAME | WS_INLINE | NUMBER | SPECIAL_CHAR)+
+
+SPECIAL_CHAR: "'"
+    | "!"
+    | ":"
+    | "."
+    | "="
+    | "+"
+    | "?"
+    | "/"
+    | "-"
+    | "_"
+    | "<"
+    | ">"
+    | "("
+    | ")"
 
 %import common.CNAME
 %import common.INT
