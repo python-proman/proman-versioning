@@ -12,11 +12,7 @@ from . import controller
 log = logging.getLogger(__name__)
 
 
-def start(
-    kind: str = 'dev',
-    commit: bool = True,
-    dry_run: bool = False,
-) -> None:
+def start(commit: bool = True, dry_run: bool = False) -> None:
     """Start a release.
 
     Paramters
@@ -26,7 +22,7 @@ def start(
     commit: bool
         Commit release changes to project.
     """
-    controller.start_release(kind=kind, commit=commit, dry_run=dry_run)
+    controller.start_release(commit=commit, dry_run=dry_run)
     print(f"project version is now: {controller.version}", file=sys.stdout)
 
 

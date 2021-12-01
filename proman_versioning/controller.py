@@ -174,13 +174,16 @@ class IntegrationController(CommitMessageParser):
         else:
             raise PromanWorkflowException('git repository is not clean')
 
-    def start_release(self, kind: str = 'dev', **kwargs: Any) -> Version:
+    def start_release(self, **kwargs: Any) -> Version:
         """Start a release."""
         new_version = deepcopy(self.version)
-        if kind == 'dev':
+        state = str(self.version.state)  # type: ignore
+        if state == 'release':
             new_version.start_devrelease()  # type: ignore
-        elif kind == 'pre':
+        elif state == 'devrelease':
             new_version.start_prerelease()  # type: ignore
+        elif state == 'prerelease':
+            new_version.finish_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
         return new_version
 

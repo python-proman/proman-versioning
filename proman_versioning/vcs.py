@@ -81,13 +81,13 @@ class Git:
         # commit
         if not kwargs.get('dry_run', False):
             commit = self.repo.create_commit(
-                reference_name=name,
-                author=author,
-                committer=committer,
-                message=message,
-                tree=tree,
-                parents=parents,
-                encoding=encoding,
+                name,
+                author,
+                committer,
+                message,
+                tree,
+                parents,
+                encoding,
             )
         return commit
 
