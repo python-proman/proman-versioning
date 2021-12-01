@@ -141,7 +141,6 @@ class Version(PackageVersion):
             pre = pre or self.pre
             post = post or self.post
             dev = dev or self.dev
-            local = local or self.local
 
         self._version = _Version(
             epoch=epoch or self.epoch,

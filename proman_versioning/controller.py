@@ -129,7 +129,7 @@ class IntegrationController(CommitMessageParser):
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
-                # print the file
+                # print the file changes
                 print(file_contents, file=sys.stdout)
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
@@ -208,8 +208,6 @@ class IntegrationController(CommitMessageParser):
         """Update the version of the project."""
         new_version = deepcopy(self.version)
         build = kwargs.pop('build', None)
-        if build is not None:
-            new_version = Version(f"{new_version}+{build}")
 
         # local number depends on metadata / fork / conflict existing vers
         if self.title['break'] or self.footer['breaking_change']:
@@ -236,6 +234,9 @@ class IntegrationController(CommitMessageParser):
                 new_version = self.__bump_release(new_version)
             elif self.title['type'] == 'chore':
                 new_version = self.__bump_release(new_version)
+        # TODO: configure local version handling
+        if build is not None:
+            new_version = Version(f"{new_version}+{build}")
 
         self.update_configs(new_version, **kwargs)
         return new_version
