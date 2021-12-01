@@ -28,13 +28,6 @@ class Version(PackageVersion):
             self, states=self.states, initial=self.get_state()
         )
 
-        self.machine.add_transition(
-            trigger='start_local',
-            source=['final', 'release', 'development', 'post'],
-            dest='local',
-            before='new_local',
-        )
-
         # dev-releases
         self.machine.add_transition(
             trigger='start_devrelease',
@@ -70,7 +63,7 @@ class Version(PackageVersion):
         # final release
         self.machine.add_transition(
             trigger='finish_release',
-            source=['local', 'development', 'release'],
+            source=['development', 'release'],
             dest='final',
             before='finalize_release',
         )
@@ -87,7 +80,7 @@ class Version(PackageVersion):
     @property
     def states(self) -> List[str]:
         """List all states."""
-        states = ['local', 'final']
+        states = ['final']
         if self.enable_devreleases:
             states += ['development']
         if self.enable_prereleases:

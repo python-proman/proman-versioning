@@ -109,6 +109,7 @@ class IntegrationController(CommitMessageParser):
             )
             template = Template(pattern).substitute(version=version_str)
             match = re.compile(
+                # XXX: escape not compiling correctly
                 template,  # re.escape(template),
                 flags=0,
             )
@@ -154,7 +155,7 @@ class IntegrationController(CommitMessageParser):
                     )
                 self.version = new_version
                 if kwargs.pop('commit', True):
-                    # TODO: tie scope to release types or version ranges
+                    # TODO: tie scope to configs, releases or version ranges
                     scope = 'version'
                     self.vcs.commit(
                         filepaths=[f['filepath'] for f in self.filepaths],

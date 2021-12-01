@@ -102,12 +102,29 @@ def test_local_state():
     v = Version('1.0.0')
     assert v.get_state() == 'final'
 
-    v.start_local()
+    v = Version(f"{str(v)}+build.0")
     assert v.local == 'build.0'
     v.get_state() == 'final'
 
     v.bump_local()
     assert v.local == 'build.1'
+
+
+def test_local_removed():
+    v = Version('1.0.0+build.0')
+    assert v.local == 'build.0'
+    v.get_state() == 'final'
+
+    # ensure local version is removed from alpha
+    v.start_prerelease()
+    assert v.get_state() == 'prerelease'
+    assert v.local is None
+
+    # ensure local version is removed from beta
+    v = Version('1.0.0b+build.0')
+    v.bump_minor()
+    assert v.get_state() == 'final'
+    assert v.local is None
 
 
 def test_mixed():
