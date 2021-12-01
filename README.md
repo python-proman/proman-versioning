@@ -40,7 +40,7 @@ enable_postreleases = false
 
 #### Example `.versioning`
 
-The `.versioning` config is a non-specfile based config using TOML. This is the
+The `.versioning` config is a non-specfile based project file using TOML. This is the
 preferred configuration for non-python projects that may use this tool.
 
 ```
