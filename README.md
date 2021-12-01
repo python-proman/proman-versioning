@@ -79,7 +79,7 @@ pattern = "__version__ = '${version}'"
 
 Setuptools allows `setup.cfg` to pull the version from the application. This
 should be used in tandem with either of the above configurations to control
-vversions for a project.
+versions for a project.
 
 ```
 [metadata]
