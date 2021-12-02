@@ -25,7 +25,7 @@ class Version(PackageVersion):
         self.enable_postreleases = kwargs.get('enable_postreleases', True)
 
         self.machine = Machine(
-            self, states=self.states, initial=self.get_state()
+            self, states=self.states, initial=self.release_type
         )
 
         # dev-releases
@@ -37,23 +37,23 @@ class Version(PackageVersion):
             conditions=['devreleases_enabled'],
         )
 
-        # pre-release
+        # pre-releases
         self.machine.add_transition(
-            trigger='start_prerelease',
+            trigger='start_alpha',
             source=['final', 'development', 'post'],
             dest='alpha',
             before='new_prerelease',
             conditions=['prereleases_enabled'],
         )
         self.machine.add_transition(
-            trigger='start_prerelease',
+            trigger='start_beta',
             source='alpha',
             dest='beta',
             before='new_prerelease',
             conditions=['prereleases_enabled'],
         )
         self.machine.add_transition(
-            trigger='start_prerelease',
+            trigger='start_release',
             source='beta',
             dest='release',
             before='new_prerelease',
@@ -104,23 +104,18 @@ class Version(PackageVersion):
         """Check if postreleases are enabled."""
         return self.enable_postreleases
 
-    def get_prerelease(self) -> Optional[str]:
-        """Get current prerelease state."""
-        if self.pre:
+    @property
+    def release_type(self) -> str:
+        """Get the current state of package release."""
+        if self.is_devrelease:
+            state = 'development'
+        elif self.is_prerelease and self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
             elif self.pre[0] == 'b':
                 return 'beta'
             elif self.pre[0] == 'rc':
                 return 'release'
-        return None
-
-    def get_state(self) -> str:
-        """Get the current state of package release."""
-        if self.is_devrelease:
-            state = 'development'
-        elif self.is_prerelease:
-            state = 'prerelease'
         elif self.is_postrelease:
             state = 'post'
         else:
@@ -163,14 +158,17 @@ class Version(PackageVersion):
     def bump_epoch(self) -> None:
         """Update epoch releaes for version system changes."""
         self.__update_version(epoch=self.epoch + 1)
+        self.machine.set_state('final')
 
     def bump_major(self) -> None:
         """Update major release to next version number."""
         self.__update_version(release=(self.major + 1, 0, 0))
+        self.machine.set_state('final')
 
     def bump_minor(self) -> None:
         """Update minor release to next version number."""
         self.__update_version(release=(self.major, self.minor + 1, 0))
+        self.machine.set_state('final')
 
     def bump_micro(self) -> None:
         """Update micro release to next version number."""
@@ -229,7 +227,7 @@ class Version(PackageVersion):
 
     def new_postrelease(self, kind: str = 'major') -> None:
         """Update to next prerelease version type."""
-        if self.get_state() == 'final':
+        if self.release_type == 'final':
             self.__update_version(post=('post', 0))
 
     def bump_postrelease(self) -> None:
