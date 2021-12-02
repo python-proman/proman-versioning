@@ -52,9 +52,6 @@ mkdocstrings = "^0.16.2"
 version = "proman_versioning.__main__:main"
 
 [tool.proman.versioning]
-enable_devreleases = true
-enable_prereleases = true
-enable_postreleases = true
 
 [[tool.proman.versioning.files]]
 filepath = "proman_versioning/__init__.py"
