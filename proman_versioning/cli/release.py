@@ -17,8 +17,6 @@ def start(commit: bool = True, dry_run: bool = False) -> None:
 
     Paramters
     ----------
-    kind: str
-        Choose the kind of release to be performed.
     commit: bool
         Commit release changes to project.
     """

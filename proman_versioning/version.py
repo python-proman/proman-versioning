@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# copyright: (c) 2021 by Jesse Johnson.
+
 # license: MPL-2.0, see LICENSE for more details.
 """Manage version numbers."""
 
@@ -183,60 +182,51 @@ class Version(PackageVersion):
         if kind == 'micro':
             self.bump_micro()
 
-    def new_devrelease(self, kind: str = 'minor') -> None:
-        """Update to the next development release version number."""
-        if self.dev is None:
-            self.__bump_version(kind)
-            self.__update_version(dev=('dev', 0))
-
-    def bump_devrelease(self) -> None:
-        """Update to the next development release version number."""
-        if self.dev is not None:
-            # XXX: stupid pypa bug
-            if type(self.dev) is int:
-                dev = ('dev', self.dev + 1)  # type: ignore
-            else:
-                dev = (self.dev[0], self.dev[1] + 1)
-            self.__update_version(dev=dev)
-
     def new_local(self, name: str = 'build') -> None:
         """Create new local version instance number."""
-        self.__update_version(local=f"{name}.0")
-
-    def bump_local(self) -> None:
-        """Update local version instance number."""
-        if self.local:
+        if self.local is None:
+            self.__update_version(local=f"{name}.0")
+        elif self.local is not None:
             local = self.local.split('.')
             if local[-1].isdigit():
                 local[-1] = str(int(local[-1]) + 1)
             self.__update_version(local='.'.join(local))
 
-    def new_prerelease(self, kind: str = 'major') -> None:
+    def new_devrelease(self, kind: str = 'minor') -> None:
+        """Update to the next development release version number."""
+        if self.dev is None:
+            self.__bump_version(kind)
+            dev = ('dev', 0)
+        elif self.dev is not None:
+            # XXX: stupid pypa bug
+            if type(self.dev) is int:
+                dev = ('dev', self.dev + 1)  # type: ignore
+            else:
+                dev = (self.dev[0], self.dev[1] + 1)
+        self.__update_version(dev=dev)
+
+    def new_prerelease(
+        self, kind: Optional[str] = None, next_release: bool = False
+    ) -> None:
         """Update to next prerelease version type."""
-        if self.pre is not None:
+        if self.pre is None:
+            if not self.enable_devreleases:
+                self.__bump_version(kind or 'minor')
+            pre = ('a', 0)
+        elif self.pre is not None and not next_release:
+            pre = (self.pre[0], self.pre[1] + 1)
+        else:
             if self.pre[0] == 'a':
                 pre = ('b', 0)
             elif self.pre[0] == 'b':
                 pre = ('rc', 0)
-        else:
-            self.__bump_version(kind)
-            pre = ('a', 0)
         self.__update_version(pre=pre)
 
-    def bump_prerelease(self) -> None:
-        """Update the prerelease version number."""
-        if self.pre is not None:
-            pre = (self.pre[0], self.pre[1] + 1)
-            self.__update_version(pre=pre)
-
-    def new_postrelease(self, kind: str = 'major') -> None:
+    def new_postrelease(self) -> None:
         """Update to next prerelease version type."""
         if self.release_type == 'final':
             self.__update_version(post=('post', 0))
-
-    def bump_postrelease(self) -> None:
-        """Update the post release version number."""
-        if self.post is not None:
+        elif self.post is not None:
             if type(self.post) is tuple:
                 post = (self.post[0], self.post[1] + 1)
             else:

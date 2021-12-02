@@ -195,11 +195,11 @@ class IntegrationController(CommitMessageParser):
     def __bump_release(version: Version) -> Version:
         """Update release number."""
         if version.is_devrelease:
-            version.bump_devrelease()
+            version.new_devrelease()
         elif version.is_prerelease:
-            version.bump_prerelease()
+            version.new_prerelease()
         elif version.is_postrelease:
-            version.bump_postrelease()
+            version.new_postrelease()
         elif version.enable_postreleases:
             version.start_postrelease()  # type: ignore
         return version

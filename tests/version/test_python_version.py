@@ -18,9 +18,9 @@ def test_versioning():
 
 def test_devrelease():
     v = Version('1.0.0', enable_devreleases=True)
-    v.start_devrelease()
+    v.new_devrelease()
     assert str(v) == '1.1.0.dev0'
-    v.bump_devrelease()
+    v.new_devrelease()
     assert str(v) == '1.1.0.dev1'
     v.finish_release()
     assert str(v) == '1.1.0'
@@ -36,16 +36,16 @@ def test_devrelease_state():
 
 
 def test_prerelease():
-    v = Version('2.0.0', enable_prereleases=True)
+    v = Version('2.0.0', enable_devreleases=False)
     assert v.state == 'final'
-    v.start_alpha()
+    v.start_alpha(kind='major')
     assert str(v) == '3.0.0a0'
     assert v.pre == ('a', 0)
-    v.bump_prerelease()
+    v.new_prerelease()
     assert str(v) == '3.0.0a1'
     v.start_beta()
     assert str(v) == '3.0.0b0'
-    v.bump_prerelease()
+    v.new_prerelease()
     assert str(v) == '3.0.0b1'
     v.start_release()
     assert str(v) == '3.0.0rc0'
@@ -76,7 +76,7 @@ def test_post():
     assert v.minor == 0
     assert v.micro == 0
     assert v.state == 'post'
-    v.bump_postrelease()
+    v.new_postrelease()
     assert v.state == 'post'
     v.bump_major()
     assert v.state == 'final'
@@ -104,11 +104,12 @@ def test_local_state():
     v = Version('1.0.0')
     assert v.state == 'final'
 
+    # XXX: sure this should be start_local
     v = Version(f"{str(v)}+build.0")
     assert v.local == 'build.0'
     v.state == 'final'
 
-    v.bump_local()
+    v.new_local()
     assert v.local == 'build.1'
 
 
