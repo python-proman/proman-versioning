@@ -62,22 +62,23 @@ class IntegrationController(CommitMessageParser):
     @staticmethod
     def __get_version_regex(version: Version) -> str:
         """Get PEP-440 compliant regex for version."""
-        v = '.'.join([str(x) for x in version.release])
+        r = '.'.join(str(x) for x in version.release)
         if version.pre:
             if version.epoch > 0:
-                v = f"{version.epoch}!{v}"
+                v = f"{version.epoch}!{r}"
             pre = version.pre[0]
+            inst = version.pre[1]
             if pre == 'a' or pre == 'alpha':
-                v = f"{v}[-_\\.]?(?:a|alpha)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{r}[-_\\.]?(?:a|alpha)[-_\\.]?{inst or '0?'}"
             if pre == 'b' or pre == 'beta':
-                v = f"{v}[-_\\.]?(?:b|beta)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
             if pre == 'rc' or pre == 'release':
-                v = f"{v}[-_\\.]?(?:rc|release)[-_\\.]?{version.pre[1] or ''}"
+                v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
             if version.dev:
-                v = f"{v}{version.dev[0]}{version.dev[1]}"
+                v = f"{r}{version.dev[0]}{version.dev[1]}"
             return v
         if version.post:
-            v = f"{v}[-_\\.]?(?:post[-_\\.]?)?{version.post[1]}"
+            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post[1]}"
             return v
         else:
             return str(version)
@@ -123,6 +124,7 @@ class IntegrationController(CommitMessageParser):
             else:
                 # print the file changes
                 print(file_contents, file=sys.stdout)
+                # print(match)
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -130,17 +132,17 @@ class IntegrationController(CommitMessageParser):
         stats = self.vcs.repo.diff('HEAD').stats
         if stats.files_changed == 0 or dry_run:
             if str(self.config.version) != str(new_version):
-                for filepath in self.config.templates:
-                    if 'release_only' in filepath and filepath['release_only']:
+                for config in self.config.templates:
+                    if 'release_only' in config and config['release_only']:
                         release = '.'.join(
-                            [str(x) for x in new_version.release]
+                            str(x) for x in new_version.release
                         )
                         new_version = Version(release)
                     self.__update_config(
                         filepath=os.path.join(
-                            self.vcs.working_dir, filepath['filepath']
+                            self.vcs.working_dir, config['filepath']
                         ),
-                        pattern=filepath['pattern'],
+                        pattern=config['pattern'],
                         version=self.config.version,
                         new_version=new_version,
                         dry_run=dry_run,
@@ -233,7 +235,10 @@ class IntegrationController(CommitMessageParser):
                 kind = 'release'
             if self.release == 'release':
                 kind = 'final'
+            if self.release == 'final' or self.release == 'post':
+                kind = 'dev'
             new_version = self.start_release(kind=kind, **kwargs)
+            self.update_configs(new_version, **kwargs)
         else:
             new_version = deepcopy(self.config.version)
             build = kwargs.pop('build', None)
@@ -257,6 +262,5 @@ class IntegrationController(CommitMessageParser):
             # TODO: configure local version handling
             if build is not None:
                 new_version.new_local(name=build)
-
             self.update_configs(new_version, **kwargs)
         return new_version
