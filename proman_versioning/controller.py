@@ -122,8 +122,7 @@ class IntegrationController(CommitMessageParser):
                     print(err, file=sys.stderr)
             else:
                 # print the file changes
-                # print(file_contents, file=sys.stdout)
-                print('yeah')
+                print(file_contents, file=sys.stdout)
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -209,17 +208,29 @@ class IntegrationController(CommitMessageParser):
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         # TODO: state machine to determine env, branch, or cli release
-        if self.config.release.strategy == 'branching':
-            pattern = re.compile(self.config.release.pattern)
-            match = pattern.match(self.vcs.branch)
-        if (
-            match
-            and self.release != match.group('branch')
-            and self.config.release.strategy == 'branching'
-        ):
-            new_version = self.start_release(
-                kind=match.group('branch'), **kwargs
-            )
+        # if self.config.release.strategy == 'branching':
+        #     pattern = re.compile(self.config.release.pattern)
+        #     match = pattern.match(self.vcs.branch)
+
+        # if (
+        #     match
+        #     and self.release != match.group('branch')
+        #     and self.config.release.strategy == 'branching'
+        # ):
+        #     new_version = self.start_release(
+        #         kind=match.group('branch'), **kwargs
+        #     )
+
+        if self.title['release'] or kwargs.get('release') is True:
+            if self.release == 'dev':
+                kind = 'alpha'
+            if self.release == 'alpha':
+                kind = 'beta'
+            if self.release == 'beta':
+                kind = 'release'
+            if self.release == 'release':
+                kind = 'final'
+            new_version = self.start_release(kind=kind, **kwargs)
         else:
             new_version = deepcopy(self.config.version)
             build = kwargs.pop('build', None)
@@ -232,25 +243,17 @@ class IntegrationController(CommitMessageParser):
                     new_version.bump_minor()
                 elif self.title['type'] == 'fix':
                     new_version.bump_micro()
-                # update release instance
-                elif self.title['type'] == 'build':
+                elif self.title['type'] in self.config.parser.types:
                     new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'ci':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'docs':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'perf':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'refactor':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'style':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'test':
-                    new_version = self.__bump_release(new_version)
+                else:
+                    # TODO: need debug statement here instead
+                    raise PromanWorkflowException(
+                        'received unsupported commit type'
+                    )
+
             # TODO: configure local version handling
             if build is not None:
-                # TODO: should be done through transition
-                new_version = Version(f"{new_version}+{build}")
+                new_version.new_local(name=build)
 
             self.update_configs(new_version, **kwargs)
         return new_version

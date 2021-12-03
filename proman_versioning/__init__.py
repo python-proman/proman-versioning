@@ -17,10 +17,16 @@ from proman_versioning.version import Version  # noqa
 __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
-__description__ = 'Convenience tools to manage project versioning.'
+__description__ = 'Convenience tool to manage project versioning.'
 __version__ = '0.1.1a15'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
+__all__ = (
+    'IntegrationController',
+    'get_source_tree',
+    'get_release_controller',
+    'Version'
+)
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
@@ -41,9 +47,5 @@ def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
 
     config_files = kwargs.pop('config_files', CONFIG_FILES)
     cfg = get_source_tree(config_files=config_files)
-    # version = get_python_version(kwargs.pop('version', cfg))
 
     return IntegrationController(config=cfg, repo=repo, **kwargs)
-
-
-__all__ = ('get_source_tree', 'get_release_controller', 'Version')

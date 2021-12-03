@@ -15,7 +15,6 @@ from proman_versioning.version import Version
 
 # from urllib.parse import urljoin, urlparse
 
-
 # TODO check VCS for paths
 CURRENT_DIR = os.getcwd()
 REPO_DIR = discover_repository(CURRENT_DIR)
@@ -52,18 +51,28 @@ class ParserConfig:
 
     def __post_init__(self, config: Dict[str, Any]) -> None:
         """Configure VCS message parsing."""
+        # thinking builtin types might not need to be here
+        # if (
+        #     self.types == []
+        #     and 'types' in config
+        #     and config['types'] != []
+        # ):
+        #     self.types = config['types']
+        #     if 'feat' not in self.types:
+        #         self.types.insert(0, 'feat')
+        #     if 'fix' not in self.types:
+        #         self.types.insert(1, 'fix')
+        #     if 'release' not in self.types:
+        #         self.types.insert(2, 'release')
+        # else:
+        #     self.types = ['feat', 'fix', 'release']
+
         if (
             self.types == []
             and 'types' in config
             and config['types'] != []
         ):
             self.types = config['types']
-            if 'feat' not in self.types:
-                self.types.insert(0, 'feat')
-            if 'fix' not in self.types:
-                self.types.insert(1, 'fix')
-        else:
-            self.types = ['feat', 'fix']
 
         if (
             self.scopes == []
@@ -81,8 +90,8 @@ class ReleaseConfig:
     enable_devreleases: bool = True
     enable_prereleases: bool = True
     enable_postreleases: bool = True
-    strategy: str = 'branching'
-    pattern: str = '^(?P<branch>dev|a|alpha|b|beta|rc)[-_\\.].*$'
+    # strategy: str = 'branching'
+    # pattern: str = '^(?P<branch>dev|a|alpha|b|beta|rc)[-_\\.].*$'
 
     def __post_init(self, config: Dict[str, Any]) -> None:
         """Load configuration for release operation."""
@@ -92,10 +101,10 @@ class ReleaseConfig:
             self.enable_prereleases = config['enable_prereleases']
         if 'enable_postreleases' in config:
             self.enable_postreleases = config['enable_postreleases']
-        if 'strategy' in config:
-            self.strategy == config['strategy']
-        if 'pattern' in config:
-            self.strategy == config['pattern']
+        # if 'strategy' in config:
+        #     self.strategy == config['strategy']
+        # if 'pattern' in config:
+        #     self.strategy == config['pattern']
 
 
 # @dataclass
@@ -136,9 +145,20 @@ class Config(ConfigManager):
         ):
             self.templates = config['files']
         else:
-            raise PromanWorkflowException('no files for templating found')
+            raise PromanWorkflowException('no configuration files provided')
 
         if not hasattr(self, 'parser'):
+            if 'types' not in config:
+                angular_convention = [
+                    'build',
+                    'ci',
+                    'docs',
+                    'perf',
+                    'refactor',
+                    'style',
+                    'test',
+                ]
+                config['types'] = angular_convention
             self.parser = ParserConfig(config=config)
 
         if not hasattr(self, 'release'):
@@ -151,7 +171,7 @@ class Config(ConfigManager):
                 or self.retrieve('/tool/poetry/version')
             )
             if config_version is None:
-                raise PromanWorkflowException('no version found')
+                raise PromanWorkflowException('no version found in filepaths')
 
             self.version = Version(
                 version=config_version,
