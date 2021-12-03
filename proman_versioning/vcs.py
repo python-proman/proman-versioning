@@ -18,7 +18,6 @@ class Git:
     def __init__(self, repo: Repository) -> None:
         """Initialize git object."""
         self.repo = repo
-        self.ref = 'master'
         self.hooks_dir = os.path.join(self.repo.path, 'hooks')
         self.config = os.path.join(self.repo.path, 'config')
 
@@ -33,19 +32,18 @@ class Git:
         return os.path.abspath(os.path.join(self.repo_dir, '..'))
 
     @property
-    def branch(self) -> str:
+    def ref(self) -> str:
         """Retrieve the current branch."""
         return self.repo.head.name
 
     def commit(
         self,
-        name: Optional[str] = None,
+        branch: Optional[str] = None,
         filepaths: List[str] = [],
         **kwargs: Any,
-    ) -> Commit:
+    ) -> Optional[Commit]:
         """Create commit."""
-        if not name:
-            name = f"refs/heads/{self.ref}"
+        ref = f"refs/heads/{branch}" if branch else self.ref
 
         # TODO: find better way to use config
         config = self.repo.config.get_global_config()
@@ -81,7 +79,7 @@ class Git:
         # commit
         if not kwargs.get('dry_run', False):
             commit = self.repo.create_commit(
-                name,
+                ref,
                 author,
                 committer,
                 message,
@@ -89,16 +87,24 @@ class Git:
                 parents,
                 encoding,
             )
-        return commit
+            return commit
+        # TODO: should a mock commit be created?
+        return None
 
-    def tag(self, name: str, ref: str = 'HEAD', **kwargs: Any) -> Tag:
+    def tag(
+        self, name: str, branch: Optional[str] = None, **kwargs: Any
+    ) -> Optional[Tag]:
         """Create tag."""
+        ref = f"refs/heads/{branch}" if branch else self.ref
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)
+
         # XXX: regression from GitPython, signature not available here
         signature = kwargs.get('signature', commit.signature)
         message = kwargs.get('message', f"ci: {name}")
         if not kwargs.get('dry_run', False):
             tag = self.repo.create_tag(name, oid, kind, signature, message)
-        return tag
+            return tag
+        # TODO: should a mock tag be created?
+        return None
