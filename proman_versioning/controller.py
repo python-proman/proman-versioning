@@ -9,7 +9,7 @@ import re
 import sys
 from copy import deepcopy
 from string import Template
-from typing import Any, Dict, List
+from typing import Any
 
 from proman_versioning.exception import PromanWorkflowException
 from proman_versioning.config import Config
@@ -38,14 +38,12 @@ class IntegrationController(CommitMessageParser):
 
     def __init__(
         self,
-        version: Version,
         config: Config,
         repo: Git,
         *args: Any,
         **kwargs: Any,
     ) -> None:
         """Initialize commit message action object."""
-        self.version = version
         self.config = config
         parse_current_repo = kwargs.pop('parse_current_repo', True)
         super().__init__(*args, **kwargs)
@@ -57,15 +55,9 @@ class IntegrationController(CommitMessageParser):
             self.parse(target.message)
 
     @property
-    def filepaths(self) -> List[Dict[str, Any]]:
-        """List templated filepaths."""
-        filepaths = (
-            self.config.retrieve('/proman/versioning/files')
-            or self.config.retrieve('/tool/proman/versioning/files')
-        )
-        if not filepaths:
-            raise PromanWorkflowException('no files for templating foundd')
-        return filepaths
+    def release(self) -> str:
+        """Get the current version release state."""
+        return self.config.version.state  # type: ignore
 
     @staticmethod
     def __get_version_regex(version: Version) -> str:
@@ -138,8 +130,8 @@ class IntegrationController(CommitMessageParser):
         dry_run = kwargs.pop('dry_run', False)
         stats = self.vcs.repo.diff('HEAD').stats
         if stats.files_changed == 0 or dry_run:
-            if str(self.version) != str(new_version):
-                for filepath in self.filepaths:
+            if str(self.config.version) != str(new_version):
+                for filepath in self.config.templates:
                     if 'release_only' in filepath and filepath['release_only']:
                         release = '.'.join(
                             [str(x) for x in new_version.release]
@@ -150,16 +142,19 @@ class IntegrationController(CommitMessageParser):
                             self.vcs.working_dir, filepath['filepath']
                         ),
                         pattern=filepath['pattern'],
-                        version=self.version,
+                        version=self.config.version,
                         new_version=new_version,
                         dry_run=dry_run,
                     )
-                self.version = new_version
+                self.config.version = new_version
                 if kwargs.pop('commit', True):
                     # TODO: tie scope to configs, releases or version ranges
                     scope = 'version'
                     self.vcs.commit(
-                        filepaths=[f['filepath'] for f in self.filepaths],
+                        filepaths=[
+                            f['filepath']
+                            for f in self.config.templates
+                        ],
                         message=(f"ci({scope}): apply {new_version} updates"),
                         dry_run=dry_run,
                     )
@@ -171,13 +166,15 @@ class IntegrationController(CommitMessageParser):
                         dry_run=dry_run,
                     )
             else:
-                raise PromanWorkflowException('no new version available')
+                raise PromanWorkflowException(
+                    'no version update could be determined'
+                )
         else:
-            raise PromanWorkflowException('git repository is not clean')
+            raise PromanWorkflowException('repository is not clean')
 
     def start_release(self, kind: str = 'dev', **kwargs: Any) -> Version:
         """Start a release."""
-        new_version = deepcopy(self.version)
+        new_version = deepcopy(self.config.version)
         if kind == 'dev':
             new_version.start_devrelease()  # type: ignore
         elif kind == 'alpha':
@@ -191,7 +188,7 @@ class IntegrationController(CommitMessageParser):
 
     def finish_release(self, **kwargs: Any) -> Version:
         """Finish a release."""
-        new_version = deepcopy(self.version)
+        new_version = deepcopy(self.config.version)
         new_version.finish_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
         return new_version
@@ -212,18 +209,19 @@ class IntegrationController(CommitMessageParser):
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         # TODO: state machine to determine env, branch, or cli release
-        # XXX: need more restrictive pattern
-        pattern = re.compile(self.config.release_pattern)
-        match = pattern.match(self.vcs.branch)
+        if self.config.release.strategy == 'branching':
+            pattern = re.compile(self.config.release.pattern)
+            match = pattern.match(self.vcs.branch)
         if (
             match
-            and self.version.state != match.group('branch')  # type: ignore
+            and self.release != match.group('branch')
+            and self.config.release.strategy == 'branching'
         ):
             new_version = self.start_release(
                 kind=match.group('branch'), **kwargs
             )
         else:
-            new_version = deepcopy(self.version)
+            new_version = deepcopy(self.config.version)
             build = kwargs.pop('build', None)
 
             # local number depends on metadata / fork / conflict existing vers

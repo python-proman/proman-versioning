@@ -5,7 +5,7 @@
 
 import os
 from dataclasses import InitVar, dataclass, field
-from typing import List
+from typing import Any, Dict, List
 
 from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
@@ -46,18 +46,65 @@ GRAMMAR_PATH: str = os.path.join(
 class ParserConfig:
     """Configure parser operation."""
 
+    config: InitVar[Dict[str, Any]] = None
     types: List[str] = field(default_factory=list)
     scopes: List[str] = field(default_factory=list)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self, config: Dict[str, Any]) -> None:
         """Configure VCS message parsing."""
-        if self.types is None:
-            self.types = ['feat', 'fix']
-        else:
+        if (
+            self.types == []
+            and 'types' in config
+            and config['types'] != []
+        ):
+            self.types = config['types']
             if 'feat' not in self.types:
                 self.types.insert(0, 'feat')
             if 'fix' not in self.types:
                 self.types.insert(1, 'fix')
+        else:
+            self.types = ['feat', 'fix']
+
+        if (
+            self.scopes == []
+            and 'scopes' in config
+            and config['scopes'] != []
+        ):
+            self.scopes = config['scopes']
+
+
+@dataclass
+class ReleaseConfig:
+    """Configure release operation."""
+
+    config: InitVar[Dict[str, Any]] = None
+    enable_devreleases: bool = True
+    enable_prereleases: bool = True
+    enable_postreleases: bool = True
+    strategy: str = 'branching'
+    pattern: str = '^(?P<branch>dev|a|alpha|b|beta|rc)[-_\\.].*$'
+
+    def __post_init(self, config: Dict[str, Any]) -> None:
+        """Load configuration for release operation."""
+        if 'enable_devreleases' in config:
+            self.enable_devreleases = config['enable_devreleases']
+        if 'enable_prereleases' in config:
+            self.enable_prereleases = config['enable_prereleases']
+        if 'enable_postreleases' in config:
+            self.enable_postreleases = config['enable_postreleases']
+        if 'strategy' in config:
+            self.strategy == config['strategy']
+        if 'pattern' in config:
+            self.strategy == config['pattern']
+
+
+# @dataclass
+# class TemplateConfig:
+#     """Configure template layout."""
+#
+#     filepath: str
+#     pattern: str
+#     release_only: bool = False
 
 
 @dataclass
@@ -65,34 +112,37 @@ class Config(ConfigManager):
     """Manage settings from configuration file."""
 
     filepaths: InitVar[List[str]]
+    templates: List[Dict[str, Any]] = field(default_factory=list)
     parser: ParserConfig = field(init=False)
-    release_pattern: str = '^(?P<kind>dev|a|alpha|b|beta|rc)[-_\\.].*$'
+    release: ReleaseConfig = field(init=False)
     version: Version = field(init=False)
-    writable: bool = True
 
     def __post_init__(self, filepaths: List[str]) -> None:
         """Initialize settings from configuration."""
+        # TODO: config_manager is not passing separator
         super().__init__(filepaths=filepaths)
         super().load_configs()
 
-        if not hasattr(self, 'parser'):
-            types = (
-                self.retrieve('/proman/versioning/parser/types')
-                or self.retrieve('/tool/proman/versioning/parser/types')
-            )
-            scopes = (
-                self.retrieve('/proman/versioning/parser/scopes')
-                or self.retrieve('/tool/proman/versioning/parser/scopes')
-            )
-            self.parser = ParserConfig(types=types, scopes=scopes)
-
-        release_pattern = config_version = (
-            self.retrieve('/proman/versioning/release_pattern')
-            or self.retrieve('/tool/proman/versioning/release_pattern')
-            or self.retrieve('/tool/poetry/versioning/release_pattern')
+        config = (
+            self.retrieve('/proman/versioning')
+            or self.retrieve('/tool/proman/versioning')
+            or self.retrieve('/tool/poetry/versioning')
         )
-        if release_pattern:
-            self.release_pattern = release_pattern
+
+        if (
+            self.templates == []
+            and 'files' in config
+            and config['files'] != []
+        ):
+            self.templates = config['files']
+        else:
+            raise PromanWorkflowException('no files for templating found')
+
+        if not hasattr(self, 'parser'):
+            self.parser = ParserConfig(config=config)
+
+        if not hasattr(self, 'release'):
+            self.release = ReleaseConfig(config=config)
 
         if not hasattr(self, 'version'):
             config_version = (
@@ -105,22 +155,7 @@ class Config(ConfigManager):
 
             self.version = Version(
                 version=config_version,
-                enable_devreleases=(
-                    self.retrieve('/proman/versioning/enable_devreleases')
-                    or self.retrieve(
-                        '/tool/proman/versioning/enable_devreleases'
-                    )
-                ),
-                enable_prereleases=(
-                    self.retrieve('/proman/versioning/enable_prereleases')
-                    or self.retrieve(
-                        '/tool/proman/versioning/enable_prereleases'
-                    )
-                ),
-                enable_postreleases=(
-                    self.retrieve('/proman/versioning/enable_postreleases')
-                    or self.retrieve(
-                        '/tool/proman/versioning/enable_postreleases'
-                    )
-                ),
+                enable_devreleases=self.release.enable_devreleases,
+                enable_prereleases=self.release.enable_prereleases,
+                enable_postreleases=self.release.enable_postreleases,
             )

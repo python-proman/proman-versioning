@@ -43,12 +43,7 @@ def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
     cfg = get_source_tree(config_files=config_files)
     # version = get_python_version(kwargs.pop('version', cfg))
 
-    return IntegrationController(
-        version=cfg.version,
-        config=cfg,
-        repo=repo,
-        **kwargs,
-    )
+    return IntegrationController(config=cfg, repo=repo, **kwargs)
 
 
 __all__ = ('get_source_tree', 'get_release_controller', 'Version')
