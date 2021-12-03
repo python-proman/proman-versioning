@@ -179,8 +179,12 @@ class IntegrationController(CommitMessageParser):
         new_version = deepcopy(self.version)
         if kind == 'dev':
             new_version.start_devrelease()  # type: ignore
-        elif kind == 'pre':
-            new_version.start_prerelease()  # type: ignore
+        elif kind == 'alpha':
+            new_version.start_alpha()  # type: ignore
+        elif kind == 'beta':
+            new_version.start_beta()  # type: ignore
+        elif kind == 'release':
+            new_version.start_release()  # type: ignore
         self.update_configs(new_version, **kwargs)
         return new_version
 
@@ -206,37 +210,44 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
-        new_version = deepcopy(self.version)
-        build = kwargs.pop('build', None)
+        pattern = re.compile("^.*(?P<branch>dev|alpha|beta|release).*$")
+        match = pattern.match(self.vcs.ref)
+        if match:
+            new_version = self.start_release(
+                kind=match.group('branch'), **kwargs
+            )
+        else:
+            new_version = deepcopy(self.version)
+            build = kwargs.pop('build', None)
 
-        # local number depends on metadata / fork / conflict existing vers
-        if self.title['break'] or self.footer['breaking_change']:
-            new_version.bump_major()
-        elif 'type' in self.title:
-            if self.title['type'] == 'feat':
-                new_version.bump_minor()
-            elif self.title['type'] == 'fix':
-                new_version.bump_micro()
-            # update release instance
-            elif self.title['type'] == 'build':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'ci':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'docs':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'perf':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'refactor':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'style':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'test':
-                new_version = self.__bump_release(new_version)
-            elif self.title['type'] == 'chore':
-                new_version = self.__bump_release(new_version)
-        # TODO: configure local version handling
-        if build is not None:
-            new_version = Version(f"{new_version}+{build}")
+            # local number depends on metadata / fork / conflict existing vers
+            if self.title['break'] or self.footer['breaking_change']:
+                new_version.bump_major()
+            elif 'type' in self.title:
+                if self.title['type'] == 'feat':
+                    new_version.bump_minor()
+                elif self.title['type'] == 'fix':
+                    new_version.bump_micro()
+                # update release instance
+                elif self.title['type'] == 'build':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'ci':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'docs':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'perf':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'refactor':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'style':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'test':
+                    new_version = self.__bump_release(new_version)
+                elif self.title['type'] == 'chore':
+                    new_version = self.__bump_release(new_version)
+            # TODO: configure local version handling
+            if build is not None:
+                new_version = Version(f"{new_version}+{build}")
 
-        self.update_configs(new_version, **kwargs)
+            self.update_configs(new_version, **kwargs)
         return new_version

@@ -51,6 +51,15 @@ class Parser:
 
 
 @dataclass
+class ReleaseConfig:
+    """Configure releases."""
+
+    enable_devreleases: bool = True
+    enable_prereleases: bool = True
+    enable_postreleases: bool = True
+
+
+@dataclass
 class Config(ConfigManager):
     """Manage settings from configuration file."""
 
