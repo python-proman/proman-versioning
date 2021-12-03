@@ -34,10 +34,12 @@ def bump(
     print(str(version), file=sys.stdout)
 
 
-def view(files: bool = False) -> None:
+def view(release_type: bool = False, filepaths: bool = False) -> None:
     """Get the current version of project."""
-    if files:
+    if release_type:
+        print(controller.version.release_type, file=sys.stdout)
+    if filepaths:
         for x in controller.filepaths:
             print(x['filepath'], file=sys.stdout)
-    else:
+    if not release_type and not filepaths:
         print(controller.version, file=sys.stdout)

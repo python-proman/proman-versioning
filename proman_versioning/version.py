@@ -192,7 +192,11 @@ class Version(PackageVersion):
     def bump_devrelease(self) -> None:
         """Update to the next development release version number."""
         if self.dev is not None:
-            dev = (self.dev[0], self.dev[1] + 1)
+            # XXX: stupid pypa bug
+            if type(self.dev) is int:
+                dev = ('dev', self.dev + 1)  # type: ignore
+            else:
+                dev = (self.dev[0], self.dev[1] + 1)
             self.__update_version(dev=dev)
 
     def new_local(self, name: str = 'build') -> None:

@@ -20,6 +20,8 @@ def test_devrelease():
     v = Version('1.0.0', enable_devreleases=True)
     v.start_devrelease()
     assert str(v) == '1.1.0.dev0'
+    v.bump_devrelease()
+    assert str(v) == '1.1.0.dev1'
     v.finish_release()
     assert str(v) == '1.1.0'
 
