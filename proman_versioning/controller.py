@@ -210,9 +210,14 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
-        pattern = re.compile("^.*(?P<branch>dev|alpha|beta|release).*$")
+        # XXX: need more restrictive pattern
+        pattern = re.compile("^(dev|a|b|rc)-.*$")
         match = pattern.match(self.vcs.ref)
-        if match:
+        if (
+            match
+            and self.version.state != match.group('branch')  # type: ignore
+        ):
+            print('wtf')
             new_version = self.start_release(
                 kind=match.group('branch'), **kwargs
             )
@@ -247,6 +252,7 @@ class IntegrationController(CommitMessageParser):
                     new_version = self.__bump_release(new_version)
             # TODO: configure local version handling
             if build is not None:
+                # TODO: should be done through transition
                 new_version = Version(f"{new_version}+{build}")
 
             self.update_configs(new_version, **kwargs)
