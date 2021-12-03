@@ -221,7 +221,10 @@ class IntegrationController(CommitMessageParser):
         #         kind=match.group('branch'), **kwargs
         #     )
 
-        if self.title['release'] or kwargs.get('release') is True:
+        if (
+            ('type' in self.title and self.title['type'] == 'release')
+            or kwargs.get('release') is True
+        ):
             if self.release == 'dev':
                 kind = 'alpha'
             if self.release == 'alpha':
