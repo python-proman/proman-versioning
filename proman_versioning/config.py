@@ -43,20 +43,21 @@ GRAMMAR_PATH: str = os.path.join(
 
 
 @dataclass
-class Parser:
+class ParserConfig:
     """Configure parser operation."""
 
     types: List[str] = field(default_factory=list)
     scopes: List[str] = field(default_factory=list)
 
-
-@dataclass
-class ReleaseConfig:
-    """Configure releases."""
-
-    enable_devreleases: bool = True
-    enable_prereleases: bool = True
-    enable_postreleases: bool = True
+    def __post_init__(self) -> None:
+        """Configure VCS message parsing."""
+        if self.types is None:
+            self.types = ['feat', 'fix']
+        else:
+            if 'feat' not in self.types:
+                self.types.insert(0, 'feat')
+            if 'fix' not in self.types:
+                self.types.insert(1, 'fix')
 
 
 @dataclass
@@ -64,7 +65,8 @@ class Config(ConfigManager):
     """Manage settings from configuration file."""
 
     filepaths: InitVar[List[str]]
-    parser: Parser = field(init=False)
+    parser: ParserConfig = field(init=False)
+    release_pattern: str = '^(?P<kind>dev|a|alpha|b|beta|rc)[-_\\.].*$'
     version: Version = field(init=False)
     writable: bool = True
 
@@ -82,9 +84,15 @@ class Config(ConfigManager):
                 self.retrieve('/proman/versioning/parser/scopes')
                 or self.retrieve('/tool/proman/versioning/parser/scopes')
             )
+            self.parser = ParserConfig(types=types, scopes=scopes)
 
-            if types is not None:
-                self.parser = Parser(types=types, scopes=scopes)
+        release_pattern = config_version = (
+            self.retrieve('/proman/versioning/release_pattern')
+            or self.retrieve('/tool/proman/versioning/release_pattern')
+            or self.retrieve('/tool/poetry/versioning/release_pattern')
+        )
+        if release_pattern:
+            self.release_pattern = release_pattern
 
         if not hasattr(self, 'version'):
             config_version = (

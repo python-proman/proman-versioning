@@ -32,7 +32,7 @@ class Git:
         return os.path.abspath(os.path.join(self.repo_dir, '..'))
 
     @property
-    def ref(self) -> str:
+    def branch(self) -> str:
         """Retrieve the current branch."""
         return self.repo.head.name
 
@@ -43,7 +43,7 @@ class Git:
         **kwargs: Any,
     ) -> Optional[Commit]:
         """Create commit."""
-        ref = f"refs/heads/{branch}" if branch else self.ref
+        ref = f"refs/heads/{branch}" if branch else self.branch
 
         # TODO: find better way to use config
         config = self.repo.config.get_global_config()
@@ -95,7 +95,7 @@ class Git:
         self, name: str, branch: Optional[str] = None, **kwargs: Any
     ) -> Optional[Tag]:
         """Create tag."""
-        ref = f"refs/heads/{branch}" if branch else self.ref
+        ref = f"refs/heads/{branch}" if branch else self.branch
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)

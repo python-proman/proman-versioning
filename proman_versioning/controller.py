@@ -130,7 +130,8 @@ class IntegrationController(CommitMessageParser):
                     print(err, file=sys.stderr)
             else:
                 # print the file changes
-                print(file_contents, file=sys.stdout)
+                # print(file_contents, file=sys.stdout)
+                print('yeah')
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -210,14 +211,14 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
+        # TODO: state machine to determine env, branch, or cli release
         # XXX: need more restrictive pattern
-        pattern = re.compile("^(dev|a|b|rc)-.*$")
-        match = pattern.match(self.vcs.ref)
+        pattern = re.compile(self.config.release_pattern)
+        match = pattern.match(self.vcs.branch)
         if (
             match
             and self.version.state != match.group('branch')  # type: ignore
         ):
-            print('wtf')
             new_version = self.start_release(
                 kind=match.group('branch'), **kwargs
             )
@@ -247,8 +248,6 @@ class IntegrationController(CommitMessageParser):
                 elif self.title['type'] == 'style':
                     new_version = self.__bump_release(new_version)
                 elif self.title['type'] == 'test':
-                    new_version = self.__bump_release(new_version)
-                elif self.title['type'] == 'chore':
                     new_version = self.__bump_release(new_version)
             # TODO: configure local version handling
             if build is not None:
