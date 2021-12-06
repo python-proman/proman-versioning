@@ -204,7 +204,6 @@ class IntegrationController(CommitMessageParser):
     @staticmethod
     def __bump_release(version: Version) -> Version:
         """Update release number."""
-        print('---', version.is_alpha)  # type: ignore
         if version.is_devrelease:
             version.bump_devrelease()
         elif version.is_prerelease:
