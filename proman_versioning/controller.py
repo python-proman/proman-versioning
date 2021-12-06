@@ -25,14 +25,20 @@ from proman_versioning.version import Version
 # has Python version changed?
 # has requirements versions changed?
 
+# TODO: build numbers
+# git revision
+# GNU build ID
+# timestamp
+# external (ex: CI/CD build number)
+
 
 # TODO determine relation with state and git hooks
 class IntegrationController(CommitMessageParser):
     """Control version releases."""
 
-    # kinds = ['rolling', 'sustainment']
+    # workflow_types = ['rolling', 'sustainment']
     # Trunk Based Development (TBD) - GitHub flow
-    # Stage Based Development (SBD) - use of DTAP
+    # Stage Based Development (SBD) - DTAP
     # Release Branching Strategy (RBS) - PEP440
     # Feature Branching Strategy (FBS) - Agile
 
@@ -75,7 +81,7 @@ class IntegrationController(CommitMessageParser):
             if pre == 'rc' or pre == 'release':
                 v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
             if version.dev:
-                v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev}"
+                v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev or '0?'}"
             return v
         if version.post:
             v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post}"
@@ -173,24 +179,32 @@ class IntegrationController(CommitMessageParser):
         else:
             raise PromanWorkflowException('repository is not clean')
 
-    def start_release(self, kind: str = 'dev', **kwargs: Any) -> Version:
+    def start_release(self, **kwargs: Any) -> Version:
         """Start a release."""
         new_version = deepcopy(self.config.version)
-        if kind == 'dev':
-            new_version.start_devrelease()  # type: ignore
-        elif kind == 'alpha':
+        if self.config.version.enable_devreleases and self.release == 'dev':
             new_version.start_alpha()  # type: ignore
-        elif kind == 'beta':
-            new_version.start_beta()  # type: ignore
-        elif kind == 'release':
-            new_version.start_release()  # type: ignore
-        self.update_configs(new_version, **kwargs)
+        if self.config.version.enable_prereleases:
+            if self.release == 'alpha':
+                new_version.start_beta()  # type: ignore
+            if self.release == 'beta':
+                new_version.start_release()  # type: ignore
+            if self.release == 'release':
+                new_version.finish_release()  # type: ignore
+        if (
+            self.release == 'final'
+            or (
+                self.config.version.enable_postreleases
+                and self.release == 'post'
+            )
+        ):
+            new_version.start_devrelease()  # type: ignore
         return new_version
 
     @staticmethod
     def __bump_release(version: Version) -> Version:
         """Update release number."""
-        print('---', version.is_alpha)
+        print('---', version.is_alpha)  # type: ignore
         if version.is_devrelease:
             version.bump_devrelease()
         elif version.is_prerelease:
@@ -203,40 +217,17 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
-        # TODO: state machine to determine env, branch, or cli release
-        # if self.config.release.strategy == 'branching':
-        #     pattern = re.compile(self.config.release.pattern)
-        #     match = pattern.match(self.vcs.branch)
-
-        # if (
-        #     match
-        #     and self.release != match.group('branch')
-        #     and self.config.release.strategy == 'branching'
-        # ):
-        #     new_version = self.start_release(
-        #         kind=match.group('branch'), **kwargs
-        #     )
-
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
         ):
-            if self.version.is_devrelease:  # type: ignore
-                kind = 'alpha'
-            if self.release == 'alpha':
-                kind = 'beta'
-            if self.release == 'beta':
-                kind = 'release'
-            if self.release == 'release':
-                kind = 'final'
-            if self.release == 'final' or self.release == 'post':
-                kind = 'dev'
-            new_version = self.start_release(kind=kind, **kwargs)
+            new_version = self.start_release(**kwargs)
             self.update_configs(new_version, **kwargs)
         else:
             new_version = deepcopy(self.config.version)
             build = kwargs.pop('build', None)
 
+            # TODO: break, and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing vers
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()
@@ -247,7 +238,6 @@ class IntegrationController(CommitMessageParser):
                     new_version.bump_micro()
                 elif self.title['type'] in self.config.parser.types:
                     new_version = self.__bump_release(new_version)
-                    print(new_version)
                 else:
                     # TODO: need debug statement here instead
                     raise PromanWorkflowException(

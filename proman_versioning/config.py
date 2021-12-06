@@ -90,8 +90,6 @@ class ReleaseConfig:
     enable_devreleases: bool = True
     enable_prereleases: bool = True
     enable_postreleases: bool = True
-    # strategy: str = 'branching'
-    # pattern: str = '^(?P<branch>dev|a|alpha|b|beta|rc)[-_\\.].*$'
 
     def __post_init(self, config: Dict[str, Any]) -> None:
         """Load configuration for release operation."""
@@ -101,10 +99,6 @@ class ReleaseConfig:
             self.enable_prereleases = config['enable_prereleases']
         if 'enable_postreleases' in config:
             self.enable_postreleases = config['enable_postreleases']
-        # if 'strategy' in config:
-        #     self.strategy == config['strategy']
-        # if 'pattern' in config:
-        #     self.strategy == config['pattern']
 
 
 # @dataclass
