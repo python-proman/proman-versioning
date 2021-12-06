@@ -198,7 +198,6 @@ class IntegrationController(CommitMessageParser):
             version.bump_postrelease()
         elif version.enable_postreleases:
             version.bump_postrelease()
-            print('after bump', version)
         return version
 
     def bump_version(self, **kwargs: Any) -> Version:
