@@ -66,8 +66,8 @@ def test_proman_release_controller(fs):
         commit=False,
         tag=False,
         tag_name='version',
-        tag_message='this is a test',
-        sign_tag=False,
+        message='this is a test',
+        sign=False,
         dry_run=False,
     )
 

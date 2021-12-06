@@ -106,12 +106,16 @@ def test_local_state():
     v = Version('1.0.0')
     assert v.state == 'final'
 
-    v = Version(f"{str(v)}+build.0")
-    assert v.local == 'build.0'
-    v.state == 'final'
+    v1 = Version(f"{str(v)}+build.0")
+    assert v1.local == 'build.0'
+    assert v1.state == 'final'
 
-    v.bump_local()
-    assert v.local == 'build.1'
+    v.new_local('4321')
+    assert v == Version('1.0.0+4321')
+    assert v.local == '4321'
+    assert v.state == 'final'
+
+    # TODO: assert build is gone after bump
 
 
 def test_local_removed():

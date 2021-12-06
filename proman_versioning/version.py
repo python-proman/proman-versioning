@@ -189,11 +189,6 @@ class Version(PackageVersion):
         if self.post is not None:
             post = self.post + 1
             self.__update_version(post=('post', post))
-        if self.local:
-            local = self.local.split('.')
-            if local[-1].isdigit():
-                local[-1] = str(int(local[-1]) + 1)
-            self.__update_version(local='.'.join(local))
 
     def new_devrelease(self, kind: str = 'minor') -> None:
         """Update to the next development release version number."""
@@ -207,17 +202,9 @@ class Version(PackageVersion):
             dev = self.dev + 1
             self.__update_version(dev=('dev', dev))
 
-    def new_local(self, name: str = 'build') -> None:
+    def new_local(self, build: str = 'build-0') -> None:
         """Create new local version instance number."""
-        self.__update_version(local=f"{name}.0")
-
-    def bump_local(self) -> None:
-        """Update local version instance number."""
-        if self.local:
-            local = self.local.split('.')
-            if local[-1].isdigit():
-                local[-1] = str(int(local[-1]) + 1)
-            self.__update_version(local='.'.join(local))
+        self.__update_version(local=build)
 
     def new_prerelease(self, kind: str = 'minor') -> None:
         """Update to next prerelease version type."""

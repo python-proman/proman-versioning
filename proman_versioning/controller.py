@@ -17,7 +17,6 @@ from proman_versioning.grammars.conventional_commits import CommitMessageParser
 from proman_versioning.vcs import Git
 from proman_versioning.version import Version
 
-# from packaging.version import Version
 # from transitions import Machine
 
 # TODO: version comparison against previous version
@@ -51,14 +50,17 @@ class IntegrationController(CommitMessageParser):
     ) -> None:
         """Initialize commit message action object."""
         self.config = config
-        parse_current_repo = kwargs.pop('parse_current_repo', True)
+        # parse_current_branch = kwargs.pop('parse_current_branch', True)
+        message = kwargs.pop('message', None)
         super().__init__(*args, **kwargs)
 
         self.vcs = repo
-        if parse_current_repo:
+        if message is None:
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
             self.parse(target.message)
+        else:
+            self.parse(message)
 
     @property
     def release(self) -> str:
@@ -245,6 +247,6 @@ class IntegrationController(CommitMessageParser):
 
             # TODO: configure local version handling
             if build is not None:
-                new_version.new_local(name=build)
+                new_version.new_local(build=build)
             self.update_configs(new_version, **kwargs)
         return new_version

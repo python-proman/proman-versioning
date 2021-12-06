@@ -69,6 +69,7 @@ class ParserConfig:
 
         if (
             self.types == []
+            and config is not None
             and 'types' in config
             and config['types'] != []
         ):
@@ -76,6 +77,7 @@ class ParserConfig:
 
         if (
             self.scopes == []
+            and config is not None
             and 'scopes' in config
             and config['scopes'] != []
         ):
@@ -115,21 +117,25 @@ class Config(ConfigManager):
     """Manage settings from configuration file."""
 
     filepaths: InitVar[List[str]]
+    defaults: InitVar[Dict[str, Any]] = field(default={})
     templates: List[Dict[str, Any]] = field(default_factory=list)
     parser: ParserConfig = field(init=False)
     release: ReleaseConfig = field(init=False)
     version: Version = field(init=False)
 
-    def __post_init__(self, filepaths: List[str]) -> None:
+    def __post_init__(
+        self, filepaths: List[str], defaults: Dict[str, Any]
+    ) -> None:
         """Initialize settings from configuration."""
-        # TODO: config_manager is not passing separator
-        super().__init__(filepaths=filepaths)
+        # XXX: config_manager is not passing separator
+        super().__init__(filepaths=filepaths, defaults=defaults)
         super().load_configs()
 
         config = (
             self.retrieve('/proman/versioning')
             or self.retrieve('/tool/proman/versioning')
             or self.retrieve('/tool/poetry/versioning')
+            or {}
         )
 
         if (

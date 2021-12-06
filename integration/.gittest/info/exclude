@@ -1,5 +1,4 @@
 .gittest/
-__pycache__/
 test_config.py
 
 # Swap
@@ -20,3 +19,6 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+__pycache__/
+.mypy_cache/
