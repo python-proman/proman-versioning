@@ -16,61 +16,65 @@ controller = get_release_controller()
 def bump(
     commit: bool = False,
     release: bool = False,
-    tag: bool = False,
-    tag_name: Optional[str] = None,
-    tag_message: Optional[str] = None,
-    sign: bool = False,
+    # tag: bool = False,
+    # tag_name: Optional[str] = None,
+    message: Optional[str] = None,
+    # sign: bool = False,
     build: Optional[str] = None,
     dry_run: bool = False,
 ) -> None:
     """Manage project versions.
 
-    Paramters
+    Parameters
     ----------
     commit: bool
         Commit release changes to project.
+    message: str
+        Notes included with the commit.
     release: bool
-        Make this version update a new release.
-    tag: bool
-        Tag this version.
-    tag_name: str
-        The tag name to use for this tag.
-        default: version
-    tag_message: str
-        Notes included witht the tag.
+        Make this version a new release.
     build: str
         Build version from other systems the may help coordinate build
         artifacts.
     dry_run: bool
         Run the command without making changes.
+
     """
+    # tag: bool
+    #     Tag this version.
+    # tag_name: str
+    #     The tag name to use for this tag.
+    #     default: version
+    # sign: bool
+    #     Sign commit with PKI signature.
     version = controller.bump_version(
         commit=commit,
         release=release,
-        tag=tag,
-        tag_name=tag_name,
-        tag_message=tag_message,
-        sign_tag=sign,
+        # tag=tag,
+        # tag_name=tag_name,
+        message=message,
+        # sign_tag=sign,
         build=build,
         dry_run=dry_run,
     )
     print(str(version), file=sys.stdout)
 
 
-def view(release_type: bool = False, filepaths: bool = False) -> None:
+def view(release: bool = False, filepaths: bool = False) -> None:
     """Get the current version or settings of a project.
 
-    Paramters
+    Parameters
     ----------
-    release_type: bool
+    release: bool
         View the current release type
     filepaths: bool
         List the version filepaths
+
     """
-    if release_type:
+    if release:
         print(controller.release, file=sys.stdout)
     if filepaths:
         for x in controller.config.templates:
             print(x['filepath'], file=sys.stdout)
-    if not release_type and not filepaths:
+    if not release and not filepaths:
         print(controller.config.version, file=sys.stdout)

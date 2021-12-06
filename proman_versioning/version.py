@@ -4,7 +4,7 @@
 """Manage version numbers."""
 
 # import logging
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple
 
 from packaging.version import Version as PackageVersion
 from packaging.version import _cmpkey, _parse_local_version, _Version
@@ -73,7 +73,7 @@ class Version(PackageVersion):
             trigger='start_postrelease',
             source='final',
             dest='post',
-            before='new_postrelease',
+            before='bump_postrelease',
             conditions=['postreleases_enabled'],
         )
 
@@ -126,16 +126,16 @@ class Version(PackageVersion):
         self,
         epoch: Optional[int] = None,
         release: Optional[Tuple[Any, ...]] = None,
-        pre: Optional[Tuple[str, int]] = None,
-        post: Optional[Union[Tuple[str, int], str]] = None,
-        dev: Optional[Tuple[str, int]] = None,
+        pre: Optional[Tuple[str, Optional[int]]] = None,
+        post: Optional[Tuple[Optional[str], Optional[int]]] = None,
+        dev: Optional[Tuple[str, Optional[int]]] = None,
         local: Optional[str] = None,
     ) -> None:
         """Update the internal version state."""
         if not (epoch or release):
             pre = pre or self.pre
-            post = post or self.post
-            dev = dev or self.dev
+            post = post or (None if self.post is None else ('post', self.post))
+            dev = dev or (None if self.dev is None else ('dev', self.dev))
 
         self._version = _Version(
             epoch=epoch or self.epoch,
@@ -192,12 +192,8 @@ class Version(PackageVersion):
     def bump_devrelease(self) -> None:
         """Update to the next development release version number."""
         if self.dev is not None:
-            # XXX: stupid pypa bug
-            if type(self.dev) is int:
-                dev = ('dev', self.dev + 1)  # type: ignore
-            else:
-                dev = (self.dev[0], self.dev[1] + 1)
-            self.__update_version(dev=dev)
+            dev = self.dev + 1
+            self.__update_version(dev=('dev', dev))
 
     def new_local(self, name: str = 'build') -> None:
         """Create new local version instance number."""
@@ -211,7 +207,7 @@ class Version(PackageVersion):
                 local[-1] = str(int(local[-1]) + 1)
             self.__update_version(local='.'.join(local))
 
-    def new_prerelease(self, kind: str = 'major') -> None:
+    def new_prerelease(self, kind: str = 'minor') -> None:
         """Update to next prerelease version type."""
         if self.pre is not None:
             if self.pre[0] == 'a':
@@ -229,19 +225,13 @@ class Version(PackageVersion):
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
 
-    def new_postrelease(self, kind: str = 'major') -> None:
-        """Update to next prerelease version type."""
-        if self.release_type == 'final':
-            self.__update_version(post=('post', 0))
-
     def bump_postrelease(self) -> None:
         """Update the post release version number."""
         if self.post is not None:
-            if type(self.post) is tuple:
-                post = (self.post[0], self.post[1] + 1)
-            else:
-                post = ('post', self.post + 1)  # type: ignore
-            self.__update_version(post=post)
+            post = self.post + 1
+            self.__update_version(post=('post', post))
+        elif self.release_type == 'final':
+            self.__update_version(post=('post', 0))
 
     def finalize_release(self) -> None:
         """Update to next prerelease version type."""

@@ -19,7 +19,9 @@ def test_versioning():
 def test_devrelease():
     v = Version('1.0.0', enable_devreleases=True)
     v.start_devrelease()
-    assert str(v) == '1.1.0.dev0'
+    print('test version', v)
+    assert v == Version('1.1.0.dev0')
+    print('dev', v.dev)
     v.bump_devrelease()
     assert str(v) == '1.1.0.dev1'
     v.finish_release()
@@ -38,7 +40,7 @@ def test_devrelease_state():
 def test_prerelease():
     v = Version('2.0.0', enable_prereleases=True)
     assert v.state == 'final'
-    v.start_alpha()
+    v.start_alpha(kind='major')
     assert str(v) == '3.0.0a0'
     assert v.pre == ('a', 0)
     v.bump_prerelease()

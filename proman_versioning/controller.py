@@ -75,10 +75,10 @@ class IntegrationController(CommitMessageParser):
             if pre == 'rc' or pre == 'release':
                 v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
             if version.dev:
-                v = f"{r}{version.dev[0]}{version.dev[1]}"
+                v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev}"
             return v
         if version.post:
-            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post[1]}"
+            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post}"
             return v
         else:
             return str(version)
@@ -187,13 +187,6 @@ class IntegrationController(CommitMessageParser):
         self.update_configs(new_version, **kwargs)
         return new_version
 
-    def finish_release(self, **kwargs: Any) -> Version:
-        """Finish a release."""
-        new_version = deepcopy(self.config.version)
-        new_version.finish_release()  # type: ignore
-        self.update_configs(new_version, **kwargs)
-        return new_version
-
     @staticmethod
     def __bump_release(version: Version) -> Version:
         """Update release number."""
@@ -204,7 +197,8 @@ class IntegrationController(CommitMessageParser):
         elif version.is_postrelease:
             version.bump_postrelease()
         elif version.enable_postreleases:
-            version.start_postrelease()  # type: ignore
+            version.bump_postrelease()
+            print('after bump', version)
         return version
 
     def bump_version(self, **kwargs: Any) -> Version:
@@ -253,6 +247,7 @@ class IntegrationController(CommitMessageParser):
                     new_version.bump_micro()
                 elif self.title['type'] in self.config.parser.types:
                     new_version = self.__bump_release(new_version)
+                    print(new_version)
                 else:
                     # TODO: need debug statement here instead
                     raise PromanWorkflowException(

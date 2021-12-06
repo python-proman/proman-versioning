@@ -27,12 +27,11 @@ transitions = "^0.8.4"
 compendium = {version = "^0.1.1-alpha.2", allow-prereleases = true}
 pygit2 = "^1.6.1"
 cffi = "^1.15.0"
-packaging = "20.9"
+packaging = "^21.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 flake8 = "^3.8.3"
-pydocstyle = "^5.0.2"
 docstr-coverage = "^1.2.0"
 pytest-cov = "^2.10.0"
 bandit = "^1.6.2"
@@ -47,6 +46,7 @@ pylint = "^2.9.5"
 black = {version = "^21.11b1", allow-prereleases = true}
 pyfakefs = "^4.5.3"
 mkdocstrings = "^0.16.2"
+pydocstyle = {extras = ["toml"], version = "^6.1.1"}
 
 [tool.poetry.scripts]
 version = "proman_versioning.__main__:main"
