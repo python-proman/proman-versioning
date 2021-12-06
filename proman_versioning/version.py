@@ -34,30 +34,30 @@ class Version(PackageVersion):
             source=['final', 'release', 'post'],
             dest='development',
             before='new_devrelease',
-            conditions=['devreleases_enabled'],
+            conditions=['enable_devreleases'],
         )
 
         # pre-releases
         self.machine.add_transition(
             trigger='start_alpha',
-            source=['final', 'development', 'post'],
+            source=['development', 'final', 'post'],
             dest='alpha',
             before='new_prerelease',
-            conditions=['prereleases_enabled'],
+            conditions=['enable_prereleases'],
         )
         self.machine.add_transition(
             trigger='start_beta',
             source='alpha',
             dest='beta',
             before='new_prerelease',
-            conditions=['prereleases_enabled'],
+            conditions=['enable_prereleases'],
         )
         self.machine.add_transition(
             trigger='start_release',
             source='beta',
             dest='release',
             before='new_prerelease',
-            conditions=['prereleases_enabled'],
+            conditions=['enable_prereleases'],
         )
 
         # final release
@@ -74,7 +74,7 @@ class Version(PackageVersion):
             source='final',
             dest='post',
             before='bump_postrelease',
-            conditions=['postreleases_enabled'],
+            conditions=['enable_postreleases'],
         )
 
     @property
@@ -88,21 +88,6 @@ class Version(PackageVersion):
         if self.enable_postreleases:
             states += ['post']
         return states
-
-    @property
-    def devreleases_enabled(self) -> bool:
-        """Check if devreleases are enabled."""
-        return self.enable_devreleases
-
-    @property
-    def prereleases_enabled(self) -> bool:
-        """Check if prereleases are enabled."""
-        return self.enable_prereleases
-
-    @property
-    def postreleases_enabled(self) -> bool:
-        """Check if postreleases are enabled."""
-        return self.enable_postreleases
 
     @property
     def release_type(self) -> str:

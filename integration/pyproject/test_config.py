@@ -30,9 +30,9 @@ def test_proman_source_tree(fs):
     fs.add_real_file(VERSIONING_PATH)
     fs.add_real_file(PYPROJECT_PATH)
     config = get_source_tree(config_files=[VERSIONING_PATH, PYPROJECT_PATH])
-    assert config.version.devreleases_enabled is True
-    assert config.version.prereleases_enabled is True
-    assert config.version.postreleases_enabled is True
+    assert config.version.enable_devreleases is True
+    assert config.version.enable_prereleases is True
+    assert config.version.enable_postreleases is True
     assert config.version == version
     assert Version(config.retrieve('/proman/version')) == version
     assert Version(config.retrieve('/tool/proman/version')) == version
