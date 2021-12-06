@@ -147,22 +147,20 @@ class Config(ConfigManager):
         else:
             raise PromanWorkflowException('no configuration files provided')
 
-        if not hasattr(self, 'parser'):
-            if 'types' not in config:
-                angular_convention = [
-                    'build',
-                    'ci',
-                    'docs',
-                    'perf',
-                    'refactor',
-                    'style',
-                    'test',
-                ]
-                config['types'] = angular_convention
-            self.parser = ParserConfig(config=config)
+        if 'types' not in config:
+            angular_convention = [
+                'build',
+                'ci',
+                'docs',
+                'perf',
+                'refactor',
+                'style',
+                'test',
+            ]
+            config['types'] = angular_convention
+        self.parser = ParserConfig(config=config)
 
-        if not hasattr(self, 'release'):
-            self.release = ReleaseConfig(config=config)
+        self.release = ReleaseConfig(config=config)
 
         if not hasattr(self, 'version'):
             config_version = (

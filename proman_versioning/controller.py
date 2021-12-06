@@ -3,7 +3,7 @@
 # license: MPL-2.0, see LICENSE for more details.
 """Parse Git commit messages."""
 
-# import logging
+import logging
 import os
 import re
 import sys
@@ -29,6 +29,8 @@ from proman_versioning.version import Version
 # GNU build ID
 # timestamp
 # external (ex: CI/CD build number)
+
+log = logging.getLogger(__name__)
 
 
 # TODO determine relation with state and git hooks
@@ -59,8 +61,10 @@ class IntegrationController(CommitMessageParser):
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
             self.parse(target.message)
+            log.debug(f"provided commit message: '{message}'")
         else:
             self.parse(message)
+            log.debug(f"found commit message: '{message}'")
 
     @property
     def release(self) -> str:
@@ -71,6 +75,9 @@ class IntegrationController(CommitMessageParser):
     def __get_version_regex(version: Version) -> str:
         """Get PEP-440 compliant regex for version."""
         r = '.'.join(str(x) for x in version.release)
+        if version.dev:
+            v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev or '0?'}"
+            return v
         if version.pre:
             if version.epoch > 0:
                 v = f"{version.epoch}!{r}"
@@ -82,10 +89,8 @@ class IntegrationController(CommitMessageParser):
                 v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
             if pre == 'rc' or pre == 'release':
                 v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
-            if version.dev:
-                v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev or '0?'}"
             return v
-        if version.post:
+        elif version.post:
             v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post}"
             return v
         else:
@@ -114,6 +119,7 @@ class IntegrationController(CommitMessageParser):
                 template,  # re.escape(template),
                 flags=0,
             )
+            log.debug(f"using pattern for source version {match}")
 
             # substitute the expression in file
             file_contents = match.sub(
@@ -127,19 +133,22 @@ class IntegrationController(CommitMessageParser):
                     f.seek(0)
                     f.truncate()
                     f.write(file_contents)
+                    log.info(f"writting file at: '{filepath}'")
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
                 # print the file changes
                 print(file_contents, file=sys.stdout)
-                # print(match)
+                log.info(
+                    f"dry-run skipping file write at: '{filepath}'"
+                )
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
         dry_run = kwargs.pop('dry_run', False)
         stats = self.vcs.repo.diff('HEAD').stats
         if stats.files_changed == 0 or dry_run:
-            if str(self.config.version) != str(new_version):
+            if self.config.version != new_version:
                 for config in self.config.templates:
                     if 'release_only' in config and config['release_only']:
                         release = '.'.join(
@@ -167,6 +176,7 @@ class IntegrationController(CommitMessageParser):
                         message=(f"ci({scope}): apply {new_version} updates"),
                         dry_run=dry_run,
                     )
+                    log.info(f"commiting version changes: {str(new_version)}")
                 if kwargs.get('tag', False):
                     self.vcs.tag(
                         name=str(new_version),
@@ -174,6 +184,7 @@ class IntegrationController(CommitMessageParser):
                         message=None,
                         dry_run=dry_run,
                     )
+                    log.info(f"applying tag: {str(new_version)}")
             else:
                 raise PromanWorkflowException(
                     'no version update could be determined'
@@ -185,8 +196,10 @@ class IntegrationController(CommitMessageParser):
         """Start a release."""
         new_version = deepcopy(self.config.version)
         if self.config.version.enable_devreleases and self.release == 'dev':
+            log.info('found devrelease')
             new_version.start_alpha()  # type: ignore
         if self.config.version.enable_prereleases:
+            log.info('found prerelease')
             if self.release == 'alpha':
                 new_version.start_beta()  # type: ignore
             if self.release == 'beta':
@@ -200,6 +213,7 @@ class IntegrationController(CommitMessageParser):
                 and self.release == 'post'
             )
         ):
+            log.info(f"found {self.release} release")
             new_version.start_devrelease()  # type: ignore
         return new_version
 

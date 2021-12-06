@@ -9,8 +9,8 @@ from typing import Optional
 
 from proman_versioning import get_release_controller
 
-log = logging.getLogger(__name__)
-controller = get_release_controller()
+_log = logging.getLogger(__name__)
+_controller = get_release_controller()
 
 
 def bump(
@@ -47,7 +47,7 @@ def bump(
     #     default: version
     # sign: bool
     #     Sign commit with PKI signature.
-    version = controller.bump_version(
+    version = _controller.bump_version(
         commit=commit,
         release=release,
         # tag=tag,
@@ -72,9 +72,9 @@ def view(release: bool = False, filepaths: bool = False) -> None:
 
     """
     if release:
-        print(controller.release, file=sys.stdout)
+        print(_controller.release, file=sys.stdout)
     if filepaths:
-        for x in controller.config.templates:
+        for x in _controller.config.templates:
             print(x['filepath'], file=sys.stdout)
     if not release and not filepaths:
-        print(controller.config.version, file=sys.stdout)
+        print(_controller.config.version, file=sys.stdout)
