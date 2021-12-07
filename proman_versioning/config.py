@@ -132,9 +132,11 @@ class Config(ConfigManager):
         super().load_configs()
 
         config = (
-            self.retrieve('/proman/versioning')
-            or self.retrieve('/tool/proman/versioning')
-            or self.retrieve('/tool/poetry/versioning')
+            self.lookup(
+                '/proman/versioning',
+                '/tool/proman/versioning',
+                '/tool/poetry/versioning',
+            )
             or {}
         )
 
