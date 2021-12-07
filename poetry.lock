@@ -190,7 +190,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "compendium"
-version = "0.1.1b0"
+version = "0.1.1b1"
 description = "Simple layered configuraion tool"
 category = "main"
 optional = false
@@ -1091,7 +1091,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "2ac8a84496419eb5111a80cca9f719cf51d5a2426996f347347a2e0c6d38415f"
+content-hash = "99d47dfce7175e0b263644d29b1c79e1e1308a05c1ae7dc29e2c874e35e674e2"
 
 [metadata.files]
 anytree = [
@@ -1203,8 +1203,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 compendium = [
-    {file = "compendium-0.1.1b0-py3-none-any.whl", hash = "sha256:a81194b4182d7c46bab462d2edc3665ccde4380a7b89c437fca9f453afd765a1"},
-    {file = "compendium-0.1.1b0.tar.gz", hash = "sha256:94f36d728320a1cfced3529da25d2568c9bf76531403f2429659caa71a5a86b3"},
+    {file = "compendium-0.1.1b1-py3-none-any.whl", hash = "sha256:ff176c4539c2db27f95c24fb2777e2ea74f382e77f0233aa15fb22bfd0a0a634"},
+    {file = "compendium-0.1.1b1.tar.gz", hash = "sha256:e7289de3c7bbb7a61e35b38ece25ec837ffdfecf48575c1479e35e2c3f94680e"},
 ]
 coverage = [
     {file = "coverage-6.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6dbc1536e105adda7a6312c778f15aaabe583b0e9a0b0a324990334fd458c94b"},

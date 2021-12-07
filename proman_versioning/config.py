@@ -129,16 +129,12 @@ class Config(ConfigManager):
         """Initialize settings from configuration."""
         # XXX: config_manager is not passing separator
         super().__init__(filepaths=filepaths, defaults=defaults)
-        super().load_configs()
 
-        config = (
-            self.lookup(
-                '/proman/versioning',
-                '/tool/proman/versioning',
-                '/tool/poetry/versioning',
-            )
-            or {}
-        )
+        config = self.lookup(
+            '/proman/versioning',
+            '/tool/proman/versioning',
+            '/tool/poetry/versioning',
+        ) or {}
 
         if (
             self.templates == []
@@ -164,18 +160,17 @@ class Config(ConfigManager):
 
         self.release = ReleaseConfig(config=config)
 
-        if not hasattr(self, 'version'):
-            config_version = (
-                self.retrieve('/proman/version')
-                or self.retrieve('/tool/proman/version')
-                or self.retrieve('/tool/poetry/version')
-            )
-            if config_version is None:
-                raise PromanWorkflowException('no version found in filepaths')
+        config_version = self.lookup(
+            '/proman/version',
+            '/tool/proman/version',
+            '/tool/poetry/version',
+        )
+        if config_version is None:
+            raise PromanWorkflowException('no version found in filepaths')
 
-            self.version = Version(
-                version=config_version,
-                enable_devreleases=self.release.enable_devreleases,
-                enable_prereleases=self.release.enable_prereleases,
-                enable_postreleases=self.release.enable_postreleases,
-            )
+        self.version = Version(
+            version=config_version,
+            enable_devreleases=self.release.enable_devreleases,
+            enable_prereleases=self.release.enable_prereleases,
+            enable_postreleases=self.release.enable_postreleases,
+        )

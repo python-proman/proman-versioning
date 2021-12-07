@@ -22,6 +22,7 @@ PYPROJECT_PATH = os.path.abspath(
         'pyproject.toml',
     )
 )
+print(PYPROJECT_PATH)
 
 
 def test_proman_source_tree(fs):
