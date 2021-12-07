@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 97a10b31669f333956fa3404bfff17432d5eac1f Jesse P. Johnson <jpj6652@gmail.com> 1638139982 -0500	commit (initial): build: initial commit
+97a10b31669f333956fa3404bfff17432d5eac1f 189206e0b4097c1bc56472ed8866b201d28dc0ac Jesse P. Johnson <jpj6652@gmail.com> 1638161385 -0500	commit: build: standardize version
+189206e0b4097c1bc56472ed8866b201d28dc0ac e2e4845e6aa1a97cfa9f09fbf81cdbfd5c514211 Jesse P. Johnson <jpj6652@gmail.com> 1638225727 -0500	commit: test: add simple release version
