@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proman-versioning"
-version = "0.1.1b4"
+version = "0.1.1b5"
 description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
 license = "MPL-2.0"
