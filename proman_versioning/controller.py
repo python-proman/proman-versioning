@@ -30,7 +30,8 @@ from proman_versioning.version import Version
 # timestamp
 # external (ex: CI/CD build number)
 
-log = logging.getLogger(__name__).set_loglevel(logging.DEBUG)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 # TODO determine relation with state and git hooks
