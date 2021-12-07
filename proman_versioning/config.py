@@ -128,12 +128,12 @@ class Config(ConfigManager):
     ) -> None:
         """Initialize settings from configuration."""
         # XXX: config_manager is not passing separator
-        super().__init__(filepaths=filepaths, defaults=defaults)
+        super().__init__(filepaths=filepaths, separator='.', defaults=defaults)
 
         config = self.lookup(
-            '/proman/versioning',
-            '/tool/proman/versioning',
-            '/tool/poetry/versioning',
+            '.proman.versioning',
+            '.tool.proman.versioning',
+            '.tool.poetry.versioning',
         ) or {}
 
         if (
@@ -161,9 +161,9 @@ class Config(ConfigManager):
         self.release = ReleaseConfig(config=config)
 
         config_version = self.lookup(
-            '/proman/version',
-            '/tool/proman/version',
-            '/tool/poetry/version',
+            '.proman.version',
+            '.tool.proman.version',
+            '.tool.poetry.version',
         )
         if config_version is None:
             raise PromanWorkflowException('no version found in filepaths')

@@ -35,9 +35,9 @@ def test_proman_source_tree(fs):
     assert config.version.enable_prereleases is True
     assert config.version.enable_postreleases is True
     assert config.version == version
-    assert Version(config.retrieve('/proman/version')) == version
-    assert Version(config.retrieve('/tool/proman/version')) == version
-    assert Version(config.retrieve('/tool/poetry/version')) == version
+    assert Version(config.retrieve('.proman.version')) == version
+    assert Version(config.retrieve('.tool.proman.version')) == version
+    assert Version(config.retrieve('.tool.poetry.version')) == version
 
 
 def test_proman_release_controller(fs):
@@ -76,6 +76,6 @@ def test_proman_release_controller(fs):
 
     # TODO: need to compare version with commit
     assert version == Version('1.2.3.post0')
-    assert Version(config.retrieve('/proman/version')) == version
-    assert Version(config.retrieve('/tool/proman/version')) == version
-    assert Version(config.retrieve('/tool/poetry/version')) == version
+    assert Version(config.retrieve('.proman.version')) == version
+    assert Version(config.retrieve('.tool.proman.version')) == version
+    assert Version(config.retrieve('.tool.poetry.version')) == version
