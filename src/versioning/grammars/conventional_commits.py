@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Any, Callable, Dict, List, Optional
 
 from lark import Lark
-from proman_versioning.config import GRAMMAR_PATH
+from versioning.config import GRAMMAR_PATH
 
 
 class CommitMessageParser:

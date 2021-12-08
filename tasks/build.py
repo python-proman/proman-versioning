@@ -7,7 +7,7 @@ from typing import Optional
 
 from invoke import Context, task
 
-from proman_versioning import __version__
+from versioning import __version__
 
 if 'dev' in __version__ or 'rc' in __version__:
     part = 'build'
@@ -69,6 +69,6 @@ def clean(ctx):  # type: (Context) -> None
     paths = ['dist', 'logs']
     paths.append('**/__pycache__')
     paths.append('**/*.pyc')
-    paths.append('proman_versioning.egg-info')
+    paths.append('versioning.egg-info')
     for path in paths:
         ctx.run("rm -rf {}".format(path))

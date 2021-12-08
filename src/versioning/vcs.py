@@ -9,7 +9,7 @@ from typing import Any, List, Optional
 
 from pygit2 import GIT_OBJ_COMMIT, Commit, Repository, Signature, Tag
 
-from proman_versioning.exception import PromanWorkflowException
+from versioning.exception import PromanWorkflowException
 
 
 class Git:

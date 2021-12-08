@@ -6,8 +6,8 @@
 
 import os
 
-from proman_versioning import get_release_controller, get_source_tree, Version
-from proman_versioning.config import GRAMMAR_PATH
+from versioning import get_release_controller, get_source_tree, Version
+from versioning.config import GRAMMAR_PATH
 
 VERSIONING_PATH = os.path.abspath(
     os.path.join(

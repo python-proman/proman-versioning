@@ -5,8 +5,8 @@
 
 from argufy import Parser
 
-from proman_versioning import __version__
-from proman_versioning import cli
+from versioning import __version__
+from versioning import cli
 
 
 def main() -> None:

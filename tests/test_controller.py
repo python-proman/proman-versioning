@@ -5,9 +5,9 @@
 import os
 from unittest.mock import patch, Mock, mock_open
 
-from proman_versioning import IntegrationController, Version
-from proman_versioning.config import Config
-from proman_versioning.vcs import Git
+from versioning import IntegrationController, Version
+from versioning.config import Config
+from versioning.vcs import Git
 
 config = Config(
     filepaths=['pyproject.toml'],

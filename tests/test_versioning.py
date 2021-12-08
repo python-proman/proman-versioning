@@ -1,5 +1,5 @@
 # type: ignore
-from proman_versioning.version import Version
+from versioning.version import Version
 
 
 def test_versioning():

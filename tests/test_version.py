@@ -1,5 +1,5 @@
 """Provide tests for project version."""
-from proman_versioning import __version__
+from versioning import __version__
 
 
 def test_version() -> None:

@@ -10,8 +10,8 @@ from typing import Any, Dict, List
 from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
 
-from proman_versioning.exception import PromanWorkflowException
-from proman_versioning.version import Version
+from versioning.exception import PromanWorkflowException
+from versioning.version import Version
 
 # from urllib.parse import urljoin, urlparse
 
@@ -30,7 +30,7 @@ CONFIG_FILES = [
 GRAMMAR_PATH: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
 )
-# 'proman_versioning/templates/gitmessage.j2'
+# 'versioning/templates/gitmessage.j2'
 
 
 # @dataclass

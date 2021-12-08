@@ -17,6 +17,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
 ]
+packages = [
+    { include = "versioning", from = "src" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
@@ -49,7 +52,7 @@ mkdocstrings = "^0.16.2"
 pydocstyle = {extras = ["toml"], version = "^6.1.1"}
 
 [tool.poetry.scripts]
-version = "proman_versioning.__main__:main"
+version = "versioning.__main__:main"
 
 [tool.proman.versioning]
 enable_devreleases = true
@@ -57,7 +60,7 @@ enable_prereleases = true
 enable_postreleases = true
 
 [[tool.proman.versioning.files]]
-filepath = "proman_versioning/__init__.py"
+filepath = "versioning/__init__.py"
 pattern = "__version__ = '${version}'"
 
 [[tool.proman.versioning.files]]
