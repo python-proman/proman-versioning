@@ -40,7 +40,11 @@ class CommitMessageParser:
     def _get_section(self, name: str) -> Optional[Any]:
         """Get commit message section."""
         for arg in self.__tree.children:
-            if arg.data == name:  # type: ignore
+            # NOTE: will not have parse tree for non-match
+            if (
+                hasattr(arg, '__dict__')
+                and vars(arg)['data'] == name
+            ):
                 return arg
         return None
 
