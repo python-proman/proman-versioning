@@ -60,7 +60,7 @@ enable_prereleases = true
 enable_postreleases = true
 
 [[tool.proman.versioning.files]]
-filepath = "versioning/__init__.py"
+filepath = "src/versioning/__init__.py"
 pattern = "__version__ = '${version}'"
 
 [[tool.proman.versioning.files]]
