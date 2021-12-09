@@ -71,7 +71,7 @@ def test_prerelease_states():
 
 
 def test_post():
-    v = Version('2.0.0', enable_postreleases=True)
+    v = Version('2.0.0')
     assert v.state == 'final'
     v.start_postrelease()
     assert v.release == (2, 0, 0)
@@ -87,7 +87,7 @@ def test_post():
 
 
 def test_post_state():
-    v = Version('2.0.0', enable_postreleases=True)
+    v = Version('2.0.0')
     assert v.state == 'final'
 
     v.start_postrelease()
