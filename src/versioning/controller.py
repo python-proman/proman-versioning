@@ -253,7 +253,8 @@ class IntegrationController(CommitMessageParser):
                 elif self.title['type'] == 'fix':
                     new_version.bump_micro()
                 elif self.title['type'] in self.config.parser.types:
-                    new_version = self.__bump_release(new_version)
+                    # new_version = self.__bump_release(new_version)
+                    new_version.bump_release()  # type: ignore
                 else:
                     # TODO: need debug statement here instead
                     raise PromanVersioningException(

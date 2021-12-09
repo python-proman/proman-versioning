@@ -77,13 +77,12 @@ class Version(PackageVersion):
             conditions=['enable_postreleases'],
         )
 
-        # TODO: handle release bump
-        # self.machine.add_transition(
-        #     trigger='bump_release',
-        #     source=['alpha', 'beta', 'release', 'post'],
-        #     dest=None,
-        #     before='new_prerelease',
-        # )
+        self.machine.add_transition(
+            trigger='bump_release',
+            source=['alpha', 'beta', 'release', 'post'],
+            dest=None,
+            before='__bump_release',
+        )
 
     @property
     def states(self) -> List[str]:
@@ -176,19 +175,20 @@ class Version(PackageVersion):
         if kind == 'micro':
             self.bump_micro()
 
-    def bump_release(self) -> None:
+    def __bump_release(self, *args: Any, **kwargs: Any) -> None:
         """Update to the next development release version number."""
-        if self.dev is not None:
+        if self.enable_devreleases and self.dev is not None:
             dev = self.dev + 1
             self.__update_version(dev=('dev', dev))
-        if self.pre is not None:
+        if self.enable_prereleases and self.pre is not None:
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
-        if self.release_type == 'final':
-            self.__update_version(post=('post', 0))
-        if self.post is not None:
-            post = self.post + 1
-            self.__update_version(post=('post', post))
+        if self.enable_postreleases:
+            if self.release_type == 'final':
+                self.__update_version(post=('post', 0))
+            if self.post is not None:
+                post = self.post + 1
+                self.__update_version(post=('post', post))
 
     def new_devrelease(self, kind: str = 'minor') -> None:
         """Update to the next development release version number."""
