@@ -228,6 +228,7 @@ class IntegrationController(CommitMessageParser):
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
         ):
+            print(kwargs)
             new_version = self.start_release(**kwargs)
             self.update_configs(new_version, **kwargs)
         else:

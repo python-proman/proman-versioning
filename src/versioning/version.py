@@ -215,7 +215,7 @@ class Version(PackageVersion):
             self.__bump_version(kind)
             self.__update_version(dev=('dev', 0))
 
-    def new_prerelease(self, kind: str = 'minor') -> None:
+    def new_prerelease(self, kind: Optional[str] = None) -> None:
         """Update to next prerelease version type."""
         if self.pre is not None:
             if self.pre[0] == 'a':
@@ -223,7 +223,10 @@ class Version(PackageVersion):
             elif self.pre[0] == 'b':
                 pre = ('rc', 0)
         else:
-            self.__bump_version(kind)
+            if kind:
+                self.__bump_version(kind)
+            else:
+                self.finalize_release()
             pre = ('a', 0)
         self.__update_version(pre=pre)
 
