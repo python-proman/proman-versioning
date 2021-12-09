@@ -33,7 +33,6 @@ packaging = "^21.3"
 compendium = "^0.1.1-beta.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
 flake8 = "^3.8.3"
 docstr-coverage = "^1.2.0"
 pytest-cov = "^2.10.0"
@@ -50,6 +49,7 @@ black = {version = "^21.11b1", allow-prereleases = true}
 pyfakefs = "^4.5.3"
 mkdocstrings = "^0.16.2"
 pydocstyle = {extras = ["toml"], version = "^6.1.1"}
+pytest = "^6.2.5"
 
 [tool.poetry.scripts]
 version = "versioning.__main__:main"
