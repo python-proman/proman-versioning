@@ -73,15 +73,17 @@ class Version(PackageVersion):
             trigger='start_postrelease',
             source='final',
             dest='post',
-            before='bump_postrelease',
+            before='new_postrelease',
             conditions=['enable_postreleases'],
         )
 
         self.machine.add_transition(
             trigger='bump_release',
-            source=['alpha', 'beta', 'release', 'post'],
+            source=[
+                'development', 'alpha', 'beta', 'release', 'final', 'post'
+            ],
             dest=None,
-            before='__bump_release',
+            before='_bump_release',
         )
 
     @property
@@ -175,7 +177,7 @@ class Version(PackageVersion):
         if kind == 'micro':
             self.bump_micro()
 
-    def __bump_release(self, *args: Any, **kwargs: Any) -> None:
+    def _bump_release(self, *args: Any, **kwargs: Any) -> None:
         """Update to the next development release version number."""
         if self.enable_devreleases and self.dev is not None:
             dev = self.dev + 1
@@ -184,8 +186,6 @@ class Version(PackageVersion):
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
         if self.enable_postreleases:
-            if self.release_type == 'final':
-                self.__update_version(post=('post', 0))
             if self.post is not None:
                 post = self.post + 1
                 self.__update_version(post=('post', post))
@@ -195,16 +195,6 @@ class Version(PackageVersion):
         if self.dev is None:
             self.__bump_version(kind)
             self.__update_version(dev=('dev', 0))
-
-    def bump_devrelease(self) -> None:
-        """Update to the next development release version number."""
-        if self.dev is not None:
-            dev = self.dev + 1
-            self.__update_version(dev=('dev', dev))
-
-    def new_local(self, build: str = 'build-0') -> None:
-        """Create new local version instance number."""
-        self.__update_version(local=build)
 
     def new_prerelease(self, kind: str = 'minor') -> None:
         """Update to next prerelease version type."""
@@ -218,19 +208,14 @@ class Version(PackageVersion):
             pre = ('a', 0)
         self.__update_version(pre=pre)
 
-    def bump_prerelease(self) -> None:
-        """Update the prerelease version number."""
-        if self.pre is not None:
-            pre = (self.pre[0], self.pre[1] + 1)
-            self.__update_version(pre=pre)
-
-    def bump_postrelease(self) -> None:
+    def new_postrelease(self) -> None:
         """Update the post release version number."""
-        if self.post is not None:
-            post = self.post + 1
-            self.__update_version(post=('post', post))
-        elif self.release_type == 'final':
+        if self.release_type == 'final':
             self.__update_version(post=('post', 0))
+
+    def new_local(self, build: str = 'build-0') -> None:
+        """Create new local version instance number."""
+        self.__update_version(local=build)
 
     def finalize_release(self) -> None:
         """Update to next prerelease version type."""

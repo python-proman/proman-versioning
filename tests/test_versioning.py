@@ -22,7 +22,7 @@ def test_devrelease():
     print('test version', v)
     assert v == Version('1.1.0.dev0')
     print('dev', v.dev)
-    v.bump_devrelease()
+    v.bump_release()
     assert str(v) == '1.1.0.dev1'
     v.finish_release()
     assert str(v) == '1.1.0'
@@ -43,15 +43,15 @@ def test_prerelease():
     v.start_alpha(kind='major')
     assert str(v) == '3.0.0a0'
     assert v.pre == ('a', 0)
-    v.bump_prerelease()
+    v.bump_release()
     assert str(v) == '3.0.0a1'
     v.start_beta()
     assert str(v) == '3.0.0b0'
-    v.bump_prerelease()
+    v.bump_release()
     assert str(v) == '3.0.0b1'
     v.start_release()
     assert str(v) == '3.0.0rc0'
-    v.bump_prerelease()
+    v.bump_release()
     assert str(v) == '3.0.0rc1'
 
 
@@ -78,7 +78,7 @@ def test_post():
     assert v.minor == 0
     assert v.micro == 0
     assert v.state == 'post'
-    v.bump_postrelease()
+    v.bump_release()
     assert v.state == 'post'
     v.bump_major()
     assert v.state == 'final'

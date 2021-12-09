@@ -218,19 +218,6 @@ class IntegrationController(CommitMessageParser):
             new_version.start_devrelease()  # type: ignore
         return new_version
 
-    @staticmethod
-    def __bump_release(version: Version) -> Version:
-        """Update release number."""
-        if version.is_devrelease:
-            version.bump_devrelease()
-        elif version.is_prerelease:
-            version.bump_prerelease()
-        elif version.is_postrelease:
-            version.bump_postrelease()
-        elif version.enable_postreleases:
-            version.bump_postrelease()
-        return version
-
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         if (
