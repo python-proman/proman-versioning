@@ -29,18 +29,28 @@ class Version(PackageVersion):
         )
 
         # dev-releases
+        devrelease_sources = ['final']
+        if self.enable_postreleases:
+            devrelease_sources.append('post')
         self.machine.add_transition(
             trigger='start_devrelease',
-            source=['final', 'release', 'post'],
+            source=devrelease_sources,
             dest='development',
             before='new_devrelease',
             conditions=['enable_devreleases'],
         )
 
         # pre-releases
+        prerelease_sources = []
+        if self.enable_devreleases:
+            prerelease_sources.append('development')
+        else:
+            prerelease_sources.append('final')
+            if self.enable_postreleases:
+                prerelease_sources.append('post')
         self.machine.add_transition(
             trigger='start_alpha',
-            source=['development', 'final', 'post'],
+            source=prerelease_sources,
             dest='alpha',
             before='new_prerelease',
             conditions=['enable_prereleases'],
@@ -61,10 +71,19 @@ class Version(PackageVersion):
         )
 
         # final release
+        final_sources = []
+        if self.enable_prereleases:
+            final_sources.append('release')
+        elif self.enable_devreleases:
+            final_sources.append('development')
+        else:
+            final_sources.append('final')
+            if self.enable_postreleases:
+                final_sources.append('post')
         self.machine.add_transition(
             trigger='finish_release',
-            source=['development', 'release'],
-            dest='final',
+            source=final_sources,
+            dest='final' if 'final' not in final_sources else None,
             before='finalize_release',
         )
 
@@ -79,9 +98,7 @@ class Version(PackageVersion):
 
         self.machine.add_transition(
             trigger='bump_release',
-            source=[
-                'development', 'alpha', 'beta', 'release', 'final', 'post'
-            ],
+            source='*',
             dest=None,
             before='_bump_release',
         )
@@ -186,7 +203,9 @@ class Version(PackageVersion):
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
         if self.enable_postreleases:
-            if self.post is not None:
+            if self.release_type == 'final':
+                self.__update_version(post=('post', 0))
+            elif self.post is not None:
                 post = self.post + 1
                 self.__update_version(post=('post', post))
 

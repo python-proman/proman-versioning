@@ -196,7 +196,11 @@ class IntegrationController(CommitMessageParser):
     def start_release(self, **kwargs: Any) -> Version:
         """Start a release."""
         new_version = deepcopy(self.config.version)
-        if self.config.version.enable_devreleases and self.release == 'dev':
+        print(self.release)
+        if (
+            self.config.version.enable_devreleases
+            and self.release == 'development'
+        ):
             log.info('found devrelease')
             new_version.start_alpha()  # type: ignore
         if self.config.version.enable_prereleases:

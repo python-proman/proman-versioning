@@ -17,7 +17,8 @@ def test_versioning():
 
 
 def test_devrelease():
-    v = Version('1.0.0', enable_devreleases=True)
+    v = Version('1.0.0', enable_prereleases=False)
+    assert v.enable_prereleases is False
     v.start_devrelease()
     print('test version', v)
     assert v == Version('1.1.0.dev0')
@@ -29,7 +30,8 @@ def test_devrelease():
 
 
 def test_devrelease_state():
-    v = Version('1.0.0', enable_devreleases=True)
+    v = Version('1.0.0', enable_prereleases=False)
+    assert v.enable_prereleases is False
     assert v.state == 'final'
     v.start_devrelease()
     assert v.state == 'development'
@@ -38,7 +40,7 @@ def test_devrelease_state():
 
 
 def test_prerelease():
-    v = Version('2.0.0', enable_prereleases=True)
+    v = Version('2.0.0', enable_devreleases=False)
     assert v.state == 'final'
     v.start_alpha(kind='major')
     assert str(v) == '3.0.0a0'
@@ -56,7 +58,7 @@ def test_prerelease():
 
 
 def test_prerelease_states():
-    v = Version('1.0.0', enable_prereleases=True)
+    v = Version('1.0.0', enable_devreleases=False)
     assert v.state == 'final'
     v.start_alpha()
     assert v.state == 'alpha'
@@ -123,13 +125,14 @@ def test_local_removed():
     assert v.local == 'build.0'
     v.state == 'final'
 
-    # ensure local version is removed from alpha
-    v.start_alpha()
-    assert v.state == 'alpha'
+    # ensure local version is removed from development
+    v.start_devrelease()
+    v = Version('1.0.0.dev')
+    assert v.state == 'development'
     assert v.local is None
 
-    # ensure local version is removed from beta
-    v = Version('1.0.0b+build.0')
+    # ensure local version is removed from final
+    v = Version('1.0.0+build.0')
     v.bump_minor()
     assert v.state == 'final'
     assert v.local is None
