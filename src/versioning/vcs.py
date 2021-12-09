@@ -9,7 +9,7 @@ from typing import Any, List, Optional
 
 from pygit2 import GIT_OBJ_COMMIT, Commit, Repository, Signature, Tag
 
-from versioning.exception import PromanWorkflowException
+from versioning.exception import PromanVersioningException
 
 
 class Git:
@@ -45,16 +45,14 @@ class Git:
         """Create commit."""
         ref = f"refs/heads/{branch}" if branch else self.branch
 
-        # TODO: find better way to use config
-        config = self.repo.config.get_global_config()
-        user = list(config.get_multivar('user.name'))
+        user = list(self.repo.config.get_multivar('user.name'))
         if user == []:
-            raise PromanWorkflowException('git user.name not configured')
-        email = list(config.get_multivar('user.email'))
+            raise PromanVersioningException('git user.name not configured')
+        email = list(self.repo.config.get_multivar('user.email'))
         if email == []:
-            raise PromanWorkflowException('git user.email not configured')
+            raise PromanVersioningException('git user.email not configured')
 
-        author = Signature(user[0], email[0])
+        author = Signature(user[-1], email[-1])
         committer = kwargs.get('commiter', author)
         message = kwargs.get('message', 'ci: bump version')
 

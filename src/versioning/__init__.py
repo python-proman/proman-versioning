@@ -10,7 +10,7 @@ from pygit2 import Repository
 
 from versioning.config import CONFIG_FILES, REPO_DIR, Config
 from versioning.controller import IntegrationController
-from versioning.exception import PromanWorkflowException
+from versioning.exception import PromanVersioningException
 from versioning.vcs import Git
 from versioning.version import Version  # noqa
 
@@ -37,7 +37,7 @@ def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
         config = Config(filepaths=config_files)
         return config
     except Exception as err:
-        raise PromanWorkflowException(err)
+        raise PromanVersioningException(err)
 
 
 def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:

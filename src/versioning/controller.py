@@ -11,7 +11,7 @@ from copy import deepcopy
 from string import Template
 from typing import Any
 
-from versioning.exception import PromanWorkflowException
+from versioning.exception import PromanVersioningException
 from versioning.config import Config
 from versioning.grammars.conventional_commits import CommitMessageParser
 from versioning.vcs import Git
@@ -187,11 +187,11 @@ class IntegrationController(CommitMessageParser):
                     )
                     log.info(f"applying tag: {str(new_version)}")
             else:
-                raise PromanWorkflowException(
+                raise PromanVersioningException(
                     'no version update could be determined'
                 )
         else:
-            raise PromanWorkflowException('repository is not clean')
+            raise PromanVersioningException('repository is not clean')
 
     def start_release(self, **kwargs: Any) -> Version:
         """Start a release."""
@@ -256,7 +256,7 @@ class IntegrationController(CommitMessageParser):
                     new_version = self.__bump_release(new_version)
                 else:
                     # TODO: need debug statement here instead
-                    raise PromanWorkflowException(
+                    raise PromanVersioningException(
                         'received unsupported commit type'
                     )
 

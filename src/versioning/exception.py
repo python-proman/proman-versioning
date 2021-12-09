@@ -4,5 +4,5 @@
 '''Provide exceptions.'''
 
 
-class PromanWorkflowException(Exception):
+class PromanVersioningException(Exception):
     '''Provide base errors in PackageManager.'''
