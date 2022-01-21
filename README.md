@@ -18,24 +18,41 @@ versions using conventional commits.
 This tool is designed to work with any textfile using a templating pattern and
  path to the file.
 
-### Configuring versioning
+### Configuring versions
 
-Release versions can be configured by choosing the types of releases to use if
-any.
+Configuration can be performed with either the `.versioning` or `pyproject.toml`
+files.
 
-Disable devreleases:
+#### Global configuration settings:
+
+Specific types of releases can be disabled by setting the respective release to
+false.
+
+Disable development releases:
 ```
 enable_devreleases = false
 ```
 
-Disable prereleases:
+Disable pre-releases:
 ```
 enable_prereleases = false
 ```
 
-Disable postreleases:
+Disable post-releases:
 ```
 enable_postreleases = false
+```
+
+#### File specific settings:
+
+Use different version compatibiliy type:
+```
+compat = "semver"
+```
+
+Update only the release version for a configuration:
+```
+release_only = true
 ```
 
 #### Example `.versioning`
@@ -48,6 +65,7 @@ preferred configuration for non-python projects that may use this tool.
 version = "1.2.3"
 
 [proman.versioning]
+disable_devreleases = true
 
 [[tool.proman.versioning.files]]
 filepath = "pyproject.toml"
