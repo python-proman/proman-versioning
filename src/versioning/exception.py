@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Provide exceptions.'''
+"""Provide exceptions."""
 
 
 class PromanVersioningException(Exception):
-    '''Provide base errors in PackageManager.'''
+    """Provide base errors in PackageManager."""

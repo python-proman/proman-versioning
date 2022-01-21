@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-'''Invocation for git hooks pipelines.'''
+"""Invocation for git hooks pipelines."""
 
 from typing import Any, Dict
 
@@ -10,8 +10,10 @@ from invoke import Collection, Executor
 from stevedore.extension import ExtensionManager
 
 
-def load_collections(extension: ExtensionManager, data: Dict[str, Any]) -> None:
-    '''Load invoke collections using stevedore.'''
+def load_collections(
+    extension: ExtensionManager, data: Dict[str, Any]
+) -> None:
+    """Load invoke collections using stevedore."""
     namespace.add_collection(extension.plugin, name=extension.name)
     namespace.configure(data)
 
