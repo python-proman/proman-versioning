@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proman-versioning"
-version = "0.3.0"
+version = "0.3.0a0"
 description = "Project Manager Versioning tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
 license = "MPL-2.0"
@@ -62,7 +62,6 @@ filepath = "tests/test_version.py"
 pattern = "__version__ == '${version}'"
 
 [[tool.proman.versioning.files]]
-compat = "semver"
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
 
