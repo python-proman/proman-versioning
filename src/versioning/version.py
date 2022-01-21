@@ -16,6 +16,8 @@ class Version(PackageVersion):
     def __init__(self, version: str, **kwargs: Any) -> None:
         """Initialize version object."""
         # self.kind = kwargs.pop('version_system', 'semver')
+        self.compat = kwargs.pop('compat', 'pep440')
+        print(self.compat)
         super().__init__(version=version)
 
         # TODO: transitions here should be populated by VCS workflow
@@ -101,6 +103,49 @@ class Version(PackageVersion):
             dest=None,
             before='_bump_release',
         )
+
+    def __str__(self) -> str:
+        """Handle version formatting."""
+        parts = []
+
+        # Epoch
+        if self.epoch != 0:
+            parts.append(f"{self.epoch}!")
+
+        # Release segment
+        parts.append('.'.join(str(x) for x in self.release))
+
+        # Pre-release
+        if self.pre is not None:
+            if self.compat == 'semver':
+                separator = '-'
+            else:
+                separator = ''
+            parts.append(
+                f"{separator}{self.pre[0]}{str(self.pre[1])}"
+            )
+
+        # Post-release
+        if self.post is not None:
+            if self.compat == 'semver':
+                separator = '-'
+            else:
+                separator = '.post'
+            parts.append(f"{separator}{self.post}")
+
+        # Development release
+        if self.dev is not None:
+            if self.compat == 'semver':
+                separator = '-'
+            else:
+                separator = '.'
+            parts.append(f"{separator}dev{self.dev}")
+
+        # Local version segment
+        if self.local is not None:
+            parts.append(f"+{self.local}")
+
+        return ''.join(parts)
 
     @property
     def states(self) -> List[str]:

@@ -53,11 +53,6 @@ pytest = "^6.2.5"
 [tool.poetry.scripts]
 version = "versioning.__main__:main"
 
-[tool.proman.versioning]
-enable_devreleases = true
-enable_prereleases = true
-enable_postreleases = true
-
 [[tool.proman.versioning.files]]
 filepath = "src/versioning/__init__.py"
 pattern = "__version__ = '${version}'"
@@ -67,6 +62,7 @@ filepath = "tests/test_version.py"
 pattern = "__version__ == '${version}'"
 
 [[tool.proman.versioning.files]]
+compat = "semver"
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
 

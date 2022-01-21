@@ -129,6 +129,7 @@ class Config(ConfigManager):
         # XXX: config_manager is not passing separator
         super().__init__(filepaths=filepaths, separator='.', defaults=defaults)
 
+        # load configuration from paths in order or precedence
         config = self.lookup(
             '.proman.versioning',
             '.tool.proman.versioning',
@@ -155,8 +156,8 @@ class Config(ConfigManager):
                 'test',
             ]
             config['types'] = angular_convention
-        self.parser = ParserConfig(config=config)
 
+        self.parser = ParserConfig(config=config)
         self.release = ReleaseConfig(config=config)
 
         config_version = self.lookup(
@@ -172,4 +173,5 @@ class Config(ConfigManager):
             enable_devreleases=self.release.enable_devreleases,
             enable_prereleases=self.release.enable_prereleases,
             enable_postreleases=self.release.enable_postreleases,
+            compat=config.get('compat', 'pep440'),
         )

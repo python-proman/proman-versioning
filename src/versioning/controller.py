@@ -1,6 +1,6 @@
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-"""Parse Git commit messages."""
+"""Coordinate actions from commit messages."""
 
 import logging
 import os
@@ -8,13 +8,15 @@ import re
 import sys
 from copy import deepcopy
 from string import Template
-from typing import Any
+from typing import TYPE_CHECKING, Any, Dict
 
 from versioning.exception import PromanVersioningException
-from versioning.config import Config
 from versioning.grammars.conventional_commits import CommitMessageParser
-from versioning.vcs import Git
 from versioning.version import Version
+
+if TYPE_CHECKING:
+    from versioning.config import Config
+    from versioning.vcs import Git
 
 # from transitions import Machine
 
@@ -45,8 +47,8 @@ class IntegrationController(CommitMessageParser):
 
     def __init__(
         self,
-        config: Config,
-        repo: Git,
+        config: 'Config',
+        repo: 'Git',
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -74,10 +76,12 @@ class IntegrationController(CommitMessageParser):
     @staticmethod
     def __get_version_regex(version: Version) -> str:
         """Get PEP-440 compliant regex for version."""
+        # TODO: should this be part of Version?
         r = '.'.join(str(x) for x in version.release)
         if version.dev:
             v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev or '0?'}"
             return v
+
         if version.pre:
             if version.epoch > 0:
                 v = f"{version.epoch}!{r}"
@@ -96,15 +100,35 @@ class IntegrationController(CommitMessageParser):
         else:
             return str(version)
 
-    @staticmethod
     def __update_config(
-        filepath: str,
-        pattern: str,
-        version: Version,
+        self,
+        config: Dict[str, Any],
         new_version: Version,
         dry_run: bool = False,
     ) -> None:
-        """Update config file with new file."""
+        """Update target file with new version."""
+        if 'release_only' in config and config['release_only']:
+            current_release = '.'.join(
+                str(x) for x in self.config.version.release
+            )
+            version = Version(current_release)
+
+            release = '.'.join(
+                str(x) for x in new_version.release
+            )
+            new_version = Version(release)
+        else:
+            version = deepcopy(self.config.version)
+
+        if 'compat' in config:
+            version.compat = config['compat']
+            new_version.compat = config['compat']
+
+        pattern = config['pattern']
+        filepath = os.path.join(
+            self.vcs.working_dir, config['filepath']
+        )
+
         # TODO: handle when file does not exist
         with open(filepath, 'r+') as f:
             file_contents = f.read()
@@ -150,20 +174,12 @@ class IntegrationController(CommitMessageParser):
         if stats.files_changed == 0 or dry_run:
             if self.config.version != new_version:
                 for config in self.config.templates:
-                    if 'release_only' in config and config['release_only']:
-                        release = '.'.join(
-                            str(x) for x in new_version.release
-                        )
-                        new_version = Version(release)
                     self.__update_config(
-                        filepath=os.path.join(
-                            self.vcs.working_dir, config['filepath']
-                        ),
-                        pattern=config['pattern'],
-                        version=self.config.version,
+                        config=config,
                         new_version=new_version,
                         dry_run=dry_run,
                     )
+
                 self.config.version = new_version
                 if kwargs.pop('commit', True):
                     # TODO: tie scope to configs, releases or version ranges
@@ -173,10 +189,13 @@ class IntegrationController(CommitMessageParser):
                             f['filepath']
                             for f in self.config.templates
                         ],
-                        message=(f"ci({scope}): apply {new_version} updates"),
+                        message=(
+                            f"ci({scope}): apply {str(new_version)} updates"
+                        ),
                         dry_run=dry_run,
                     )
                     log.info(f"commiting version changes: {str(new_version)}")
+
                 if kwargs.get('tag', False):
                     self.vcs.tag(
                         name=str(new_version),
@@ -195,13 +214,14 @@ class IntegrationController(CommitMessageParser):
     def start_release(self, **kwargs: Any) -> Version:
         """Start a release."""
         new_version = deepcopy(self.config.version)
-        print(self.release)
+
         if (
             self.config.version.enable_devreleases
             and self.release == 'development'
         ):
             log.info('found devrelease')
             new_version.start_alpha()  # type: ignore
+
         if self.config.version.enable_prereleases:
             log.info('found prerelease')
             if self.release == 'alpha':
@@ -210,6 +230,7 @@ class IntegrationController(CommitMessageParser):
                 new_version.start_release()  # type: ignore
             if self.release == 'release':
                 new_version.finish_release()  # type: ignore
+
         if (
             self.release == 'final'
             or (
@@ -219,6 +240,7 @@ class IntegrationController(CommitMessageParser):
         ):
             log.info(f"found {self.release} release")
             new_version.start_devrelease()  # type: ignore
+
         return new_version
 
     def bump_version(self, **kwargs: Any) -> Version:
@@ -227,7 +249,6 @@ class IntegrationController(CommitMessageParser):
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
         ):
-            print(kwargs)
             new_version = self.start_release(**kwargs)
             self.update_configs(new_version, **kwargs)
         else:
