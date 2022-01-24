@@ -32,7 +32,8 @@ if TYPE_CHECKING:
 # external (ex: CI/CD build number)
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+# TODO: need to integrate into CLI
+# log.setLevel(logging.DEBUG)
 
 
 # TODO determine relation with state and git hooks

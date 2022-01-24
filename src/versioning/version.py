@@ -17,7 +17,6 @@ class Version(PackageVersion):
         """Initialize version object."""
         # self.kind = kwargs.pop('version_system', 'semver')
         self.compat = kwargs.pop('compat', 'pep440')
-        print(self.compat)
         super().__init__(version=version)
 
         # TODO: transitions here should be populated by VCS workflow
