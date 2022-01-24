@@ -182,7 +182,9 @@ class IntegrationController(CommitMessageParser):
                     )
 
                 self.config.version = new_version
-                if kwargs.pop('commit', True):
+                make_commit = kwargs.pop('commit', True)
+                make_tag = kwargs.pop('tag', False)
+                if make_commit or make_tag:
                     # TODO: tie scope to configs, releases or version ranges
                     scope = 'version'
                     self.vcs.commit(
@@ -197,14 +199,35 @@ class IntegrationController(CommitMessageParser):
                     )
                     log.info(f"commiting version changes: {str(new_version)}")
 
-                if kwargs.get('tag', False):
-                    self.vcs.tag(
-                        name=str(new_version),
-                        ref='HEAD',
-                        message=None,
-                        dry_run=dry_run,
-                    )
-                    log.info(f"applying tag: {str(new_version)}")
+                    if make_tag:
+                        self.vcs.tag(
+                            name=str(new_version),
+                            ref='HEAD',
+                            message=None,
+                            dry_run=dry_run,
+                        )
+                        log.info(f"applying tag: {str(new_version)}")
+
+                    if kwargs.get('push', False):
+                        remote = kwargs.pop('remote', 'origin')
+                        remote_branch = kwargs.pop('remote_branch', None)
+                        remote_url = kwargs.pop('remote_url', None)
+                        username = kwargs.pop('username', None)
+                        password = kwargs.pop('password', None)
+                        if remote_url is not None:
+                            self.vcs.add_remote(
+                                remote,
+                                remote_url,
+                                # username=username,
+                                # password=password,
+                            )
+                        self.vcs.push(
+                            branch='master',
+                            remote=remote,
+                            remote_branch=remote_branch,
+                            username=username,
+                            password=password,
+                        )
             else:
                 raise PromanVersioningException(
                     'no version update could be determined'

@@ -14,11 +14,17 @@ _controller = get_release_controller()
 
 def bump(
     commit: bool = False,
-    release: bool = False,
-    # tag: bool = False,
-    # tag_name: Optional[str] = None,
     message: Optional[str] = None,
+    tag: bool = False,
+    tag_name: Optional[str] = None,
     # sign: bool = False,
+    push: bool = False,
+    remote: str = 'origin',
+    remote_branch: Optional[str] = None,
+    remote_url: Optional[str] = None,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+    new_release: bool = False,
     build: Optional[str] = None,
     dry_run: bool = False,
 ) -> None:
@@ -26,40 +32,57 @@ def bump(
 
     Parameters
     ----------
-    commit: bool
-        Commit release changes to project.
-    message: str
-        Notes included with the commit.
-    release: bool
-        Make this version a new release.
     build: str
         Build version from other systems the may help coordinate build
         artifacts.
+    commit: bool
+        Commit release changes to project.
     dry_run: bool
         Run the command without making changes.
+    message: str
+        Notes included with the commit.
+    new_release: bool
+        Make this version a new release.
+    push: bool
+        Push changes to remote repository.
+    tag: bool
+        Tag this version.
+    tag_name: str
+        The tag name to use for this tag.
+    remote: str
+        The reference name of the repository.
+    remote_branch: str
+        The branch name of the remote reference.
+    remote_url: str
+        Remote URL of the repository.
+    username: str
+        Username for access to remote repository.
+    password: str
+        Password for access to remote repository.
 
     """
-    # tag: bool
-    #     Tag this version.
-    # tag_name: str
-    #     The tag name to use for this tag.
-    #     default: version
     # sign: bool
     #     Sign commit with PKI signature.
     version = _controller.bump_version(
         commit=commit,
-        release=release,
-        # tag=tag,
-        # tag_name=tag_name,
-        message=message,
+        release=new_release,
+        tag=tag,
+        tag_name=tag_name,
         # sign_tag=sign,
+        message=message,
         build=build,
         dry_run=dry_run,
+        push=push,
+        remote=remote,
+        remote_branch=remote_branch,
+        remote_url=remote_url,
+        username=username,
+        password=password,
     )
     print(str(version), file=sys.stdout)
 
 
-def view(release: bool = False, filepaths: bool = False) -> None:
+def info(release: bool = False, filepaths: bool = False) -> None:
     """Get the current version or settings of a project.
 
     Parameters
