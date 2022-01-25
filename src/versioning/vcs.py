@@ -148,10 +148,11 @@ class Git:
         password: Optional[str] = None,
     ) -> None:
         """Push commited changes."""
-        ref = f"refs/heads/{branch}" if branch else self.ref
+        # TODO: feels like remote should be encapsulated with creds
         remote_branch = remote_branch or branch or self.ref.split('/')[-1]
-        remote_ref = f"refs/remotes/{remote}/{remote_branch}"
-        print(ref, remote_ref)
+        # ref = f"refs/heads/{branch}" if branch else self.ref
+        # remote_ref = f"refs/remotes/{remote}/{remote_branch}"
+        # print(ref, remote_ref)
 
         remote_repo = self.repo.remotes[remote]
         credentials = UserPass(username, password)

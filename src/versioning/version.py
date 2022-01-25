@@ -147,6 +147,32 @@ class Version(PackageVersion):
         return ''.join(parts)
 
     @property
+    def query(self) -> str:
+        """Get PEP-440 compliant regex query for version."""
+        r = '.'.join(str(x) for x in self.release)
+        if self.dev:
+            v = f"{r}[-_\\.]?dev[-_\\.]?{self.dev or '0?'}"
+            return v
+
+        if self.pre:
+            if self.epoch > 0:
+                v = f"{self.epoch}!{r}"
+            pre = self.pre[0]
+            inst = self.pre[1]
+            if pre == 'a' or pre == 'alpha':
+                v = f"{r}[-_\\.]?(?:a|alpha)[-_\\.]?{inst or '0?'}"
+            if pre == 'b' or pre == 'beta':
+                v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
+            if pre == 'rc' or pre == 'release':
+                v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
+            return v
+        elif self.post:
+            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{self.post}"
+            return v
+        else:
+            return str(self)
+
+    @property
     def states(self) -> List[str]:
         """List all states."""
         states = ['final']

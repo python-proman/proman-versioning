@@ -74,33 +74,6 @@ class IntegrationController(CommitMessageParser):
         """Get the current version release state."""
         return self.config.version.state  # type: ignore
 
-    @staticmethod
-    def __get_version_regex(version: Version) -> str:
-        """Get PEP-440 compliant regex for version."""
-        # TODO: should this be part of Version?
-        r = '.'.join(str(x) for x in version.release)
-        if version.dev:
-            v = f"{r}[-_\\.]?dev[-_\\.]?{version.dev or '0?'}"
-            return v
-
-        if version.pre:
-            if version.epoch > 0:
-                v = f"{version.epoch}!{r}"
-            pre = version.pre[0]
-            inst = version.pre[1]
-            if pre == 'a' or pre == 'alpha':
-                v = f"{r}[-_\\.]?(?:a|alpha)[-_\\.]?{inst or '0?'}"
-            if pre == 'b' or pre == 'beta':
-                v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
-            if pre == 'rc' or pre == 'release':
-                v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
-            return v
-        elif version.post:
-            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{version.post}"
-            return v
-        else:
-            return str(version)
-
     def __update_config(
         self,
         config: Dict[str, Any],
@@ -135,10 +108,7 @@ class IntegrationController(CommitMessageParser):
             file_contents = f.read()
 
             # prepare source expression match pattern
-            version_str = IntegrationController.__get_version_regex(
-                version=version
-            )
-            template = Template(pattern).substitute(version=version_str)
+            template = Template(pattern).substitute(version=version.query)
             match = re.compile(
                 # XXX: escape not compiling correctly
                 template,  # re.escape(template),
@@ -209,6 +179,7 @@ class IntegrationController(CommitMessageParser):
                         log.info(f"applying tag: {str(new_version)}")
 
                     if kwargs.get('push', False):
+                        # TODO: should assemble remote somewhere else maybe
                         remote = kwargs.pop('remote', 'origin')
                         remote_branch = kwargs.pop('remote_branch', None)
                         remote_url = kwargs.pop('remote_url', None)
