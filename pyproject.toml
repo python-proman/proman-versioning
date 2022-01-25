@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 packages = [
-    { include = "versioning", from = "src" },
+    {include = "versioning", from = "src"},
 ]
 
 [tool.poetry.dependencies]
@@ -52,6 +52,9 @@ pytest = "^6.2.5"
 
 [tool.poetry.scripts]
 version = "versioning.__main__:main"
+
+[tool.proman.versioning]
+enable_devrelease = false
 
 [[tool.proman.versioning.files]]
 filepath = "src/versioning/__init__.py"
