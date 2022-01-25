@@ -185,6 +185,18 @@ class Version(PackageVersion):
         return states
 
     @property
+    def release_start(self) -> str:
+        """Get the starting release."""
+        if self.is_devrelease:
+            state = 'development'
+        elif self.is_prerelease and self.pre:
+            if self.pre[0] == 'a':
+                return 'alpha'
+        else:
+            state = 'final'
+        return state
+
+    @property
     def release_type(self) -> str:
         """Get the current state of package release."""
         if self.is_devrelease:
@@ -238,17 +250,17 @@ class Version(PackageVersion):
     def bump_epoch(self) -> None:
         """Update epoch releaes for version system changes."""
         self.__update_version(epoch=self.epoch + 1)
-        self.machine.set_state('final')
+        self.machine.set_state(self.release_start)
 
     def bump_major(self) -> None:
         """Update major release to next version number."""
         self.__update_version(release=(self.major + 1, 0, 0))
-        self.machine.set_state('final')
+        self.machine.set_state(self.release_start)
 
     def bump_minor(self) -> None:
         """Update minor release to next version number."""
         self.__update_version(release=(self.major, self.minor + 1, 0))
-        self.machine.set_state('final')
+        self.machine.set_state(self.release_start)
 
     def bump_micro(self) -> None:
         """Update micro release to next version number."""
