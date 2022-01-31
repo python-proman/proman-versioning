@@ -24,7 +24,7 @@ def bump(
     remote_url: Optional[str] = None,
     username: Optional[str] = None,
     password: Optional[str] = None,
-    new_release: bool = False,
+    release: bool = False,
     build: Optional[str] = None,
     dry_run: bool = False,
 ) -> None:
@@ -41,7 +41,7 @@ def bump(
         Run the command without making changes.
     message: str
         Notes included with the commit.
-    new_release: bool
+    release: bool
         Make this version a new release.
     push: bool
         Push changes to remote repository.
@@ -65,7 +65,7 @@ def bump(
     #     Sign commit with PKI signature.
     version = _controller.bump_version(
         commit=commit,
-        release=new_release,
+        release=release,
         tag=tag,
         tag_name=tag_name,
         # sign_tag=sign,

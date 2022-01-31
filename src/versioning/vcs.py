@@ -73,7 +73,6 @@ class Git:
             self.repo.remotes.create(name, url, fetch)
         elif self.repo.remotes[name].url != url:
             self.repo.remotes.set_url(name, url)
-        print('huh', self.repo.remotes[name].credentials)
 
     def commit(
         self,

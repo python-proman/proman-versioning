@@ -20,9 +20,7 @@ def test_devrelease():
     v = Version('1.0.0', enable_prereleases=False)
     assert v.enable_prereleases is False
     v.start_devrelease()
-    print('test version', v)
     assert v == Version('1.1.0.dev0')
-    print('dev', v.dev)
     v.bump_release()
     assert str(v) == '1.1.0.dev1'
     v.finish_release()
@@ -83,7 +81,7 @@ def test_post():
     v.bump_release()
     assert v.state == 'post'
     v.bump_major()
-    assert v.state == 'final'
+    assert v.state == 'development'
 
 
 def test_post_state():
@@ -95,11 +93,11 @@ def test_post_state():
 
 
 def test_local():
-    v = Version('3.0.0+dev4.post3')
+    v = Version('3.0.0+1234567')
     assert v.release == (3, 0, 0)
     assert v.pre is None
     assert v.post is None
-    assert v.local == 'dev4.post3'
+    assert v.local == '1234567'
     v.bump_major()
     assert str(v) == '4.0.0'
 
@@ -134,7 +132,7 @@ def test_local_removed():
     # ensure local version is removed from final
     v = Version('1.0.0+build.0')
     v.bump_minor()
-    assert v.state == 'final'
+    assert v.state == 'development'
     assert v.local is None
 
 

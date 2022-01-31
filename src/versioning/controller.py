@@ -81,19 +81,19 @@ class IntegrationController(CommitMessageParser):
         dry_run: bool = False,
     ) -> None:
         """Update target file with new version."""
+        # handle situations where version modifiers are not used
         if 'release_only' in config and config['release_only']:
             current_release = '.'.join(
                 str(x) for x in self.config.version.release
             )
             version = Version(current_release)
 
-            release = '.'.join(
-                str(x) for x in new_version.release
-            )
+            release = '.'.join(str(x) for x in new_version.release)
             new_version = Version(release)
         else:
             version = deepcopy(self.config.version)
 
+        # handle compatiblity with semver
         if 'compat' in config:
             version.compat = config['compat']
             new_version.compat = config['compat']
@@ -206,10 +206,8 @@ class IntegrationController(CommitMessageParser):
         else:
             raise PromanVersioningException('repository is not clean')
 
-    def start_release(self, **kwargs: Any) -> Version:
+    def start_release(self, new_version: Version, **kwargs: Any) -> Version:
         """Start a release."""
-        new_version = deepcopy(self.config.version)
-
         if (
             self.config.version.enable_devreleases
             and self.release == 'development'
@@ -240,14 +238,14 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
+        new_version = deepcopy(self.config.version)
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
         ):
-            new_version = self.start_release(**kwargs)
+            new_version = self.start_release(new_version, **kwargs)
             self.update_configs(new_version, **kwargs)
         else:
-            new_version = deepcopy(self.config.version)
             build = kwargs.pop('build', None)
 
             # TODO: break, and feat should start devrelease from final or post

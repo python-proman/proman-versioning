@@ -3,11 +3,119 @@
 """Manage version numbers."""
 
 # import logging
-from typing import Any, List, Optional, Tuple
+from dataclasses import InitVar, asdict, dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
 
 from packaging.version import Version as PackageVersion
 from packaging.version import _cmpkey, _parse_local_version, _Version
 from transitions import Machine
+
+
+@dataclass
+class VersionConfig:
+    """Manage versioning flow."""
+
+    initial: str
+    enable_devreleases: InitVar[bool] = True
+    enable_prereleases: InitVar[bool] = True
+    enable_postreleases: InitVar[bool] = True
+    states: List[str] = field(default_factory=list)
+    transitions: List[Dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(
+        self,
+        enable_devreleases: bool,
+        enable_prereleases: bool,
+        enable_postreleases: bool,
+    ) -> None:
+        """Initialize versioning config."""
+        self.states = ['final']
+        if enable_devreleases:
+            self.states += ['development']
+        if enable_prereleases:
+            self.states += ['alpha', 'beta', 'release']
+        if enable_postreleases:
+            self.states += ['post']
+
+        self.transitions = []
+
+        # development releases
+        devrelease_sources = ['final']
+        if enable_postreleases:
+            devrelease_sources.append('post')
+        self.transitions.append(
+            dict(
+                trigger='start_devrelease',
+                source=devrelease_sources,
+                dest='development',
+                before='new_devrelease',
+                conditions=['enable_devreleases'],
+            )
+        )
+
+        # pre-releases
+        prerelease_sources = ['final']
+        if enable_devreleases:
+            prerelease_sources.append('development')
+        if enable_postreleases:
+            prerelease_sources.append('post')
+        self.transitions.append(
+            dict(
+                trigger='start_alpha',
+                source=prerelease_sources,
+                dest='alpha',
+                before='new_prerelease',
+                conditions=['enable_prereleases'],
+            )
+        )
+        self.transitions.append(
+            dict(
+                trigger='start_beta',
+                source='alpha',
+                dest='beta',
+                before='new_prerelease',
+                conditions=['enable_prereleases'],
+            )
+        )
+        self.transitions.append(
+            dict(
+                trigger='start_release',
+                source='beta',
+                dest='release',
+                before='new_prerelease',
+                conditions=['enable_prereleases'],
+            )
+        )
+
+        # final release
+        final_sources = []
+        if enable_prereleases:
+            final_sources.append('release')
+        elif enable_devreleases:
+            final_sources.append('development')
+        else:
+            final_sources.append('final')
+            if enable_postreleases:
+                final_sources.append('post')
+        self.transitions.append(
+             dict(
+                 trigger='finish_release',
+                 source=final_sources,
+                 dest='final' if 'final' not in final_sources else None,
+                 before='finalize_release',
+             )
+        )
+
+        # post-releases
+        self.transitions.append(
+            dict(
+                trigger='start_postrelease',
+                source='final',
+                dest='post',
+                before='new_postrelease',
+                conditions=['enable_postreleases'],
+            )
+        )
 
 
 class Version(PackageVersion):
@@ -15,7 +123,6 @@ class Version(PackageVersion):
 
     def __init__(self, version: str, **kwargs: Any) -> None:
         """Initialize version object."""
-        # self.kind = kwargs.pop('version_system', 'semver')
         self.compat = kwargs.pop('compat', 'pep440')
         super().__init__(version=version)
 
@@ -24,77 +131,13 @@ class Version(PackageVersion):
         self.enable_prereleases = kwargs.get('enable_prereleases', True)
         self.enable_postreleases = kwargs.get('enable_postreleases', True)
 
-        self.machine = Machine(
-            self, states=self.states, initial=self.release_type
+        config = VersionConfig(
+            initial=self.release_type,
+            enable_devreleases=self.enable_devreleases,
+            enable_prereleases=self.enable_prereleases,
+            enable_postreleases=self.enable_postreleases,
         )
-
-        # dev-releases
-        devrelease_sources = ['final']
-        if self.enable_postreleases:
-            devrelease_sources.append('post')
-        self.machine.add_transition(
-            trigger='start_devrelease',
-            source=devrelease_sources,
-            dest='development',
-            before='new_devrelease',
-            conditions=['enable_devreleases'],
-        )
-
-        # pre-releases
-        prerelease_sources = []
-        if self.enable_devreleases:
-            prerelease_sources.append('development')
-        else:
-            prerelease_sources.append('final')
-            if self.enable_postreleases:
-                prerelease_sources.append('post')
-        self.machine.add_transition(
-            trigger='start_alpha',
-            source=prerelease_sources,
-            dest='alpha',
-            before='new_prerelease',
-            conditions=['enable_prereleases'],
-        )
-        self.machine.add_transition(
-            trigger='start_beta',
-            source='alpha',
-            dest='beta',
-            before='new_prerelease',
-            conditions=['enable_prereleases'],
-        )
-        self.machine.add_transition(
-            trigger='start_release',
-            source='beta',
-            dest='release',
-            before='new_prerelease',
-            conditions=['enable_prereleases'],
-        )
-
-        # final release
-        final_sources = []
-        if self.enable_prereleases:
-            final_sources.append('release')
-        elif self.enable_devreleases:
-            final_sources.append('development')
-        else:
-            final_sources.append('final')
-            if self.enable_postreleases:
-                final_sources.append('post')
-        self.machine.add_transition(
-            trigger='finish_release',
-            source=final_sources,
-            dest='final' if 'final' not in final_sources else None,
-            before='finalize_release',
-        )
-
-        # post-releases
-        self.machine.add_transition(
-            trigger='start_postrelease',
-            source='final',
-            dest='post',
-            before='new_postrelease',
-            conditions=['enable_postreleases'],
-        )
+        self.machine = Machine(self, **asdict(config))
 
         self.machine.add_transition(
             trigger='bump_release',
@@ -147,56 +190,6 @@ class Version(PackageVersion):
         return ''.join(parts)
 
     @property
-    def query(self) -> str:
-        """Get PEP-440 compliant regex query for version."""
-        r = '.'.join(str(x) for x in self.release)
-        if self.dev:
-            v = f"{r}[-_\\.]?dev[-_\\.]?{self.dev or '0?'}"
-            return v
-
-        if self.pre:
-            if self.epoch > 0:
-                v = f"{self.epoch}!{r}"
-            pre = self.pre[0]
-            inst = self.pre[1]
-            if pre == 'a' or pre == 'alpha':
-                v = f"{r}[-_\\.]?(?:a|alpha)[-_\\.]?{inst or '0?'}"
-            if pre == 'b' or pre == 'beta':
-                v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
-            if pre == 'rc' or pre == 'release':
-                v = f"{r}[-_\\.]?(?:rc|release)[-_\\.]?{inst or '0?'}"
-            return v
-        elif self.post:
-            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{self.post}"
-            return v
-        else:
-            return str(self)
-
-    @property
-    def states(self) -> List[str]:
-        """List all states."""
-        states = ['final']
-        if self.enable_devreleases:
-            states += ['development']
-        if self.enable_prereleases:
-            states += ['alpha', 'beta', 'release']
-        if self.enable_postreleases:
-            states += ['post']
-        return states
-
-    @property
-    def release_start(self) -> str:
-        """Get the starting release."""
-        if self.is_devrelease:
-            state = 'development'
-        elif self.is_prerelease and self.pre:
-            if self.pre[0] == 'a':
-                return 'alpha'
-        else:
-            state = 'final'
-        return state
-
-    @property
     def release_type(self) -> str:
         """Get the current state of package release."""
         if self.is_devrelease:
@@ -213,6 +206,42 @@ class Version(PackageVersion):
         else:
             state = 'final'
         return state
+
+    @property
+    def initial_release_type(self) -> str:
+        """Get the starting release type."""
+        if self.enable_devreleases:
+            return 'development'
+        elif self.enable_prereleases:
+            return 'alpha'
+        else:
+            return 'final'
+
+    @property
+    def query(self) -> str:
+        """Get PEP-440 compliant regex query for version."""
+        r = '.'.join(str(x) for x in self.release)
+        if self.dev:
+            v = f"{r}[-_\\.]?dev[-_\\.]?{self.dev or '0?'}"
+            return v
+
+        if self.pre:
+            if self.epoch > 0:
+                v = f"{self.epoch}!{r}"
+            (pre, inst) = self.pre
+            if pre == 'a':
+                v = f"{r}[-_\\.]?(?:a|alpha)[-_\\.]?{inst or '0?'}"
+            if pre == 'b':
+                v = f"{r}[-_\\.]?(?:b|beta)[-_\\.]?{inst or '0?'}"
+            if pre == 'rc':
+                candidate = 'c|candidate|rc|release'
+                v = f"{r}[-_\\.]?(?:{candidate})[-_\\.]?{inst or '0?'}"
+            return v
+        elif self.post:
+            v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{self.post}"
+            return v
+        else:
+            return str(self)
 
     def __update_version(
         self,
@@ -250,24 +279,27 @@ class Version(PackageVersion):
     def bump_epoch(self) -> None:
         """Update epoch releaes for version system changes."""
         self.__update_version(epoch=self.epoch + 1)
-        self.machine.set_state(self.release_start)
+        self.machine.set_state(self.initial_release_type)
 
     def bump_major(self) -> None:
         """Update major release to next version number."""
         self.__update_version(release=(self.major + 1, 0, 0))
-        self.machine.set_state(self.release_start)
+        self.machine.set_state(self.initial_release_type)
 
     def bump_minor(self) -> None:
         """Update minor release to next version number."""
         self.__update_version(release=(self.major, self.minor + 1, 0))
-        self.machine.set_state(self.release_start)
+        self.machine.set_state(self.initial_release_type)
 
     def bump_micro(self) -> None:
         """Update micro release to next version number."""
         self.__update_version(release=(self.major, self.minor, self.micro + 1))
+        self.machine.set_state(self.initial_release_type)
 
     def __bump_version(self, kind: str) -> None:
         """Bump version based on version kind."""
+        if kind == 'epoch':
+            self.bump_epoch()
         if kind == 'major':
             self.bump_major()
         if kind == 'minor':
