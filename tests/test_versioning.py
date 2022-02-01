@@ -40,16 +40,16 @@ def test_devrelease_state():
 def test_prerelease():
     v = Version('2.0.0', enable_devreleases=False)
     assert v.state == 'final'
-    v.start_alpha(segment='major')
+    v.start_prerelease(segment='major')
     assert str(v) == '3.0.0a0'
     assert v.pre == ('a', 0)
     v.bump_release()
     assert str(v) == '3.0.0a1'
-    v.start_beta()
+    v.start_prerelease()
     assert str(v) == '3.0.0b0'
     v.bump_release()
     assert str(v) == '3.0.0b1'
-    v.start_release()
+    v.start_prerelease()
     assert str(v) == '3.0.0rc0'
     v.bump_release()
     assert str(v) == '3.0.0rc1'
@@ -58,11 +58,11 @@ def test_prerelease():
 def test_prerelease_states():
     v = Version('1.0.0', enable_devreleases=False)
     assert v.state == 'final'
-    v.start_alpha()
+    v.start_prerelease()
     assert v.state == 'alpha'
-    v.start_beta()
+    v.start_prerelease()
     assert v.state == 'beta'
-    v.start_release()
+    v.start_prerelease()
     assert v.state == 'release'
     v.finish_release()
     assert v.state == 'final'

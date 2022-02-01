@@ -49,7 +49,7 @@ class VersionConfig:
         # pre-releases
         self.transitions.append(
             dict(
-                trigger='start_alpha',
+                trigger='start_prerelease',
                 source=['development', 'final', 'post'],
                 dest='alpha',
                 before='_new_prerelease',
@@ -58,7 +58,7 @@ class VersionConfig:
         )
         self.transitions.append(
             dict(
-                trigger='start_beta',
+                trigger='start_prerelease',
                 source='alpha',
                 dest='beta',
                 before='_new_prerelease',
@@ -67,7 +67,7 @@ class VersionConfig:
         )
         self.transitions.append(
             dict(
-                trigger='start_release',
+                trigger='start_prerelease',
                 source='beta',
                 dest='release',
                 before='_new_prerelease',
@@ -93,15 +93,6 @@ class VersionConfig:
                 dest='post',
                 before='_new_postrelease',
                 conditions=['enable_postreleases'],
-            )
-        )
-
-        self.transitions.append(
-            dict(
-                trigger='bump_release',
-                source='*',
-                dest='=',
-                before='_bump_release',
             )
         )
 
@@ -154,6 +145,7 @@ class Version(PackageVersion):
             source='*',
             dest=self.default_release_type,
             before='_bump_micro',
+            # after='new_release',
         )
 
         self.machine.add_transition(
@@ -325,10 +317,10 @@ class Version(PackageVersion):
         if self.enable_devreleases and self.dev is not None:
             dev = self.dev + 1
             self.__update_version(dev=('dev', dev))
-        if self.enable_prereleases and self.pre is not None:
+        elif self.enable_prereleases and self.pre is not None:
             pre = (self.pre[0], self.pre[1] + 1)
             self.__update_version(pre=pre)
-        if self.enable_postreleases:
+        elif self.enable_postreleases:
             if self.release_type == 'final':
                 self.__update_version(post=('post', 0))
             elif self.post is not None:

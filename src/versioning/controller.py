@@ -217,12 +217,12 @@ class IntegrationController(CommitMessageParser):
 
         if self.config.version.enable_prereleases:
             log.info('found prerelease')
-            if self.release == 'alpha':
-                new_version.start_beta()  # type: ignore
-            if self.release == 'beta':
-                new_version.start_release()  # type: ignore
-            if self.release == 'release':
-                new_version.finish_release()  # type: ignore
+            if (
+                self.release == 'alpha'
+                or self.release == 'beta'
+                or self.release == 'release'
+            ):
+                new_version.start_prerelease()  # type: ignore
 
         if (
             self.release == 'final'
@@ -251,12 +251,12 @@ class IntegrationController(CommitMessageParser):
             # TODO: break, and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing vers
             if self.title['break'] or self.footer['breaking_change']:
-                new_version.bump_major()
+                new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
                 if self.title['type'] == 'feat':
-                    new_version.bump_minor()
+                    new_version.bump_minor()  # type: ignore
                 elif self.title['type'] == 'fix':
-                    new_version.bump_micro()
+                    new_version.bump_micro()  # type: ignore
                 elif self.title['type'] in self.config.parser.types:
                     # new_version = self.__bump_release(new_version)
                     new_version.bump_release()  # type: ignore
@@ -268,6 +268,6 @@ class IntegrationController(CommitMessageParser):
 
             # TODO: configure local version handling
             if build is not None:
-                new_version.new_local(build=build)
+                new_version.new_local(local=build)
             self.update_configs(new_version, **kwargs)
         return new_version
