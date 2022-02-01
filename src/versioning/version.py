@@ -12,7 +12,7 @@ from transitions import Machine
 
 
 @dataclass
-class VersionConfig:
+class ReleaseMachine:
     """Manage versioning flow."""
 
     initial: str
@@ -96,6 +96,16 @@ class VersionConfig:
             )
         )
 
+        # bump release number
+        self.transitions.append(
+            dict(
+                trigger='bump_release',
+                source='*',
+                dest='=',
+                before='_bump_release',
+            )
+        )
+
 
 class Version(PackageVersion):
     """Provide PEP440 compliant versioning."""
@@ -110,7 +120,7 @@ class Version(PackageVersion):
         self.enable_prereleases = kwargs.get('enable_prereleases', True)
         self.enable_postreleases = kwargs.get('enable_postreleases', True)
 
-        config = VersionConfig(
+        config = ReleaseMachine(
             initial=self.release_type,
             enable_devreleases=self.enable_devreleases,
             enable_prereleases=self.enable_prereleases,
@@ -146,13 +156,6 @@ class Version(PackageVersion):
             dest=self.default_release_type,
             before='_bump_micro',
             # after='new_release',
-        )
-
-        self.machine.add_transition(
-            trigger='bump_release',
-            source='*',
-            dest='=',
-            before='_bump_release',
         )
 
     def __str__(self) -> str:
