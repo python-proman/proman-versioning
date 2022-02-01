@@ -208,8 +208,6 @@ class IntegrationController(CommitMessageParser):
 
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
-        print(self.config.version.default_release_type)
-        print(self.config.version.enable_devreleases)
         new_version = deepcopy(self.config.version)
         if (
             ('type' in self.title and self.title['type'] == 'release')
