@@ -206,7 +206,7 @@ class IntegrationController(CommitMessageParser):
         else:
             raise PromanVersioningException('repository is not clean')
 
-    def bump_version(self, **kwargs: Any) -> Version:
+    def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.config.version)
         if (

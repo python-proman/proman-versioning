@@ -63,7 +63,7 @@ def test_proman_release_controller(fs):
         config_files=[VERSIONING_PATH, PYPROJECT_PATH],
     )
 
-    version = controller.bump_version(
+    version = controller.update_version(
         commit=False,
         tag=False,
         tag_name='version',

@@ -12,18 +12,14 @@ from transitions import Machine
 
 
 @dataclass
-class ReleaseMachine:
+class ReleaseConfig:
     """Manage versioning flow."""
 
-    initial: str
     default_release_type: InitVar[str]
     states: List[str] = field(default_factory=list)
     transitions: List[Dict[str, Any]] = field(default_factory=list)
 
-    def __post_init__(
-        self,
-        default_release_type: str,
-    ) -> None:
+    def __post_init__(self, default_release_type: str) -> None:
         """Initialize versioning config."""
         self.states = [
             'development', 'alpha', 'beta', 'release', 'final', 'post'
@@ -237,11 +233,12 @@ class Version(PackageVersion):
            'autostart_default_release', True
         )
 
-        config = ReleaseMachine(
-            initial=self.release_type,
+        config = ReleaseConfig(
             default_release_type=self.default_release_type,
         )
-        self.machine = Machine(self, **asdict(config))
+        self.machine = Machine(
+            self, **asdict(config), initial=self.release_type,
+        )
         self.machine.auto_transitions = False
 
     def __str__(self) -> str:

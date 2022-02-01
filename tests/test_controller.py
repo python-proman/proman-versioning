@@ -41,7 +41,7 @@ def test_create_devrelease(mock_file):
     )
     assert controller.config.version == Version('1.2.3')
 
-    controller.bump_version(
+    controller.update_version(
         commit=False,
         # release=release,
         # tag=tag,

@@ -28,7 +28,7 @@ def bump(
     build: Optional[str] = None,
     dry_run: bool = False,
 ) -> None:
-    """Manage project versions.
+    """Update project version.
 
     Parameters
     ----------
@@ -63,7 +63,7 @@ def bump(
     """
     # sign: bool
     #     Sign commit with PKI signature.
-    version = _controller.bump_version(
+    version = _controller.update_version(
         commit=commit,
         release=release,
         tag=tag,
@@ -83,7 +83,7 @@ def bump(
 
 
 def info(release: bool = False, filepaths: bool = False) -> None:
-    """Get the current version or settings of a project.
+    """Get current version project.
 
     Parameters
     ----------
