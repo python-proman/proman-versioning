@@ -29,42 +29,30 @@ class VersionConfig:
         enable_postreleases: bool,
     ) -> None:
         """Initialize versioning config."""
-        self.states = ['final']
-        if enable_devreleases:
-            self.states += ['development']
-        if enable_prereleases:
-            self.states += ['alpha', 'beta', 'release']
-        if enable_postreleases:
-            self.states += ['post']
+        self.states = [
+            'development', 'alpha', 'beta', 'release', 'final', 'post'
+        ]
 
         self.transitions = []
 
         # development releases
-        devrelease_sources = ['final']
-        if enable_postreleases:
-            devrelease_sources.append('post')
         self.transitions.append(
             dict(
                 trigger='start_devrelease',
-                source=devrelease_sources,
+                source=['final', 'post'],
                 dest='development',
-                before='new_devrelease',
+                before='_new_devrelease',
                 conditions=['enable_devreleases'],
             )
         )
 
         # pre-releases
-        prerelease_sources = ['final']
-        if enable_devreleases:
-            prerelease_sources.append('development')
-        if enable_postreleases:
-            prerelease_sources.append('post')
         self.transitions.append(
             dict(
                 trigger='start_alpha',
-                source=prerelease_sources,
+                source=['development', 'final', 'post'],
                 dest='alpha',
-                before='new_prerelease',
+                before='_new_prerelease',
                 conditions=['enable_prereleases'],
             )
         )
@@ -73,7 +61,7 @@ class VersionConfig:
                 trigger='start_beta',
                 source='alpha',
                 dest='beta',
-                before='new_prerelease',
+                before='_new_prerelease',
                 conditions=['enable_prereleases'],
             )
         )
@@ -82,26 +70,17 @@ class VersionConfig:
                 trigger='start_release',
                 source='beta',
                 dest='release',
-                before='new_prerelease',
+                before='_new_prerelease',
                 conditions=['enable_prereleases'],
             )
         )
 
         # final release
-        final_sources = []
-        if enable_prereleases:
-            final_sources.append('release')
-        elif enable_devreleases:
-            final_sources.append('development')
-        else:
-            final_sources.append('final')
-            if enable_postreleases:
-                final_sources.append('post')
         self.transitions.append(
              dict(
                  trigger='finish_release',
-                 source=final_sources,
-                 dest='final' if 'final' not in final_sources else None,
+                 source=['development', 'release', 'final', 'post'],
+                 dest='final',
                  before='finalize_release',
              )
         )
@@ -112,8 +91,17 @@ class VersionConfig:
                 trigger='start_postrelease',
                 source='final',
                 dest='post',
-                before='new_postrelease',
+                before='_new_postrelease',
                 conditions=['enable_postreleases'],
+            )
+        )
+
+        self.transitions.append(
+            dict(
+                trigger='bump_release',
+                source='*',
+                dest='=',
+                before='_bump_release',
             )
         )
 
@@ -138,11 +126,40 @@ class Version(PackageVersion):
             enable_postreleases=self.enable_postreleases,
         )
         self.machine = Machine(self, **asdict(config))
+        self.machine.auto_transitions = False
+
+        self.machine.add_transition(
+            trigger='bump_epoch',
+            source='*',
+            dest=self.default_release_type,
+            before='_bump_epoch',
+        )
+
+        self.machine.add_transition(
+            trigger='bump_major',
+            source='*',
+            dest=self.default_release_type,
+            before='_bump_major',
+        )
+
+        self.machine.add_transition(
+            trigger='bump_minor',
+            source='*',
+            dest=self.default_release_type,
+            before='_bump_minor',
+        )
+
+        self.machine.add_transition(
+            trigger='bump_micro',
+            source='*',
+            dest=self.default_release_type,
+            before='_bump_micro',
+        )
 
         self.machine.add_transition(
             trigger='bump_release',
             source='*',
-            dest=None,
+            dest='=',
             before='_bump_release',
         )
 
@@ -208,7 +225,7 @@ class Version(PackageVersion):
         return state
 
     @property
-    def initial_release_type(self) -> str:
+    def default_release_type(self) -> str:
         """Get the starting release type."""
         if self.enable_devreleases:
             return 'development'
@@ -276,36 +293,32 @@ class Version(PackageVersion):
             self._version.local,
         )
 
-    def bump_epoch(self) -> None:
+    def _bump_epoch(self) -> None:
         """Update epoch releaes for version system changes."""
         self.__update_version(epoch=self.epoch + 1)
-        self.machine.set_state(self.initial_release_type)
 
-    def bump_major(self) -> None:
+    def _bump_major(self) -> None:
         """Update major release to next version number."""
         self.__update_version(release=(self.major + 1, 0, 0))
-        self.machine.set_state(self.initial_release_type)
 
-    def bump_minor(self) -> None:
+    def _bump_minor(self) -> None:
         """Update minor release to next version number."""
         self.__update_version(release=(self.major, self.minor + 1, 0))
-        self.machine.set_state(self.initial_release_type)
 
-    def bump_micro(self) -> None:
+    def _bump_micro(self) -> None:
         """Update micro release to next version number."""
         self.__update_version(release=(self.major, self.minor, self.micro + 1))
-        self.machine.set_state(self.initial_release_type)
 
-    def __bump_version(self, kind: str) -> None:
+    def __bump_version(self, segment: str) -> None:
         """Bump version based on version kind."""
-        if kind == 'epoch':
-            self.bump_epoch()
-        if kind == 'major':
-            self.bump_major()
-        if kind == 'minor':
-            self.bump_minor()
-        if kind == 'micro':
-            self.bump_micro()
+        if segment == 'epoch':
+            self._bump_epoch()
+        if segment == 'major':
+            self._bump_major()
+        if segment == 'minor':
+            self._bump_minor()
+        if segment == 'micro':
+            self._bump_micro()
 
     def _bump_release(self, *args: Any, **kwargs: Any) -> None:
         """Update to the next development release version number."""
@@ -322,13 +335,13 @@ class Version(PackageVersion):
                 post = self.post + 1
                 self.__update_version(post=('post', post))
 
-    def new_devrelease(self, kind: str = 'minor') -> None:
+    def _new_devrelease(self, segment: Optional[str] = None) -> None:
         """Update to the next development release version number."""
         if self.dev is None:
-            self.__bump_version(kind)
+            self.__bump_version(segment or 'minor')
             self.__update_version(dev=('dev', 0))
 
-    def new_prerelease(self, kind: Optional[str] = None) -> None:
+    def _new_prerelease(self, segment: Optional[str] = None) -> None:
         """Update to next prerelease version type."""
         if self.pre is not None:
             if self.pre[0] == 'a':
@@ -336,21 +349,29 @@ class Version(PackageVersion):
             elif self.pre[0] == 'b':
                 pre = ('rc', 0)
         else:
-            if kind:
-                self.__bump_version(kind)
-            else:
-                self.finalize_release()
+            self.__bump_version(segment or 'minor')
             pre = ('a', 0)
         self.__update_version(pre=pre)
 
-    def new_postrelease(self) -> None:
+    def _new_postrelease(self) -> None:
         """Update the post release version number."""
         if self.release_type == 'final':
             self.__update_version(post=('post', 0))
 
-    def new_local(self, build: str = 'build-0') -> None:
+    def new_release(self, kind: str, segment: Optional[str] = None) -> None:
+        """Update the version release."""
+        if kind == 'dev':
+            self._new_devrelease(segment=segment)
+        if kind == 'prerelease':
+            self._new_prerelease(segment=segment)
+        if kind == 'final':
+            self.finalize_release()
+        if kind == 'post':
+            self._new_postrelease()
+
+    def new_local(self, local: str) -> None:
         """Create new local version instance number."""
-        self.__update_version(local=build)
+        self.__update_version(local=local)
 
     def finalize_release(self) -> None:
         """Update to next prerelease version type."""
