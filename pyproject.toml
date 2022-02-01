@@ -54,7 +54,7 @@ pytest = "^6.2.5"
 version = "versioning.__main__:main"
 
 [tool.proman.versioning]
-enable_devrelease = false
+enable_devreleases = false
 
 [[tool.proman.versioning.files]]
 filepath = "src/versioning/__init__.py"

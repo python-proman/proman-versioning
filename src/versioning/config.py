@@ -92,7 +92,7 @@ class ReleaseConfig:
     enable_prereleases: bool = True
     enable_postreleases: bool = True
 
-    def __post_init(self, config: Dict[str, Any]) -> None:
+    def __post_init__(self, config: Dict[str, Any]) -> None:
         """Load configuration for release operation."""
         if 'enable_devreleases' in config:
             self.enable_devreleases = config['enable_devreleases']

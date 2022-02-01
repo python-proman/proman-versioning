@@ -1,6 +1,6 @@
 # copyright: (c) 2021 by Jesse Johnson.
 # license: MPL-2.0, see LICENSE for more details.
-"""Convenience tools to manage project versioning."""
+"""Initialize versioning instances."""
 
 import logging
 from typing import Any, List
@@ -16,7 +16,7 @@ from versioning.version import Version  # noqa
 __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
-__description__ = 'Convenience tool to manage project versioning.'
+__description__ = 'Workflows to manage project versioning.'
 __version__ = '0.4.0a2'
 __license__ = 'MPL-2.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'

@@ -206,44 +206,16 @@ class IntegrationController(CommitMessageParser):
         else:
             raise PromanVersioningException('repository is not clean')
 
-    def start_release(self, new_version: Version, **kwargs: Any) -> Version:
-        """Start a release."""
-        if (
-            self.config.version.enable_devreleases
-            and self.release == 'development'
-        ):
-            log.info('found devrelease')
-            new_version.start_alpha()  # type: ignore
-
-        if self.config.version.enable_prereleases:
-            log.info('found prerelease')
-            if (
-                self.release == 'alpha'
-                or self.release == 'beta'
-                or self.release == 'release'
-            ):
-                new_version.start_prerelease()  # type: ignore
-
-        if (
-            self.release == 'final'
-            or (
-                self.config.version.enable_postreleases
-                and self.release == 'post'
-            )
-        ):
-            log.info(f"found {self.release} release")
-            new_version.start_devrelease()  # type: ignore
-
-        return new_version
-
     def bump_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
+        print(self.config.version.default_release_type)
+        print(self.config.version.enable_devreleases)
         new_version = deepcopy(self.config.version)
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
         ):
-            new_version = self.start_release(new_version, **kwargs)
+            new_version.start_release(segment='minor')  # type: ignore
             self.update_configs(new_version, **kwargs)
         else:
             build = kwargs.pop('build', None)

@@ -1,9 +1,11 @@
 # type: ignore
+"""Test versioning capability."""
+
 from versioning.version import Version
 
 
 def test_versioning():
-    v = Version('1.0.0')
+    v = Version('1.0.0', autostart_default_release=False)
     assert v.state == 'final'
     assert v.major == 1
     assert v.minor == 0
@@ -18,8 +20,9 @@ def test_versioning():
 
 def test_devrelease():
     v = Version('1.0.0', enable_prereleases=False)
+    assert v.default_release_type == 'development'
     assert v.enable_prereleases is False
-    v.start_devrelease()
+    v.start_release(segment='minor')
     assert v == Version('1.1.0.dev0')
     v.bump_release()
     assert str(v) == '1.1.0.dev1'
@@ -29,9 +32,10 @@ def test_devrelease():
 
 def test_devrelease_state():
     v = Version('1.0.0', enable_prereleases=False)
+    assert v.default_release_type == 'development'
     assert v.enable_prereleases is False
     assert v.state == 'final'
-    v.start_devrelease()
+    v.start_release()
     assert v.state == 'development'
     v.finish_release()
     assert v.state == 'final'
@@ -39,17 +43,18 @@ def test_devrelease_state():
 
 def test_prerelease():
     v = Version('2.0.0', enable_devreleases=False)
+    assert v.default_release_type == 'alpha'
     assert v.state == 'final'
-    v.start_prerelease(segment='major')
+    v.start_release(segment='major')
     assert str(v) == '3.0.0a0'
     assert v.pre == ('a', 0)
     v.bump_release()
     assert str(v) == '3.0.0a1'
-    v.start_prerelease()
+    v.start_release()
     assert str(v) == '3.0.0b0'
     v.bump_release()
     assert str(v) == '3.0.0b1'
-    v.start_prerelease()
+    v.start_release()
     assert str(v) == '3.0.0rc0'
     v.bump_release()
     assert str(v) == '3.0.0rc1'
@@ -57,19 +62,20 @@ def test_prerelease():
 
 def test_prerelease_states():
     v = Version('1.0.0', enable_devreleases=False)
+    assert v.default_release_type == 'alpha'
     assert v.state == 'final'
-    v.start_prerelease()
+    v.start_release()
     assert v.state == 'alpha'
-    v.start_prerelease()
+    v.start_release()
     assert v.state == 'beta'
-    v.start_prerelease()
+    v.start_release()
     assert v.state == 'release'
     v.finish_release()
     assert v.state == 'final'
 
 
 def test_post():
-    v = Version('2.0.0')
+    v = Version('2.0.0', autostart_default_release=True)
     assert v.state == 'final'
     v.start_postrelease()
     assert v.release == (2, 0, 0)
@@ -93,7 +99,7 @@ def test_post_state():
 
 
 def test_local():
-    v = Version('3.0.0+1234567')
+    v = Version('3.0.0+1234567', autostart_default_release=False)
     assert v.release == (3, 0, 0)
     assert v.pre is None
     assert v.post is None
@@ -124,13 +130,13 @@ def test_local_removed():
     v.state == 'final'
 
     # ensure local version is removed from development
-    v.start_devrelease()
+    v.start_release()
     v = Version('1.0.0.dev')
     assert v.state == 'development'
     assert v.local is None
 
     # ensure local version is removed from final
-    v = Version('1.0.0+build.0')
+    v = Version('1.0.0+build.0', autostart_default_release=True)
     v.bump_minor()
     assert v.state == 'development'
     assert v.local is None
