@@ -3,7 +3,7 @@
 """Provide configuration for versioning tools."""
 
 import os
-from dataclasses import InitVar, dataclass, field
+from dataclasses import InitVar, asdict, dataclass, field
 from typing import Any, Dict, List
 
 from compendium.config_manager import ConfigManager
@@ -91,6 +91,7 @@ class ReleaseConfig:
     enable_devreleases: bool = True
     enable_prereleases: bool = True
     enable_postreleases: bool = True
+    compat: str = 'pep440'
 
     def __post_init__(self, config: Dict[str, Any]) -> None:
         """Load configuration for release operation."""
@@ -100,6 +101,8 @@ class ReleaseConfig:
             self.enable_prereleases = config['enable_prereleases']
         if 'enable_postreleases' in config:
             self.enable_postreleases = config['enable_postreleases']
+        if 'compat' in config:
+            self.compat = config['compat']
 
 
 # @dataclass
@@ -156,9 +159,7 @@ class Config(ConfigManager):
                 'test',
             ]
             config['types'] = angular_convention
-
         self.parser = ParserConfig(config=config)
-        self.release = ReleaseConfig(config=config)
 
         config_version = self.lookup(
             '.proman.version',
@@ -168,10 +169,8 @@ class Config(ConfigManager):
         if config_version is None:
             raise PromanVersioningException('no version found in filepaths')
 
+        # TODO: use different version based on config
         self.version = Version(
             version=config_version,
-            enable_devreleases=self.release.enable_devreleases,
-            enable_prereleases=self.release.enable_prereleases,
-            enable_postreleases=self.release.enable_postreleases,
-            compat=config.get('compat', 'pep440'),
+            **asdict(ReleaseConfig(config=config)),
         )
