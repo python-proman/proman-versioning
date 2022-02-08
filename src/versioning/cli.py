@@ -18,12 +18,6 @@ def bump(
     tag: bool = False,
     tag_name: Optional[str] = None,
     # sign: bool = False,
-    push: bool = False,
-    remote: str = 'origin',
-    remote_branch: Optional[str] = None,
-    remote_url: Optional[str] = None,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
     release: bool = False,
     build: Optional[str] = None,
     dry_run: bool = False,
@@ -43,22 +37,10 @@ def bump(
         Notes included with the commit.
     release: bool
         Make this version a new release.
-    push: bool
-        Push changes to remote repository.
     tag: bool
         Tag this version.
     tag_name: str
         The tag name to use for this tag.
-    remote: str
-        The reference name of the repository.
-    remote_branch: str
-        The branch name of the remote reference.
-    remote_url: str
-        Remote URL of the repository.
-    username: str
-        Username for access to remote repository.
-    password: str
-        Password for access to remote repository.
 
     """
     # sign: bool
@@ -72,12 +54,6 @@ def bump(
         message=message,
         build=build,
         dry_run=dry_run,
-        push=push,
-        remote=remote,
-        remote_branch=remote_branch,
-        remote_url=remote_url,
-        username=username,
-        password=password,
     )
     print(str(version), file=sys.stdout)
 
@@ -100,3 +76,36 @@ def info(release: bool = False, filepaths: bool = False) -> None:
             print(x['filepath'], file=sys.stdout)
     if not release and not filepaths:
         print(_controller.config.version, file=sys.stdout)
+
+
+def push(
+    remote: str = 'origin',
+    remote_branch: Optional[str] = None,
+    remote_url: Optional[str] = None,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+) -> None:
+    """Push project version.
+
+    Parameters
+    ----------
+    remote: str
+        The reference name of the repository.
+    remote_branch: str
+        The branch name of the remote reference.
+    remote_url: str
+        Remote URL of the repository.
+    username: str
+        Username for access to remote repository.
+    password: str
+        Password for access to remote repository.
+
+    """
+    # INFO: Helper for when run from containers without git.
+    _controller.push_changes(
+        remote=remote,
+        remote_branch=remote_branch,
+        remote_url=remote_url,
+        username=username,
+        password=password,
+    )

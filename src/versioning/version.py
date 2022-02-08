@@ -4,11 +4,12 @@
 
 # import logging
 from dataclasses import InitVar, asdict, dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from packaging.version import Version as PackageVersion
 from packaging.version import _cmpkey, _parse_local_version, _Version
-from transitions.extensions import HierarchicalMachine
+from transitions import Machine
+# from transitions.extensions import HierarchicalMachine
 
 
 @dataclass
@@ -16,13 +17,19 @@ class ReleaseConfig:
     """Manage versioning flow."""
 
     default_release_type: InitVar[str]
-    states: List[str] = field(default_factory=list)
+    states: List[Union[str, Dict[str, Any]]] = field(default_factory=list)
     transitions: List[Dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self, default_release_type: str) -> None:
         """Initialize versioning config."""
         self.states = [
-            'dev', 'alpha', 'beta', 'candidate', 'final', 'post'
+            'development',
+            'alpha',
+            'beta',
+            'candidate',
+            'final',
+            'post',
+            'local'
         ]
 
         self.transitions = []
@@ -78,7 +85,6 @@ class ReleaseConfig:
                 source='*',
                 dest='final',
                 before='_bump_epoch',
-                # XXX: need to calver as alternative first
                 # unless=['autostart_default_release'],
             )
         )
@@ -118,13 +124,13 @@ class ReleaseConfig:
             dict(
                 trigger='start_release',
                 source=['final', 'post'],
-                dest='dev',
+                dest='development',
                 before='_new_devrelease',
                 conditions=['enable_devreleases'],
             )
         )
 
-        # prereleases
+        # pre-releases
         self.transitions.append(
             dict(
                 trigger='start_release',
@@ -138,7 +144,7 @@ class ReleaseConfig:
         self.transitions.append(
             dict(
                 trigger='start_release',
-                source=['dev'],
+                source=['development'],
                 dest='alpha',
                 before='_new_prerelease',
                 conditions=['enable_devreleases', 'enable_prereleases'],
@@ -162,26 +168,12 @@ class ReleaseConfig:
                 conditions=['enable_prereleases'],
             )
         )
-        # dev prerelease
-        self.transitions.append(
-            dict(
-                trigger='start_dev_prerelease',
-                source=['alpha', 'beta', 'candidate'],
-                dest=None,
-                before='_new_devrelease',
-                conditions=[
-                    'enable_devreleases',
-                    'enable_prereleases',
-                    # 'enable_dev_prereleases',
-                ],
-            )
-        )
 
         # final release
         self.transitions.append(
              dict(
                  trigger='finish_release',
-                 source=['dev'],
+                 source=['development'],
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_devreleases'],
@@ -251,7 +243,7 @@ class Version(PackageVersion):
         config = ReleaseConfig(
             default_release_type=self.default_release_type,
         )
-        self.machine = HierarchicalMachine(
+        self.machine = Machine(
             self, **asdict(config), initial=self.release_type,
         )
         self.machine.auto_transitions = False
@@ -303,7 +295,7 @@ class Version(PackageVersion):
     def release_type(self) -> str:
         """Get the current state of package release."""
         if self.is_devrelease:
-            state = 'dev'
+            state = 'development'
         elif self.is_prerelease and self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
@@ -321,7 +313,7 @@ class Version(PackageVersion):
     def default_release_type(self) -> str:
         """Get the starting release type."""
         if self.enable_devreleases:
-            return 'dev'
+            return 'development'
         elif self.enable_prereleases:
             return 'alpha'
         else:
@@ -445,7 +437,7 @@ class Version(PackageVersion):
     ) -> None:
         """Update the version release."""
         kind = kind or self.default_release_type
-        if self.enable_devreleases and kind == 'dev':
+        if self.enable_devreleases and kind == 'development':
             self._new_devrelease(segment=segment)
         if kind == 'alpha':
             self._new_prerelease(segment=segment)

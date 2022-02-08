@@ -177,28 +177,6 @@ class IntegrationController(CommitMessageParser):
                             dry_run=dry_run,
                         )
                         log.info(f"applying tag: {str(new_version)}")
-
-                    if kwargs.get('push', False):
-                        # TODO: should assemble remote somewhere else maybe
-                        remote = kwargs.pop('remote', 'origin')
-                        remote_branch = kwargs.pop('remote_branch', None)
-                        remote_url = kwargs.pop('remote_url', None)
-                        username = kwargs.pop('username', None)
-                        password = kwargs.pop('password', None)
-                        if remote_url is not None:
-                            self.vcs.add_remote(
-                                remote,
-                                remote_url,
-                                # username=username,
-                                # password=password,
-                            )
-                        self.vcs.push(
-                            branch='master',
-                            remote=remote,
-                            remote_branch=remote_branch,
-                            username=username,
-                            password=password,
-                        )
             else:
                 raise PromanVersioningException(
                     'no version update could be determined'
@@ -241,3 +219,26 @@ class IntegrationController(CommitMessageParser):
                 new_version.new_local(local=build)
             self.update_configs(new_version, **kwargs)
         return new_version
+
+    def push_changes(self, **kwargs: Any) -> None:
+        """Push changes to repository."""
+        remote = kwargs.pop('remote', 'origin')
+        remote_branch = kwargs.pop('remote_branch', None)
+        remote_url = kwargs.pop('remote_url', None)
+        username = kwargs.pop('username', None)
+        password = kwargs.pop('password', None)
+
+        if remote_url is not None:
+            self.vcs.add_remote(
+                remote,
+                remote_url,
+                # username=username,
+                # password=password,
+            )
+        self.vcs.push(
+            branch='master',
+            remote=remote,
+            remote_branch=remote_branch,
+            username=username,
+            password=password,
+        )
