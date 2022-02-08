@@ -4,6 +4,14 @@
 from versioning.version import Version
 
 
+def test_dev_prerelease():
+    v = Version('1.0.0a1')
+    v.start_dev_prerelease()
+    print(v)
+    # v.finish_dev_prerelease()
+    # print(v)
+
+
 def test_versioning():
     v = Version('1.0.0', autostart_default_release=False)
     assert v.state == 'final'
@@ -20,7 +28,7 @@ def test_versioning():
 
 def test_devrelease():
     v = Version('1.0.0', enable_prereleases=False)
-    assert v.default_release_type == 'development'
+    assert v.default_release_type == 'dev'
     assert v.enable_prereleases is False
     v.start_release(segment='minor')
     assert v == Version('1.1.0.dev0')
@@ -32,11 +40,11 @@ def test_devrelease():
 
 def test_devrelease_state():
     v = Version('1.0.0', enable_prereleases=False)
-    assert v.default_release_type == 'development'
+    assert v.default_release_type == 'dev'
     assert v.enable_prereleases is False
     assert v.state == 'final'
     v.start_release()
-    assert v.state == 'development'
+    assert v.state == 'dev'
     v.finish_release()
     assert v.state == 'final'
 
@@ -69,7 +77,7 @@ def test_prerelease_states():
     v.start_release()
     assert v.state == 'beta'
     v.start_release()
-    assert v.state == 'release'
+    assert v.state == 'candidate'
     v.finish_release()
     assert v.state == 'final'
 
@@ -87,7 +95,7 @@ def test_post():
     v.bump_release()
     assert v.state == 'post'
     v.bump_major()
-    assert v.state == 'development'
+    assert v.state == 'dev'
 
 
 def test_post_state():
@@ -132,20 +140,20 @@ def test_local_removed():
     # ensure local version is removed from development
     v.start_release()
     v = Version('1.0.0.dev')
-    assert v.state == 'development'
+    assert v.state == 'dev'
     assert v.local is None
 
     # ensure local version is removed from final
     v = Version('1.0.0+build.0', autostart_default_release=True)
     v.bump_minor()
-    assert v.state == 'development'
+    assert v.state == 'dev'
     assert v.local is None
 
 
 def test_mixed():
     # TODO: getting warning due to both
     v = Version('5.0.0-rc5+build254')
-    assert v.state == 'release'
+    assert v.state == 'candidate'
     assert v.local == 'build254'
 
 

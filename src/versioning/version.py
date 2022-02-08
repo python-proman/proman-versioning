@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from packaging.version import Version as PackageVersion
 from packaging.version import _cmpkey, _parse_local_version, _Version
-from transitions import Machine
+from transitions.extensions import HierarchicalMachine
 
 
 @dataclass
@@ -22,7 +22,7 @@ class ReleaseConfig:
     def __post_init__(self, default_release_type: str) -> None:
         """Initialize versioning config."""
         self.states = [
-            'development', 'alpha', 'beta', 'release', 'final', 'post'
+            'dev', 'alpha', 'beta', 'candidate', 'final', 'post'
         ]
 
         self.transitions = []
@@ -78,6 +78,7 @@ class ReleaseConfig:
                 source='*',
                 dest='final',
                 before='_bump_epoch',
+                # XXX: need to calver as alternative first
                 # unless=['autostart_default_release'],
             )
         )
@@ -117,13 +118,13 @@ class ReleaseConfig:
             dict(
                 trigger='start_release',
                 source=['final', 'post'],
-                dest='development',
+                dest='dev',
                 before='_new_devrelease',
                 conditions=['enable_devreleases'],
             )
         )
 
-        # pre-releases
+        # prereleases
         self.transitions.append(
             dict(
                 trigger='start_release',
@@ -137,7 +138,7 @@ class ReleaseConfig:
         self.transitions.append(
             dict(
                 trigger='start_release',
-                source=['development'],
+                source=['dev'],
                 dest='alpha',
                 before='_new_prerelease',
                 conditions=['enable_devreleases', 'enable_prereleases'],
@@ -156,9 +157,23 @@ class ReleaseConfig:
             dict(
                 trigger='start_release',
                 source='beta',
-                dest='release',
+                dest='candidate',
                 before='_new_prerelease',
                 conditions=['enable_prereleases'],
+            )
+        )
+        # dev prerelease
+        self.transitions.append(
+            dict(
+                trigger='start_dev_prerelease',
+                source=['alpha', 'beta', 'candidate'],
+                dest=None,
+                before='_new_devrelease',
+                conditions=[
+                    'enable_devreleases',
+                    'enable_prereleases',
+                    # 'enable_dev_prereleases',
+                ],
             )
         )
 
@@ -166,7 +181,7 @@ class ReleaseConfig:
         self.transitions.append(
              dict(
                  trigger='finish_release',
-                 source=['development'],
+                 source=['dev'],
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_devreleases'],
@@ -177,7 +192,7 @@ class ReleaseConfig:
         self.transitions.append(
              dict(
                  trigger='finish_release',
-                 source=['release'],
+                 source=['candidate'],
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_prereleases'],
@@ -236,7 +251,7 @@ class Version(PackageVersion):
         config = ReleaseConfig(
             default_release_type=self.default_release_type,
         )
-        self.machine = Machine(
+        self.machine = HierarchicalMachine(
             self, **asdict(config), initial=self.release_type,
         )
         self.machine.auto_transitions = False
@@ -288,14 +303,14 @@ class Version(PackageVersion):
     def release_type(self) -> str:
         """Get the current state of package release."""
         if self.is_devrelease:
-            state = 'development'
+            state = 'dev'
         elif self.is_prerelease and self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
             elif self.pre[0] == 'b':
                 return 'beta'
             elif self.pre[0] == 'rc':
-                return 'release'
+                return 'candidate'
         elif self.is_postrelease:
             state = 'post'
         else:
@@ -306,7 +321,7 @@ class Version(PackageVersion):
     def default_release_type(self) -> str:
         """Get the starting release type."""
         if self.enable_devreleases:
-            return 'development'
+            return 'dev'
         elif self.enable_prereleases:
             return 'alpha'
         else:
@@ -430,7 +445,7 @@ class Version(PackageVersion):
     ) -> None:
         """Update the version release."""
         kind = kind or self.default_release_type
-        if self.enable_devreleases and kind == 'development':
+        if self.enable_devreleases and kind == 'dev':
             self._new_devrelease(segment=segment)
         if kind == 'alpha':
             self._new_prerelease(segment=segment)
