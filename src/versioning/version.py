@@ -23,13 +23,7 @@ class ReleaseConfig:
     def __post_init__(self, default_release_type: str) -> None:
         """Initialize versioning config."""
         self.states = [
-            'development',
-            'alpha',
-            'beta',
-            'candidate',
-            'final',
-            'post',
-            'local'
+            'dev', 'alpha', 'beta', 'candidate', 'final', 'post'
         ]
 
         self.transitions = []
@@ -124,7 +118,7 @@ class ReleaseConfig:
             dict(
                 trigger='start_release',
                 source=['final', 'post'],
-                dest='development',
+                dest='dev',
                 before='_new_devrelease',
                 conditions=['enable_devreleases'],
             )
@@ -144,7 +138,7 @@ class ReleaseConfig:
         self.transitions.append(
             dict(
                 trigger='start_release',
-                source=['development'],
+                source=['dev'],
                 dest='alpha',
                 before='_new_prerelease',
                 conditions=['enable_devreleases', 'enable_prereleases'],
@@ -173,7 +167,7 @@ class ReleaseConfig:
         self.transitions.append(
              dict(
                  trigger='finish_release',
-                 source=['development'],
+                 source=['dev'],
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_devreleases'],
@@ -295,7 +289,7 @@ class Version(PackageVersion):
     def release_type(self) -> str:
         """Get the current state of package release."""
         if self.is_devrelease:
-            state = 'development'
+            state = 'dev'
         elif self.is_prerelease and self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
@@ -313,7 +307,7 @@ class Version(PackageVersion):
     def default_release_type(self) -> str:
         """Get the starting release type."""
         if self.enable_devreleases:
-            return 'development'
+            return 'dev'
         elif self.enable_prereleases:
             return 'alpha'
         else:
@@ -437,7 +431,7 @@ class Version(PackageVersion):
     ) -> None:
         """Update the version release."""
         kind = kind or self.default_release_type
-        if self.enable_devreleases and kind == 'development':
+        if self.enable_devreleases and kind == 'dev':
             self._new_devrelease(segment=segment)
         if kind == 'alpha':
             self._new_prerelease(segment=segment)
