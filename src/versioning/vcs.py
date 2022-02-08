@@ -128,12 +128,14 @@ class Git:
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)
+        # print(commit)
 
         # XXX: regression from GitPython, signature not available here
-        signature = kwargs.get('signature', commit.signature)
+        # tagger = pygit2.Signature("Alice Doe", "adoe@example.com", 12347, 0)
+        tagger = kwargs.get('signature', None)  # commit.signature)
         message = kwargs.get('message', f"ci: {name}")
         if not kwargs.get('dry_run', False):
-            tag = self.repo.create_tag(name, oid, kind, signature, message)
+            tag = self.repo.create_tag(name, oid, kind, tagger, message)
             return tag
         # TODO: should a mock tag be created?
         return None
