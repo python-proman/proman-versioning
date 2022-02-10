@@ -130,9 +130,7 @@ class Git:
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)
         # print(commit)
 
-        # XXX: regression from GitPython, signature not available here
-        # tagger = pygit2.Signature("Alice Doe", "adoe@example.com", 12347, 0)
-        tagger = kwargs.get('signature', None)  # commit.signature)
+        tagger = Signature(self.username, self.email)
         message = kwargs.get('message', f"ci: {name}")
         if not kwargs.get('dry_run', False):
             tag = self.repo.create_tag(name, oid, kind, tagger, message)
