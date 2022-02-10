@@ -133,6 +133,7 @@ class Git:
         tagger = Signature(self.username, self.email)
         message = kwargs.get('message', f"ci: {name}")
         if not kwargs.get('dry_run', False):
+            print(name, oid, kind, tagger, message)
             tag = self.repo.create_tag(name, oid, kind, tagger, message)
             return tag
         # TODO: should a mock tag be created?
