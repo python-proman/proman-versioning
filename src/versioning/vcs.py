@@ -128,13 +128,14 @@ class Git:
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)
-        # print(commit)
 
+        # tagger = pygit2.Signature("Alice Doe", "adoe@example.com", 12347, 0)
         tagger = Signature(self.username, self.email)
-        message = kwargs.get('message', f"ci: {name}")
+        message = kwargs.get('message')
         if not kwargs.get('dry_run', False):
-            print(name, oid, kind, tagger, message)
-            tag = self.repo.create_tag(name, oid, kind, tagger, message)
+            tag = self.repo.create_tag(
+                name, oid, kind, tagger, message or f"ci: {name}"
+            )
             return tag
         # TODO: should a mock tag be created?
         return None
