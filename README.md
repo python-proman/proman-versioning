@@ -74,6 +74,14 @@ pattern = "version = \"${version}\""
 [[proman.versioning.files]]
 filepath = "example/__init__.py"
 pattern = "__version__ = '${version}'"
+
+[[tool.proman.versioning.files]]
+filepath = "chart/Chart.yaml"
+compat = "semver"
+patterns = [
+  "version = \"${version}\"",
+  "appVersion = \"${version}\""
+]
 ```
 
 #### Example `pyproject.toml`
@@ -91,6 +99,14 @@ pattern = "version = \"${version}\""
 [[tool.proman.versioning.files]]
 filepath = "example/__init__.py"
 pattern = "__version__ = '${version}'"
+
+[[tool.proman.versioning.files]]
+filepath = "chart/Chart.yaml"
+compat = "semver"
+patterns = [
+  "version = \"${version}\"",
+  "appVersion = \"${version}\""
+]
 ```
 
 #### Example `setup.cfg`
