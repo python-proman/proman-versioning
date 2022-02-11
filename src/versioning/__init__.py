@@ -1,5 +1,5 @@
 # copyright: (c) 2021 by Jesse Johnson.
-# license: MPL-2.0, see LICENSE for more details.
+# license: LGPL-3.0, see LICENSE.md for more details.
 """Initialize versioning instances."""
 
 import logging
@@ -18,7 +18,7 @@ __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
 __description__ = 'Workflows to manage project versioning.'
 __version__ = '0.4.3a0'
-__license__ = 'MPL-2.0'
+__license__ = 'LGPL-3.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 __all__ = (
     'IntegrationController',

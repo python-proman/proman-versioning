@@ -1,5 +1,5 @@
 # copyright: (c) 2021 by Jesse Johnson.
-# license: MPL-2.0, see LICENSE for more details.
+# license: LGPL-3.0, see LICENSE.md for more details.
 """Coordinate actions from commit messages."""
 
 import logging

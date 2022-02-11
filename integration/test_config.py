@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: (c) 2020 by Jesse Johnson.
-# license: MPL-2.0, see LICENSE for more details.
+# license: LGPL-3.0, see LICENSE.md for more details.
 # type: ignore
 """Test configuration file."""
 
