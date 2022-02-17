@@ -116,7 +116,7 @@ def test_local_state():
     assert v1.local == 'build.0'
     assert v1.state == 'final'
 
-    v.new_local('4321')
+    v._new_local('4321')
     assert v == Version('1.0.0+4321')
     assert v.local == '4321'
     assert v.state == 'final'

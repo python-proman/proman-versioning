@@ -216,7 +216,7 @@ class IntegrationController(CommitMessageParser):
 
             # TODO: configure local version handling
             if build is not None:
-                new_version.new_local(local=build)
+                new_version._new_local(local=build)
             self.update_configs(new_version, **kwargs)
         return new_version
 

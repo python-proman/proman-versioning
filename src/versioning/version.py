@@ -209,7 +209,7 @@ class ReleaseConfig:
                  trigger='start_release',
                  source='dev',
                  dest='final',
-                 before='finalize_release',
+                 before='_finalize_release',
                  conditions=['enable_devreleases'],
                  unless=['enable_prereleases'],
              )
@@ -220,7 +220,7 @@ class ReleaseConfig:
                  trigger='start_release',
                  source='candidate',
                  dest='final',
-                 before='finalize_release',
+                 before='_finalize_release',
                  conditions=['enable_prereleases'],
              )
         )
@@ -229,7 +229,7 @@ class ReleaseConfig:
                  trigger='start_release',
                  source='post',
                  dest='final',
-                 before='finalize_release',
+                 before='_finalize_release',
                  conditions=['enable_postreleases'],
                  unless=['enable_devreleases', 'enable_prereleases'],
              )
@@ -483,7 +483,7 @@ class Version(PackageVersion):
         if kind == 'alpha':
             self._new_prerelease(segment=segment)
         if kind == 'final':
-            self.finalize_release()
+            self._finalize_release()
 
     def _bump_release(self, *args: Any, **kwargs: Any) -> None:
         """Update to the next development release version number."""
@@ -500,11 +500,10 @@ class Version(PackageVersion):
                 post = self.post + 1
                 self.__update_version(post=('post', post))
 
-    def new_local(self, local: str) -> None:
+    def _new_local(self, local: str) -> None:
         """Create new local version instance number."""
         self.__update_version(local=local)
 
-    def finalize_release(self) -> None:
+    def _finalize_release(self, segment: Optional[str] = None) -> None:
         """Update to next prerelease version type."""
-        if self.is_devrelease or self.is_prerelease:
-            self.__update_version(release=(self.major, self.minor, self.micro))
+        self.__update_version(release=(self.major, self.minor, self.micro))
