@@ -98,7 +98,6 @@ class IntegrationController(CommitMessageParser):
             version.compat = config['compat']
             new_version.compat = config['compat']
 
-        pattern = config['pattern']
         filepath = os.path.join(
             self.vcs.working_dir, config['filepath']
         )
@@ -107,20 +106,24 @@ class IntegrationController(CommitMessageParser):
         with open(filepath, 'r+') as f:
             file_contents = f.read()
 
-            # prepare source expression match pattern
-            template = Template(pattern).substitute(version=version.query)
-            match = re.compile(
-                # XXX: escape not compiling correctly
-                template,  # re.escape(template),
-                flags=0,
-            )
-            log.debug(f"using pattern for source version {match}")
+            if 'patterns' in config:
+                patterns = config['patterns']
+            else:
+                patterns = [config['pattern']]
+            for pattern in patterns:
+                template = Template(pattern).substitute(version=version.query)
+                match = re.compile(
+                    # XXX: escape not compiling correctly
+                    template,  # re.escape(template),
+                    flags=0,
+                )
+                log.debug(f"using pattern for source version {match}")
 
-            # substitute the expression in file
-            file_contents = match.sub(
-                Template(pattern).substitute(version=str(new_version)),
-                file_contents,
-            )
+                # substitute the expression in file
+                file_contents = match.sub(
+                    Template(pattern).substitute(version=str(new_version)),
+                    file_contents,
+                )
 
             if not dry_run:
                 # save the file
@@ -196,8 +199,9 @@ class IntegrationController(CommitMessageParser):
         else:
             build = kwargs.pop('build', None)
 
-            # TODO: break, and feat should start devrelease from final or post
-            # local number depends on metadata / fork / conflict existing vers
+            # TODO: break and feat should start devrelease from final
+            # or post local number depends on metadata / fork / con-
+            # flict existing versions
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
@@ -229,6 +233,8 @@ class IntegrationController(CommitMessageParser):
         password = kwargs.pop('password', None)
 
         if remote_url is not None:
+            # TODO: feels like it would be smarter to encapsulate
+            # credentials with a remote.
             self.vcs.add_remote(
                 remote,
                 remote_url,

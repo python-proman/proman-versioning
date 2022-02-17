@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # type: ignore
 """Test git hooks pipeline."""
 
@@ -20,7 +19,16 @@ config = Config(
                         'filepath': 'pyproject.toml',
                         'pattern': 'version = "${version}"'
                     },
+                    {
+                        'filepath': 'chart/Chart.yaml',
+                        'compat': 'semver',
+                        'patterns': [
+                           'version: "${version}"',
+                           'appVersion: "${version}"'
+                        ]
+                    },
                 ],
+
             },
         }
     }
