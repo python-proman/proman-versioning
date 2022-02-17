@@ -67,7 +67,7 @@ version = "1.2.3"
 [proman.versioning]
 disable_devreleases = true
 
-[[tool.proman.versioning.files]]
+[[proman.versioning.files]]
 filepath = "pyproject.toml"
 pattern = "version = \"${version}\""
 

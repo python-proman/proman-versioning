@@ -26,7 +26,7 @@ def test_devrelease():
     assert v == Version('1.1.0.dev0')
     v.bump_release()
     assert str(v) == '1.1.0.dev1'
-    v.finish_release()
+    v.start_release()
     assert str(v) == '1.1.0'
 
 
@@ -37,7 +37,7 @@ def test_devrelease_state():
     assert v.state == 'final'
     v.start_release()
     assert v.state == 'dev'
-    v.finish_release()
+    v.start_release()
     assert v.state == 'final'
 
 
@@ -70,7 +70,7 @@ def test_prerelease_states():
     assert v.state == 'beta'
     v.start_release()
     assert v.state == 'candidate'
-    v.finish_release()
+    v.start_release()
     assert v.state == 'final'
 
 

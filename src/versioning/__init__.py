@@ -32,6 +32,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
     """Get source tree from path."""
+    print(config_files)
     try:
         config = Config(filepaths=config_files)
         return config

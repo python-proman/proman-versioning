@@ -13,6 +13,48 @@ from transitions import Machine
 
 
 @dataclass
+class LocalConfig:
+    """Manage local build versions."""
+
+    states: List[Union[str, Dict[str, Any]]] = field(default_factory=list)
+    transitions: List[Dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        """Initialize local version configuration."""
+        self.states = ['non_local', 'local']
+
+        # add build number
+        self.transitions.append(
+            dict(
+                trigger='update_local',
+                source='non_local',
+                dest='local',
+                before='_update_local',
+            )
+        )
+
+        # update build number
+        self.transitions.append(
+            dict(
+                trigger='update_local',
+                source='local_local',
+                dest='=',
+                before='_update_local',
+            )
+        )
+
+        # remove build number
+        self.transitions.append(
+            dict(
+                trigger='update_local',
+                source='local',
+                dest='non_local',
+                before='_update_local',
+            )
+        )
+
+
+@dataclass
 class ReleaseConfig:
     """Manage versioning flow."""
 
@@ -25,8 +67,6 @@ class ReleaseConfig:
         self.states = [
             'dev', 'alpha', 'beta', 'candidate', 'final', 'post'
         ]
-
-        self.transitions = []
 
         # XXX: need to calver as alternative first
         # self.transitions.append(
@@ -138,7 +178,7 @@ class ReleaseConfig:
         self.transitions.append(
             dict(
                 trigger='start_release',
-                source=['dev'],
+                source='dev',
                 dest='alpha',
                 before='_new_prerelease',
                 conditions=['enable_devreleases', 'enable_prereleases'],
@@ -166,8 +206,8 @@ class ReleaseConfig:
         # final release
         self.transitions.append(
              dict(
-                 trigger='finish_release',
-                 source=['dev'],
+                 trigger='start_release',
+                 source='dev',
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_devreleases'],
@@ -177,8 +217,8 @@ class ReleaseConfig:
 
         self.transitions.append(
              dict(
-                 trigger='finish_release',
-                 source=['candidate'],
+                 trigger='start_release',
+                 source='candidate',
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_prereleases'],
@@ -186,8 +226,8 @@ class ReleaseConfig:
         )
         self.transitions.append(
              dict(
-                 trigger='finish_release',
-                 source=['post'],
+                 trigger='start_release',
+                 source='post',
                  dest='final',
                  before='finalize_release',
                  conditions=['enable_postreleases'],
@@ -234,12 +274,19 @@ class Version(PackageVersion):
            'autostart_default_release', True
         )
 
-        config = ReleaseConfig(
+        _release = ReleaseConfig(
             default_release_type=self.default_release_type,
         )
         self.machine = Machine(
-            self, **asdict(config), initial=self.release_type,
+            self, **asdict(_release), initial=self.release_type,
         )
+        self.local_machine = Machine(
+            self,
+            **asdict(LocalConfig()),
+            initial='local' if self.local else 'non_local',
+            model_attribute='build',
+        )
+
         self.machine.auto_transitions = False
 
     def __str__(self) -> str:
