@@ -5,6 +5,7 @@ from versioning.version import Version
 
 
 def test_versioning():
+    """Test capability to bump versions."""
     v = Version('1.0.0', autostart_default_release=False)
     assert v.state == 'final'
     assert v.major == 1
@@ -19,6 +20,7 @@ def test_versioning():
 
 
 def test_devrelease():
+    """Test development releases."""
     v = Version('1.0.0', enable_prereleases=False)
     assert v.default_release_type == 'dev'
     assert v.enable_prereleases is False
@@ -31,6 +33,7 @@ def test_devrelease():
 
 
 def test_devrelease_state():
+    """Test development release state."""
     v = Version('1.0.0', enable_prereleases=False)
     assert v.default_release_type == 'dev'
     assert v.enable_prereleases is False
@@ -42,6 +45,7 @@ def test_devrelease_state():
 
 
 def test_prerelease():
+    """Test pre-releases."""
     v = Version('2.0.0', enable_devreleases=False)
     assert v.default_release_type == 'alpha'
     assert v.state == 'final'
@@ -61,6 +65,7 @@ def test_prerelease():
 
 
 def test_prerelease_states():
+    """Test pre-release states."""
     v = Version('1.0.0', enable_devreleases=False)
     assert v.default_release_type == 'alpha'
     assert v.state == 'final'
@@ -75,6 +80,7 @@ def test_prerelease_states():
 
 
 def test_post():
+    """Test post-release version bump."""
     v = Version('2.0.0', autostart_default_release=True)
     assert v.state == 'final'
     v.start_postrelease()
@@ -91,6 +97,7 @@ def test_post():
 
 
 def test_post_state():
+    """Test post-release state."""
     v = Version('2.0.0')
     assert v.state == 'final'
 
@@ -99,6 +106,7 @@ def test_post_state():
 
 
 def test_local():
+    """Test local version update."""
     v = Version('3.0.0+1234567', autostart_default_release=False)
     assert v.release == (3, 0, 0)
     assert v.pre is None
@@ -109,6 +117,7 @@ def test_local():
 
 
 def test_local_state():
+    """Test local version state."""
     v = Version('1.0.0')
     assert v.state == 'final'
 
@@ -125,6 +134,7 @@ def test_local_state():
 
 
 def test_local_removed():
+    """Test removal of local version."""
     v = Version('1.0.0+build.0')
     assert v.local == 'build.0'
     v.state == 'final'
@@ -143,6 +153,7 @@ def test_local_removed():
 
 
 def test_mixed():
+    """Test mixed versions."""
     # TODO: getting warning due to both
     v = Version('5.0.0-rc5+build254')
     assert v.state == 'candidate'
@@ -150,6 +161,7 @@ def test_mixed():
 
 
 def test_epoch():
+    """Test epoch version bump."""
     v = Version('1!6.0.0')
     assert v.state == 'final'
     assert v.epoch == 1

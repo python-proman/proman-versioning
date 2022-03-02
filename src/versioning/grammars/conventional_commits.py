@@ -40,10 +40,7 @@ class CommitMessageParser:
         """Get commit message section."""
         for arg in self.__tree.children:
             # NOTE: will not have parse tree for non-match
-            if (
-                hasattr(arg, '__dict__')
-                and vars(arg)['data'] == name
-            ):
+            if hasattr(arg, '__dict__') and vars(arg)['data'] == name:
                 return arg
         return None
 

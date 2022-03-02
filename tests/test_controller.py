@@ -41,6 +41,7 @@ config = Config(
     read_data='version = "1.2.3"'
 )
 def test_create_devrelease(mock_file):
+    """Test development release creation."""
     working_dir = os.path.join(os.sep, 'mock', '.git')
     controller = IntegrationController(
         repo=Git(Mock(path=working_dir, head={'name': 'mock'})),
