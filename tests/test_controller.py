@@ -17,36 +17,31 @@ config = Config(
                 'files': [
                     {
                         'filepath': 'pyproject.toml',
-                        'pattern': 'version = "${version}"'
+                        'pattern': 'version = "${version}"',
                     },
                     {
                         'filepath': 'chart/Chart.yaml',
                         'compat': 'semver',
                         'patterns': [
-                           'version: "${version}"',
-                           'appVersion: "${version}"'
-                        ]
+                            'version: "${version}"',
+                            'appVersion: "${version}"',
+                        ],
                     },
                 ],
-
             },
         }
-    }
+    },
 )
 
 
-@patch(
-    'builtins.open',
-    new_callable=mock_open,
-    read_data='version = "1.2.3"'
-)
+@patch('builtins.open', new_callable=mock_open, read_data='version = "1.2.3"')
 def test_create_devrelease(mock_file):
     """Test development release creation."""
     working_dir = os.path.join(os.sep, 'mock', '.git')
     controller = IntegrationController(
         repo=Git(Mock(path=working_dir, head={'name': 'mock'})),
         config=config,
-        message='release: create devrelease'
+        message='release: create devrelease',
     )
     assert controller.config.version == Version('1.2.3')
 

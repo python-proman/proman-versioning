@@ -53,9 +53,7 @@ def test_proman_release_controller(fs):
     fs.add_real_file(PYPROJECT_PATH, False)
 
     repo_dir = os.path.abspath(
-        os.path.join(
-            os.path.relpath(os.path.dirname(__file__)), '.gittest'
-        )
+        os.path.join(os.path.relpath(os.path.dirname(__file__)), '.gittest')
     )
 
     controller = get_release_controller(
