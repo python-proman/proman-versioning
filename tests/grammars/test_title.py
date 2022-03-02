@@ -5,6 +5,7 @@ from versioning.grammars.conventional_commits import CommitMessageParser
 
 
 def test_title_description():
+    """Test title description."""
     parser = CommitMessageParser()
     parser.parse('test')
     assert parser.title['type'] is None
@@ -12,6 +13,7 @@ def test_title_description():
 
 
 def test_title():
+    """Test title."""
     parser = CommitMessageParser()
     parser.parse('fix: test')
     assert parser.title['type'] == 'fix'
@@ -19,6 +21,7 @@ def test_title():
 
 
 def test_title_emoji():
+    """Test title emoji."""
     parser = CommitMessageParser()
     parser.parse(':sparkles:: this is a feature')
     assert parser.title['type'] == 'sparkles'
@@ -27,6 +30,7 @@ def test_title_emoji():
 
 
 def test_title_scope():
+    """Test title scope."""
     parser = CommitMessageParser()
     parser.parse('feat(ui): test')
     assert parser.title['type'] == 'feat'
@@ -35,6 +39,7 @@ def test_title_scope():
 
 
 def test_title_breaking_change():
+    """test title breaking change."""
     parser = CommitMessageParser()
     parser.parse('refactor!: test')
     assert parser.title['type'] == 'refactor'
@@ -43,6 +48,7 @@ def test_title_breaking_change():
 
 
 def test_title_git_merge_description():
+    """Test title git merge description."""
     parser = CommitMessageParser()
     parser.parse(
         'Merge branch \'master\' of https://example.com'
