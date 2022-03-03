@@ -7,7 +7,7 @@ on:
     branches: [master]
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
@@ -24,17 +24,17 @@ jobs:
           poetry install
       - name: Lint
         run: |
-          poetry run inv qa.style --check
-          poetry run inv qa.lint
+          poetry run invoke qa.style --check
+          poetry run invoke qa.lint
       - name: Perform tests
         run: |
-          poetry run inv qa.unit-test
-          poetry run inv qa.static-analysis
+          poetry run invoke qa.unit-test
+          poetry run invoke qa.static-analysis
       - name: Lint documentation
         run: |
-          poetry run inv doc.lint
-          poetry run inv doc.test
+          poetry run invoke doc.lint
+          poetry run invoke doc.test
       - name: Perform documentation tests
         run: |
-          poetry run inv doc.coverage
-          poetry run inv doc.build
+          poetry run invoke doc.coverage
+          poetry run invoke doc.build
