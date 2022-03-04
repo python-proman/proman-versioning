@@ -1,23 +1,22 @@
 """Manage changelog using pygit2."""
 
 import logging
-import os
 import re
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set  # noqa
+from typing import TYPE_CHECKING, Dict, List
 
 from mdutils.mdutils import MdUtils
-from pygit2 import discover_repository, Repository
-from versioning import get_release_controller
 from versioning.grammars.conventional_commits import CommitMessageParser
+
+if TYPE_CHECKING:
+    from pygit2 import Repository
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 SCOPES = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
-_controller = get_release_controller()
 
 
-def generate_changelog() -> None:
+def generate_changelog(repo: 'Repository') -> None:
     """Provide main function."""
     # TODO: stopgap changelog solution
     md = MdUtils(
@@ -25,10 +24,6 @@ def generate_changelog() -> None:
         title='Changelog',
         author='Jesse P. Johnson'
     )
-
-    repo = Repository(discover_repository(os.getcwd()))
-    # print(list(repo.references))
-
     md.new_header(
         level=1,
         title='ProMan Versioning Changelog'
@@ -37,15 +32,15 @@ def generate_changelog() -> None:
     # iterate tags and add each commit since preious tag to a section
     regex = re.compile('^refs/tags/')
     tags = [r for r in repo.references if regex.match(r)]
-    # previous_tag = None
     for tag in reversed(tags):
         obj = repo.revparse_single(tag)
-        baseurl = 'https://gitlab.mgmt.hijynx.io/primistek/changelog'
-        url = f"{baseurl}/-/tree/{obj.name}/"
+        # baseurl = 'https://gitlab.mgmt.hijynx.io/primistek/changelog'
+        # url = f"{baseurl}/-/tree/{obj.name}/"
         dt = datetime.fromtimestamp(obj.tagger.time)
         md.new_header(
             level=2,
-            title=f"[v{obj.name}]({url}) - ({dt.strftime('%Y-%m-%d')})"
+            # title=f"[v{obj.name}]({url}) - ({dt.strftime('%Y-%m-%d')})"
+            title=f"v{obj.name} - ({dt.strftime('%Y-%m-%d')})"
         )
 
         parser = CommitMessageParser()
@@ -99,8 +94,4 @@ def generate_changelog() -> None:
                     text=sections + v,
                     text_align='left',
                 )
-        # print('type', obj.type_str)
-        # print('hash', obj.hex)
-        # previous_tag = tag
-        # print('previous tag:', previous_tag)
     md.create_md_file()
