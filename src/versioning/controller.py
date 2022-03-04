@@ -124,6 +124,7 @@ class IntegrationController(CommitMessageParser):
             )
 
             if not dry_run:
+                generate_changelog(self.vcs.repo)
                 # save the file
                 try:
                     f.seek(0)
@@ -156,8 +157,6 @@ class IntegrationController(CommitMessageParser):
                 make_commit = kwargs.pop('commit', True)
                 make_tag = kwargs.pop('tag', False)
                 if make_commit or make_tag:
-                    generate_changelog(self.vcs.repo)
-
                     # TODO: tie scope to configs, releases or version ranges
                     scope = 'version'
                     self.vcs.commit(
