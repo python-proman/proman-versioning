@@ -33,7 +33,10 @@ def generate_changelog(repo: 'Repository') -> None:
     regex = re.compile('^refs/tags/')
     tags = [r for r in repo.references if regex.match(r)]
     for tag in reversed(tags):
+        # get commit from tag
         obj = repo.revparse_single(tag)
+        current_commit = obj.get_object()
+
         # baseurl = 'https://gitlab.mgmt.hijynx.io/primistek/changelog'
         # url = f"{baseurl}/-/tree/{obj.name}/"
         dt = datetime.fromtimestamp(obj.tagger.time)
@@ -42,10 +45,6 @@ def generate_changelog(repo: 'Repository') -> None:
             # title=f"[v{obj.name}]({url}) - ({dt.strftime('%Y-%m-%d')})"
             title=f"v{obj.name} - ({dt.strftime('%Y-%m-%d')})"
         )
-
-        parser = CommitMessageParser()
-        # NOTE: use this to get commit from tag
-        # current_commit = obj.get_object()
 
         sections = ['commit', 'type', 'description']
         scopes: Dict[str, List[str]] = {
@@ -56,6 +55,8 @@ def generate_changelog(repo: 'Repository') -> None:
             'fixed': [],
             'security': [],
         }
+
+        parser = CommitMessageParser()
         for commit in repo.walk(repo.head.target):
             # check if commit is tagged and stop if it is
             parser.parse(commit.message.rstrip())
@@ -84,6 +85,9 @@ def generate_changelog(repo: 'Repository') -> None:
                 or parser.title['type'] == 'perf'
             ):
                 scopes['changed'].extend(row)
+
+        if current_commit == commit:
+            break
 
         for k, v in scopes.items():
             if v != []:
