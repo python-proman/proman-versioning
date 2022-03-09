@@ -16,8 +16,9 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 SCOPES = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
 
 
-def get_release_changes(
-    current_commit: 'Commit',
+def _get_release_changes(
+    start_commit: 'Commit',
+    end_commit: 'Commit',
     repo: 'Repository'
 ) -> Dict[str, Any]:
     """Get changes associated with a release."""
@@ -31,8 +32,15 @@ def get_release_changes(
         'security': [],
     }
 
-    for commit in repo.walk(repo.head.target):
-        # check if commit is tagged and stop if it is
+    print('start', start_commit, 'end', end_commit.hex)
+    for commit in repo.walk(start_commit):
+        print('current', commit)
+
+        # stop if tagged commit
+        if end_commit == commit:
+            # should yield
+            return changes
+
         parser.parse(commit.message.rstrip())
         scope = parser.title['scope']
         row = [
@@ -59,10 +67,7 @@ def get_release_changes(
             or parser.title['type'] == 'perf'
         ):
             changes['changed'].extend(row)
-
-        if current_commit == commit:
-            break
-    return changes
+    return {}
 
 
 def generate_changelog(repo: 'Repository') -> None:
@@ -81,10 +86,12 @@ def generate_changelog(repo: 'Repository') -> None:
     # iterate tags and add each commit since preious tag to a section
     regex = re.compile('^refs/tags/')
     tags = [r for r in repo.references if regex.match(r)]
+    start_commit = repo.head.target
     for tag in reversed(tags):
+        print(tag)
         # get commit from tag
         obj = repo.revparse_single(tag)
-        current_commit = obj.get_object()
+        end_commit = obj.get_object()
 
         # baseurl = 'https://gitlab.mgmt.hijynx.io/primistek/changelog'
         # url = f"{baseurl}/-/tree/{obj.name}/"
@@ -96,7 +103,8 @@ def generate_changelog(repo: 'Repository') -> None:
         )
 
         sections = ['commit', 'type', 'description']
-        changes = get_release_changes(current_commit, repo)
+        changes = _get_release_changes(start_commit, end_commit, repo)
+        start_commit = end_commit.hex
 
         for k, v in changes.items():
             if v != []:

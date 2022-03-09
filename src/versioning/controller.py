@@ -99,7 +99,6 @@ class IntegrationController(CommitMessageParser):
             version.compat = config['compat']
             new_version.compat = config['compat']
 
-        pattern = config['pattern']
         filepath = os.path.join(
             self.vcs.working_dir, config['filepath']
         )
@@ -108,23 +107,26 @@ class IntegrationController(CommitMessageParser):
         with open(filepath, 'r+') as f:
             file_contents = f.read()
 
-            # prepare source expression match pattern
-            template = Template(pattern).substitute(version=version.query)
-            match = re.compile(
-                # XXX: escape not compiling correctly
-                template,  # re.escape(template),
-                flags=0,
-            )
-            log.debug(f"using pattern for source version {match}")
+            if 'patterns' in config:
+                patterns = config['patterns']
+            else:
+                patterns = [config['pattern']]
+            for pattern in patterns:
+                template = Template(pattern).substitute(version=version.query)
+                match = re.compile(
+                    # XXX: escape not compiling correctly
+                    template,  # re.escape(template),
+                    flags=0,
+                )
+                log.debug(f"using pattern for source version {match}")
 
-            # substitute the expression in file
-            file_contents = match.sub(
-                Template(pattern).substitute(version=str(new_version)),
-                file_contents,
-            )
+                # substitute the expression in file
+                file_contents = match.sub(
+                    Template(pattern).substitute(version=str(new_version)),
+                    file_contents,
+                )
 
             if not dry_run:
-                generate_changelog(self.vcs.repo)
                 # save the file
                 try:
                     f.seek(0)
@@ -135,10 +137,11 @@ class IntegrationController(CommitMessageParser):
                     print(err, file=sys.stderr)
             else:
                 # print the file changes
-                print(file_contents, file=sys.stdout)
-                log.info(
-                    f"dry-run skipping file write at: '{filepath}'"
-                )
+                # print(file_contents, file=sys.stdout)
+                # log.info(
+                #     f"dry-run skipping file write at: '{filepath}'"
+                # )
+                ...
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -189,6 +192,7 @@ class IntegrationController(CommitMessageParser):
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.config.version)
+        generate_changelog(self.vcs.repo)
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
@@ -198,8 +202,9 @@ class IntegrationController(CommitMessageParser):
         else:
             build = kwargs.pop('build', None)
 
-            # TODO: break, and feat should start devrelease from final or post
-            # local number depends on metadata / fork / conflict existing vers
+            # TODO: break and feat should start devrelease from final
+            # or post local number depends on metadata / fork / con-
+            # flict existing versions
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
@@ -231,6 +236,8 @@ class IntegrationController(CommitMessageParser):
         password = kwargs.pop('password', None)
 
         if remote_url is not None:
+            # TODO: feels like it would be smarter to encapsulate
+            # credentials with a remote.
             self.vcs.add_remote(
                 remote,
                 remote_url,
