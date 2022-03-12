@@ -10,7 +10,7 @@ from copy import deepcopy
 from string import Template
 from typing import TYPE_CHECKING, Any, Dict
 
-from versioning.changelog import generate_changelog
+from versioning.changelog import Changelog
 from versioning.exception import PromanVersioningException
 from versioning.grammars.conventional_commits import CommitMessageParser
 from versioning.version import Version
@@ -61,6 +61,7 @@ class IntegrationController(CommitMessageParser):
         super().__init__(*args, **kwargs)
 
         self.vcs = repo
+        self.changelog = Changelog(self.vcs.repo)
         if message is None:
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
@@ -192,7 +193,7 @@ class IntegrationController(CommitMessageParser):
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.config.version)
-        generate_changelog(self.vcs.repo)
+        self.changelog.generate_changelog()
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
