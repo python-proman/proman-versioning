@@ -102,6 +102,7 @@ class Changelog:
 
     def _generate_document(self, releases: List[Dict[str, Any]]) -> None:
         """Generate changelog file."""
+        # stopgap until better parser is found
         md = MdUtils(
             file_name='CHANGELOG.md',
             title='Changelog',
@@ -111,7 +112,6 @@ class Changelog:
             level=1,
             title='ProMan Versioning Changelog'
         )
-
         sections = ['commit', 'type', 'description']
 
         for release in reversed(releases):
