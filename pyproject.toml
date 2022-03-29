@@ -51,7 +51,7 @@ pydocstyle = {extras = ["toml"], version = "^6.1.1"}
 pytest = "^6.2.5"
 
 [tool.poetry.extras]
-changelog = "mdutils"
+changelog = ["mdutils"]
 
 [tool.poetry.scripts]
 version = "versioning.__main__:main"
