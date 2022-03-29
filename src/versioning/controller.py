@@ -10,16 +10,20 @@ from copy import deepcopy
 from string import Template
 from typing import TYPE_CHECKING, Any, Dict
 
-from versioning.changelog import Changelog
+# from transitions import Machine
 from versioning.exception import PromanVersioningException
 from versioning.grammars.conventional_commits import CommitMessageParser
 from versioning.version import Version
 
+if 'mdutils' not in sys.modules:
+    enable_changelog = False
+else:
+    from versioning.changelog import Changelog
+    enable_changelog = True
+
 if TYPE_CHECKING:
     from versioning.config import Config
     from versioning.vcs import Git
-
-# from transitions import Machine
 
 # TODO: version comparison against previous version
 # has API spec been modified?
@@ -61,7 +65,8 @@ class IntegrationController(CommitMessageParser):
         super().__init__(*args, **kwargs)
 
         self.vcs = repo
-        self.changelog = Changelog(self.vcs.repo)
+        self.changelog = Changelog(self.vcs.repo) if enable_changelog else None
+
         if message is None:
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
@@ -100,9 +105,7 @@ class IntegrationController(CommitMessageParser):
             version.compat = config['compat']
             new_version.compat = config['compat']
 
-        filepath = os.path.join(
-            self.vcs.working_dir, config['filepath']
-        )
+        filepath = os.path.join(self.vcs.working_dir, config['filepath'])
 
         # TODO: handle when file does not exist
         with open(filepath, 'r+') as f:
@@ -138,11 +141,10 @@ class IntegrationController(CommitMessageParser):
                     print(err, file=sys.stderr)
             else:
                 # print the file changes
-                # print(file_contents, file=sys.stdout)
-                # log.info(
-                #     f"dry-run skipping file write at: '{filepath}'"
-                # )
-                ...
+                print(file_contents, file=sys.stdout)
+                log.info(
+                    f"dry-run skipping file write at: '{filepath}'"
+                )
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -193,7 +195,8 @@ class IntegrationController(CommitMessageParser):
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.config.version)
-        self.changelog.generate_changelog()
+        if self.changelog:
+            self.changelog.generate_changelog()
         if (
             ('type' in self.title and self.title['type'] == 'release')
             or kwargs.get('release') is True
@@ -203,9 +206,9 @@ class IntegrationController(CommitMessageParser):
         else:
             build = kwargs.pop('build', None)
 
-            # TODO: break and feat should start devrelease from final
-            # or post local number depends on metadata / fork / con-
-            # flict existing versions
+            # TODO: break and feat should start devrelease from final or post
+            # local number depends on metadata / fork / conflict existing
+            # versions
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:

@@ -58,7 +58,11 @@ def bump(
     print(str(version), file=sys.stdout)
 
 
-def info(release: bool = False, filepaths: bool = False) -> None:
+def info(
+    release: bool = False,
+    filepaths: bool = False,
+    compat: Optional[str] = None,
+) -> None:
     """Get current version project.
 
     Parameters
@@ -67,6 +71,8 @@ def info(release: bool = False, filepaths: bool = False) -> None:
         View the current release type
     filepaths: bool
         List the version filepaths
+    compat: str:
+        Type of version format
 
     """
     if release:
@@ -74,6 +80,8 @@ def info(release: bool = False, filepaths: bool = False) -> None:
     if filepaths:
         for x in _controller.config.templates:
             print(x['filepath'], file=sys.stdout)
+    if compat:
+        ...
     if not release and not filepaths:
         print(_controller.config.version, file=sys.stdout)
 
