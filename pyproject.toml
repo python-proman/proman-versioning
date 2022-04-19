@@ -34,6 +34,7 @@ pygit2 = "^1.6.1"
 cffi = "^1.15.0"
 packaging = "^21.3"
 compendium = "^0.1.1-beta.0"
+proman-workflows = "^0.1.0-alpha.8"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
