@@ -25,6 +25,7 @@ jobs:
           poetry install
       - name: Bump version
         run: |
+          cat ~/.gitconfig
           poetry run version info
           poetry run version bump --commit
           poetry run version push

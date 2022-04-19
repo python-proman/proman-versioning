@@ -2,7 +2,7 @@
 """Test git hooks pipeline."""
 
 import os
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import Mock, mock_open, patch
 
 from versioning import IntegrationController, Version
 from versioning.config import Config

@@ -6,7 +6,7 @@
 
 import os
 
-from versioning import get_release_controller, get_source_tree, Version
+from versioning import Version, get_release_controller, get_source_tree
 from versioning.config import GRAMMAR_PATH
 
 VERSIONING_PATH = os.path.abspath(
