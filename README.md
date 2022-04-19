@@ -1,7 +1,7 @@
 # Proman Versioning
 
-[![License](https://img.shields.io/badge/License-MPL%202.0-blue.svg)](https://spdx.org/licenses/MPL-2.0)
-[![Build Status](https://travis-ci.org/kuwv/proman-versioning.svg?branch=master)](https://travis-ci.org/kuwv/proman-versioning)
+[![License](https://img.shields.io/badge/License-LGPL%203.0-blue.svg)](https://spdx.org/licenses/LGPL-3.0)
+![Build Status](https://github.com/python-proman/proman-versioning/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/kuwv/proman-versioning/branch/master/graph/badge.svg)](https://codecov.io/gh/kuwv/proman-versioning)
 
 ## Overview
