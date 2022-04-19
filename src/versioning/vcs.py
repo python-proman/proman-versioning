@@ -52,7 +52,7 @@ class Git:
     @property
     def working_dir(self) -> str:
         """Return working directory of project."""
-        return os.path.abspath(os.path.join(self.repo_dir, '..'))
+        return os.path.abspath(os.path.join(self.repo_dir, os.pardir))
 
     @property
     def ref(self) -> str:
@@ -95,7 +95,7 @@ class Git:
             for filepath in filepaths:
                 index.add(
                     os.path.relpath(
-                        filepath, os.path.join(self.repo.path, '..')
+                        filepath, os.path.join(self.repo.path, os.pardir)
                     )
                 )
         index.write()

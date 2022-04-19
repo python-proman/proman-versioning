@@ -1,5 +1,5 @@
 ---
-name: Python package
+name: CI Build
 on:
   push:
     branches: [master]
@@ -7,7 +7,7 @@ on:
     branches: [master]
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]

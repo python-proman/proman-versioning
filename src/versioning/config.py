@@ -19,7 +19,7 @@ CURRENT_DIR = os.getcwd()
 REPO_DIR = discover_repository(CURRENT_DIR)
 if REPO_DIR is None:
     raise PromanVersioningException('Unable to locate git repository.')
-PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, '..'))
+PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, os.pardir))
 CONFIG_FILES = [
     os.path.join(PROJECT_DIR, '.versioning'),
     os.path.join(PROJECT_DIR, 'pyproject.toml'),
