@@ -32,12 +32,9 @@ jobs:
           else
             poetry run version bump --build=${{ github.run_number }}
           fi
-      - name: Cache version changes
-        id: info
-        run: |
-          version info --filepaths | tar -cvzf versioning.tar.gz -T -
-          # VERSION=$(version info)
-          # RELEASE=$(version info --release)
+          poetry run version info --filepaths | tar -cvzf versioning.tar.gz -T -
+          # VERSION=$(proman run version info)
+          # RELEASE=$(proman run version info --release)
       - name: Store versioned files
         uses: actions/upload-artifact@v3
         with:
