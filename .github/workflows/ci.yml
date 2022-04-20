@@ -43,7 +43,7 @@ jobs:
         id: versioned-files
         uses: actions/cache@v3
         with:
-          key: "versioning-${{ github.run_id }}"
+          key: versioning.tar.gz
           path: versioning.tar.gz
   #   outputs:
   #     version: "${{ steps.version.info }}"
@@ -87,9 +87,7 @@ jobs:
           poetry install --no-dev
       - name: Overlay versioned files
         if: steps.versioned-files.outputs.cache-hit == 'true'
-        run: |
-          VERSIONED_FILES=$(tar -tzf versioning.tar.gz)
-          tar -xzf versioning.tar.gz
+        run: tar -xzf versioning.tar.gz
       - name: Perform build
         run: poetry run workflow-tools dist.package.build
       - name: Perform publish
