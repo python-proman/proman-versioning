@@ -54,7 +54,7 @@ jobs:
       #     poetry run workflow-tools sec.dependency-scan.run
   build:
     runs-on: ubuntu-latest
-    needs: version
+    needs: [version, sca]
     steps:
       - uses: actions/checkout@v2
       - name: 'Set up Python 3.10'
