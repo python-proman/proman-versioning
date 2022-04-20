@@ -33,8 +33,6 @@ jobs:
             poetry run version bump
           fi
           poetry run version info --filepaths | tar -cvzf versioning.tar.gz -T -
-          # VERSION=$(proman run version info)
-          # RELEASE=$(proman run version info --release)
       - name: Store versioned files
         uses: actions/upload-artifact@v3
         with:
