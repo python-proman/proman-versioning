@@ -96,7 +96,9 @@ jobs:
       # - name: Overlay versioned files
       #   if: steps.versioned-files.outputs.cache-hit == 'true'
       - name: Perform build
-        run: tar -xzf versioning.tar.gz
+        run: |
+          tar -xzf versioning.tar.gz
+          cat pyproject.toml
       - name: Perform build
         run: poetry run workflow-tools dist.package.build
       - name: Perform publish
