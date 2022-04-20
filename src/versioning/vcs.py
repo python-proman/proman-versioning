@@ -25,23 +25,23 @@ class Git:
     def __init__(self, repo: Repository) -> None:
         """Initialize git object."""
         self.repo = repo
-        self.hooks_dir = os.path.join(self.repo.path, "hooks")
-        self.config = os.path.join(self.repo.path, "config")
+        self.hooks_dir = os.path.join(self.repo.path, 'hooks')
+        self.config = os.path.join(self.repo.path, 'config')
 
     @property
     def username(self) -> str:
         """Return username from git configuration."""
-        usernames = list(self.repo.config.get_multivar("user.name"))
+        usernames = list(self.repo.config.get_multivar('user.name'))
         if usernames == []:
-            raise PromanVersioningException("git user.name not configured")
+            raise PromanVersioningException('git user.name not configured')
         return usernames[-1]
 
     @property
     def email(self) -> str:
         """Return email from git configuration."""
-        emails = list(self.repo.config.get_multivar("user.email"))
+        emails = list(self.repo.config.get_multivar('user.email'))
         if emails == []:
-            raise PromanVersioningException("git user.email not configured")
+            raise PromanVersioningException('git user.email not configured')
         return emails[-1]
 
     @property
@@ -84,8 +84,8 @@ class Git:
         ref = f"refs/heads/{branch}" if branch else self.ref
 
         author = Signature(self.username, self.email)
-        committer = kwargs.get("commiter", author)
-        message = kwargs.get("message", "ci: bump version")
+        committer = kwargs.get('commiter', author)
+        message = kwargs.get('message', 'ci: bump version')
 
         # populate index
         index = self.repo.index
@@ -102,11 +102,11 @@ class Git:
         tree = index.write_tree()
 
         # get parent
-        parents = kwargs.get("parents", [self.repo.head.target])
-        encoding = kwargs.get("encoding", "utf-8")
+        parents = kwargs.get('parents', [self.repo.head.target])
+        encoding = kwargs.get('encoding', 'utf-8')
 
         # commit
-        if not kwargs.get("dry_run", False):
+        if not kwargs.get('dry_run', False):
             commit = self.repo.create_commit(
                 ref,
                 author,
@@ -127,12 +127,12 @@ class Git:
         ref = f"refs/heads/{branch}" if branch else self.ref
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
-        kind = kwargs.get("kind", GIT_OBJ_COMMIT)
+        kind = kwargs.get('kind', GIT_OBJ_COMMIT)
 
-        # tagger = pygit2.Signature("Alice Doe", "adoe@example.com", 12347, 0)
+        # tagger = pygit2.Signature('Alice Doe', 'adoe@example.com', 12347, 0)
         tagger = Signature(self.username, self.email)
-        message = kwargs.get("message")
-        if not kwargs.get("dry_run", False):
+        message = kwargs.get('message')
+        if not kwargs.get('dry_run', False):
             tag = self.repo.create_tag(
                 name, oid, kind, tagger, message or f"ci: {name}"
             )
@@ -143,14 +143,14 @@ class Git:
     def push(
         self,
         branch: Optional[str] = None,
-        remote: str = "origin",
+        remote: str = 'origin',
         remote_branch: Optional[str] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
     ) -> None:
         """Push commited changes."""
         # TODO: feels like remote should be encapsulated with creds
-        remote_branch = remote_branch or branch or self.ref.split("/")[-1]
+        remote_branch = remote_branch or branch or self.ref.split('/')[-1]
         # ref = f"refs/heads/{branch}" if branch else self.ref
         # remote_ref = f"refs/remotes/{remote}/{remote_branch}"
         # print(ref, remote_ref)
