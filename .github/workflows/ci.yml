@@ -98,7 +98,7 @@ jobs:
       - name: Perform build
         run: |
           tar -xzf versioning.tar.gz
-          echo pyproject.toml
+          cat pyproject.toml
           poetry run workflow-tools dist.package.build
       - name: Perform publish
         run: |
