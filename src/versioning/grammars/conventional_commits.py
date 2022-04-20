@@ -7,6 +7,7 @@ from collections import defaultdict
 from typing import Any, Callable, Dict, List, Optional
 
 from lark import Lark
+
 from versioning.config import GRAMMAR_PATH
 
 

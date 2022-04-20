@@ -9,8 +9,8 @@ from typing import Any, List, Optional
 from pygit2 import (
     GIT_OBJ_COMMIT,
     Commit,
-    Repository,
     RemoteCallbacks,
+    Repository,
     Signature,
     Tag,
     UserPass,
