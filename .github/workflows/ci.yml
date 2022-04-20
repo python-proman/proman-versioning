@@ -30,7 +30,7 @@ jobs:
             poetry run version bump --commit --tag
             poetry run version push
           else
-            poetry run version bump --build=${{ github.run_number }}
+            poetry run version bump
           fi
           poetry run version info --filepaths | tar -cvzf versioning.tar.gz -T -
           # VERSION=$(proman run version info)
