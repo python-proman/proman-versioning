@@ -26,9 +26,27 @@ jobs:
       - name: Bump version
         run: |
           poetry run version info
-          poetry run version bump --commit
-          # poetry run version push
-          git push
+          if [ "${GITHUB_REF##*/}" == "master" ]; then
+            poetry run version bump --commit --tag
+            poetry run version push
+          else
+            portry run version bump --build=${{ github.run_id }}
+          fi
+      - name: Cache version changes
+        id: info
+        run: |
+          version info --filepaths | tar -cvzf versioning.tar.gz -T -
+          # VERSION=$(version info)
+          # RELEASE=$(version info --release)
+
+      - name: Cache version changes
+        id: versioned-files
+        uses: actions/cache@v3
+        with:
+          key: "versioning-${{ github.run_id }}"
+          path: versioning.tar.gz
+  #   outputs:
+  #     version: "${{ steps.version.info }}"
   sca:
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +85,11 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install poetry
           poetry install --no-dev
+      - name: Overlay versioned files
+        if: steps.versioned-files.outputs.cache-hit == 'true'
+        run: |
+          VERSIONED_FILES=$(tar -tzf versioning.tar.gz)
+          tar -xzf versioning.tar.gz
       - name: Perform build
         run: poetry run workflow-tools dist.package.build
       - name: Perform publish
