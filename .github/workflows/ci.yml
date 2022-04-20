@@ -30,7 +30,7 @@ jobs:
             poetry run version bump --commit --tag
             poetry run version push
           else
-            portry run version bump --build=${{ github.run_id }}
+            poetry run version bump --build=${{ github.run_id }}
           fi
       - name: Cache version changes
         id: info
