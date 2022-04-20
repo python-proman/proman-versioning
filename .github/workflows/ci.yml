@@ -97,8 +97,8 @@ jobs:
       #   if: steps.versioned-files.outputs.cache-hit == 'true'
       - name: Perform build
         run: |
+          tar -tvf versioning.tar.gz
           tar -xzf versioning.tar.gz
-          cat pyproject.toml
           poetry run workflow-tools dist.package.build
       - name: Perform publish
         run: |
