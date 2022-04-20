@@ -98,9 +98,7 @@ jobs:
       - name: Perform build
         run: |
           tar -xzf versioning.tar.gz
-          cat pyproject.toml
-      - name: Perform build
-        run: poetry run workflow-tools dist.package.build
+          poetry run workflow-tools dist.package.build
       - name: Perform publish
         run: |
           poetry config repositories.test-pypi 'https://test.pypi.org/legacy/'
