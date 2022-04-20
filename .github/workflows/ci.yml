@@ -30,7 +30,7 @@ jobs:
             poetry run version bump --commit --tag
             poetry run version push
           else
-            poetry run version bump --build=${{ github.run_id }}
+            poetry run version bump --build=${{ github.run_number }}
           fi
       - name: Cache version changes
         id: info
@@ -38,13 +38,17 @@ jobs:
           version info --filepaths | tar -cvzf versioning.tar.gz -T -
           # VERSION=$(version info)
           # RELEASE=$(version info --release)
-
-      - name: Cache version changes
-        id: versioned-files
-        uses: actions/cache@v3
+      - name: Store versioned files
+        uses: actions/upload-artifact@v3
         with:
-          key: versioning.tar.gz
+          name: "versioning-${{ github.run_number }}"
           path: versioning.tar.gz
+      # - name: Cache version changes
+      #   id: versioned-files
+      #   uses: actions/cache@v3
+      #   with:
+      #     key: "${{ runner.os }}-versioning-${{ hashFiles('versioning.tar.gz') }}"
+      #     path: versioning.tar.gz
   #   outputs:
   #     version: "${{ steps.version.info }}"
   sca:
@@ -85,8 +89,13 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install poetry
           poetry install --no-dev
-      - name: Overlay versioned files
-        if: steps.versioned-files.outputs.cache-hit == 'true'
+      - name: Download versioned files
+        uses: actions/download-artifact@v3
+        with:
+          name: "versioning-${{ github.run_number }}"
+      # - name: Overlay versioned files
+      #   if: steps.versioned-files.outputs.cache-hit == 'true'
+      - name: Perform build
         run: tar -xzf versioning.tar.gz
       - name: Perform build
         run: poetry run workflow-tools dist.package.build
