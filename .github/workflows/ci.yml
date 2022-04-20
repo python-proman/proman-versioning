@@ -27,7 +27,8 @@ jobs:
         run: |
           poetry run version info
           poetry run version bump --commit
-          poetry run version push
+          # poetry run version push
+          git push
   sca:
     runs-on: ubuntu-latest
     steps:
