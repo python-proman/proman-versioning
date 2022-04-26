@@ -192,16 +192,16 @@ class IntegrationController(CommitMessageParser):
 
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
-        print('what the hell is going on now')
         new_version = deepcopy(self.config.version)
         if self.changelog:
             self.changelog.generate_changelog()
         if (
             'type' in self.title and self.title['type'] == 'release'
         ) or kwargs.get('release') is True:
+            print('what the hell is going on now')
             new_version.start_release(segment='minor')  # type: ignore
-            self.update_configs(new_version, **kwargs)
         else:
+            print('not a release so what now')
             build = kwargs.pop('build', None)
 
             # TODO: break and feat should start devrelease from final or post
@@ -227,7 +227,7 @@ class IntegrationController(CommitMessageParser):
             # TODO: configure local version handling
             if build is not None:
                 new_version._new_local(local=build)
-            self.update_configs(new_version, **kwargs)
+        self.update_configs(new_version, **kwargs)
         return new_version
 
     def push_changes(self, **kwargs: Any) -> None:
