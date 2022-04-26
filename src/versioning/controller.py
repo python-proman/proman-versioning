@@ -198,10 +198,8 @@ class IntegrationController(CommitMessageParser):
         if (
             'type' in self.title and self.title['type'] == 'release'
         ) or kwargs.get('release') is True:
-            print('what the hell is going on now')
             new_version.start_release(segment='minor')  # type: ignore
         else:
-            print('not a release so what now')
             build = kwargs.pop('build', None)
 
             # TODO: break and feat should start devrelease from final or post
@@ -210,14 +208,13 @@ class IntegrationController(CommitMessageParser):
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
-                print('found type', self.title['type'])
                 if self.title['type'] == 'feat':
                     new_version.bump_minor()  # type: ignore
                 elif self.title['type'] == 'fix':
                     new_version.bump_micro()  # type: ignore
                 elif self.title['type'] in self.config.parser.types:
-                    # new_version = self.__bump_release(new_version)
                     new_version.bump_release()  # type: ignore
+                    print('found type', self.title['type'])
                 else:
                     # TODO: need debug statement here instead
                     raise PromanVersioningException(
