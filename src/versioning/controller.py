@@ -192,6 +192,7 @@ class IntegrationController(CommitMessageParser):
 
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
+        print('what the hell is going on now')
         new_version = deepcopy(self.config.version)
         if self.changelog:
             self.changelog.generate_changelog()
