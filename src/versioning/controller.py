@@ -68,6 +68,7 @@ class IntegrationController(CommitMessageParser):
         self.vcs = repo
         self.changelog = Changelog(self.vcs.repo) if enable_changelog else None
 
+        print('-------', message)
         if message is None:
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
@@ -215,7 +216,6 @@ class IntegrationController(CommitMessageParser):
                     new_version.bump_micro()  # type: ignore
                 elif self.title['type'] in self.config.parser.types:
                     new_version.bump_release()  # type: ignore
-                    print('found type', self.title['type'])
                 else:
                     # TODO: need debug statement here instead
                     raise PromanVersioningException(
