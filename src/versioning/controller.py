@@ -193,6 +193,7 @@ class IntegrationController(CommitMessageParser):
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
         new_version = deepcopy(self.config.version)
+        print(self.title)
         if self.changelog:
             self.changelog.generate_changelog()
         if (
@@ -206,7 +207,6 @@ class IntegrationController(CommitMessageParser):
             # TODO: break and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing
             # versions
-            print(self.title)
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
