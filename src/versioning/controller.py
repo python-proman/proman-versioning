@@ -68,7 +68,6 @@ class IntegrationController(CommitMessageParser):
         self.vcs = repo
         self.changelog = Changelog(self.vcs.repo) if enable_changelog else None
 
-        print('-------', message)
         if message is None:
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
@@ -206,7 +205,6 @@ class IntegrationController(CommitMessageParser):
             # TODO: break and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing
             # versions
-            print('------------', self.title['type'])
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
@@ -215,6 +213,7 @@ class IntegrationController(CommitMessageParser):
                 elif self.title['type'] == 'fix':
                     new_version.bump_micro()  # type: ignore
                 elif self.title['type'] in self.config.parser.types:
+                    # new_version = self.__bump_release(new_version)
                     new_version.bump_release()  # type: ignore
                 else:
                     # TODO: need debug statement here instead
