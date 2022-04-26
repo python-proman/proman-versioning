@@ -24,7 +24,7 @@ __all__ = (
     'IntegrationController',
     'get_source_tree',
     'get_release_controller',
-    'Version'
+    'Version',
 )
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
