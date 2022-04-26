@@ -76,6 +76,7 @@ class IntegrationController(CommitMessageParser):
         else:
             self.parse(message)
             log.debug(f"found commit message: '{message}'")
+        print('---', message)
 
     @property
     def release(self) -> str:
