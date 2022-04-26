@@ -205,6 +205,7 @@ class IntegrationController(CommitMessageParser):
             # TODO: break and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing
             # versions
+            print('------------', self.title['type'])
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
