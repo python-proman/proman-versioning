@@ -19,6 +19,7 @@ if 'mdutils' not in sys.modules:
     enable_changelog = False
 else:
     from versioning.changelog import Changelog
+
     enable_changelog = True
 
 if TYPE_CHECKING:
@@ -142,9 +143,7 @@ class IntegrationController(CommitMessageParser):
             else:
                 # print the file changes
                 print(file_contents, file=sys.stdout)
-                log.info(
-                    f"dry-run skipping file write at: '{filepath}'"
-                )
+                log.info(f"dry-run skipping file write at: '{filepath}'")
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
@@ -167,8 +166,7 @@ class IntegrationController(CommitMessageParser):
                     scope = 'version'
                     self.vcs.commit(
                         filepaths=[
-                            f['filepath']
-                            for f in self.config.templates
+                            f['filepath'] for f in self.config.templates
                         ],
                         message=(
                             f"ci({scope}): apply {str(new_version)} updates"
@@ -198,9 +196,8 @@ class IntegrationController(CommitMessageParser):
         if self.changelog:
             self.changelog.generate_changelog()
         if (
-            ('type' in self.title and self.title['type'] == 'release')
-            or kwargs.get('release') is True
-        ):
+            'type' in self.title and self.title['type'] == 'release'
+        ) or kwargs.get('release') is True:
             new_version.start_release(segment='minor')  # type: ignore
             self.update_configs(new_version, **kwargs)
         else:
@@ -209,6 +206,7 @@ class IntegrationController(CommitMessageParser):
             # TODO: break and feat should start devrelease from final or post
             # local number depends on metadata / fork / conflict existing
             # versions
+            print(self.title)
             if self.title['break'] or self.footer['breaking_change']:
                 new_version.bump_major()  # type: ignore
             elif 'type' in self.title:
