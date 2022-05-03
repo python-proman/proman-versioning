@@ -92,32 +92,40 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: "versioning-${{ github.run_number }}"
-      # - name: Overlay versioned files
-      #   if: steps.versioned-files.outputs.cache-hit == 'true'
       - name: Perform build
         run: |
+          tar -xzf versioning.tar.gz
           poetry run workflow-tools dist.package.build
       - name: Perform publish
         run: |
           poetry config repositories.test-pypi 'https://test.pypi.org/legacy/'
           poetry config pypi-token.test-pypi "${{ secrets.TESTPYPI_TOKEN }}"
           poetry run workflow-tools dist.package.publish --repository test-pypi
-  # test:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: ['3.7', '3.8', '3.9', '3.10']
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: "Set up Python 3.10"
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: 3.10
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         python -m pip install poetry
-  #     - name: Install package fro test-pypi
-  #       run: python3 -m pip install --index-url https://test.pypi.org/simple/
-  #     # - name: Perform tests
-  #     #   run: poetry run workflow-tools qa.unit-test.run
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download versioned files
+        uses: actions/download-artifact@v3
+        with:
+          name: "versioning-${{ github.run_number }}"
+      - name: Perform build
+        run: tar -xzf versioning.tar.gz
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+          poetry install
+          poetry run pip install \
+            --index-url https://test.pypi.org/simple/ \
+            proman-versioning==$(proman run version info)
+      - name: Run tests
+      - name: Perform tests
+        run: poetry run workflow-tools qa.unit-test.run
