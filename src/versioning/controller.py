@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, Dict
 # from transitions import Machine
 from versioning.exception import PromanVersioningException
 from versioning.grammars.conventional_commits import CommitMessageParser
-from versioning.interactive import prepare_commit
 from versioning.version import Version
 
 if 'mdutils' not in sys.modules:
