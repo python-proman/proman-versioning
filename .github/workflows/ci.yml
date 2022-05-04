@@ -126,6 +126,5 @@ jobs:
           poetry run pip install \
             --index-url https://test.pypi.org/simple/ \
             proman-versioning==$(proman run version info)
-      - name: Run tests
       - name: Perform tests
         run: poetry run workflow-tools qa.unit-test.run
