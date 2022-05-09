@@ -31,18 +31,20 @@ class Git:
     @property
     def username(self) -> str:
         """Return username from git configuration."""
-        usernames = list(self.repo.config.get_multivar('user.name'))
-        if usernames == []:
+        try:
+            username = self.repo.config['user.name']
+            return username
+        except Exception:
             raise PromanVersioningException('git user.name not configured')
-        return usernames[-1]
 
     @property
     def email(self) -> str:
         """Return email from git configuration."""
-        emails = list(self.repo.config.get_multivar('user.email'))
-        if emails == []:
+        try:
+            email = self.repo.config['user.email']
+            return email
+        except Exception:
             raise PromanVersioningException('git user.email not configured')
-        return emails[-1]
 
     @property
     def repo_dir(self) -> str:
@@ -155,9 +157,8 @@ class Git:
         # remote_ref = f"refs/remotes/{remote}/{remote_branch}"
         # print(ref, remote_ref)
 
-        print('creds', username)
         remote_repo = self.repo.remotes[remote]
-        credentials = UserPass(username, password)
+        credentials = UserPass(username or self.username, password)
         remote_repo.credentials = credentials
 
         callbacks = RemoteCallbacks(credentials=credentials)
