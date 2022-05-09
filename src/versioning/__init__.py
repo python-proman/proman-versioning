@@ -17,14 +17,14 @@ __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'
 __title__ = 'proman-versioning'
 __description__ = 'Workflows to manage project versioning.'
-__version__ = '0.5.0a2'
+__version__ = '0.5.0a3'
 __license__ = 'LGPL-3.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 __all__ = (
     'IntegrationController',
     'get_source_tree',
     'get_release_controller',
-    'Version'
+    'Version',
 )
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())

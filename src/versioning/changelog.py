@@ -4,9 +4,10 @@ import logging
 import re
 from collections import deque
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Generator, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple
 
 from mdutils.mdutils import MdUtils
+
 from versioning.grammars.conventional_commits import CommitMessageParser
 
 if TYPE_CHECKING:

@@ -9,11 +9,11 @@ from typing import Any, List, Optional
 from pygit2 import (
     GIT_OBJ_COMMIT,
     Commit,
-    Repository,
     RemoteCallbacks,
+    Repository,
     Signature,
     Tag,
-    UserPass
+    UserPass,
 )
 
 from versioning.exception import PromanVersioningException
@@ -31,18 +31,20 @@ class Git:
     @property
     def username(self) -> str:
         """Return username from git configuration."""
-        usernames = list(self.repo.config.get_multivar('user.name'))
-        if usernames == []:
+        try:
+            username = self.repo.config['user.name']
+            return username
+        except Exception:
             raise PromanVersioningException('git user.name not configured')
-        return usernames[-1]
 
     @property
     def email(self) -> str:
         """Return email from git configuration."""
-        emails = list(self.repo.config.get_multivar('user.email'))
-        if emails == []:
+        try:
+            email = self.repo.config['user.email']
+            return email
+        except Exception:
             raise PromanVersioningException('git user.email not configured')
-        return emails[-1]
 
     @property
     def repo_dir(self) -> str:
@@ -129,7 +131,7 @@ class Git:
         oid = commit.hex
         kind = kwargs.get('kind', GIT_OBJ_COMMIT)
 
-        # tagger = pygit2.Signature("Alice Doe", "adoe@example.com", 12347, 0)
+        # tagger = pygit2.Signature('Alice Doe', 'adoe@example.com', 12347, 0)
         tagger = Signature(self.username, self.email)
         message = kwargs.get('message')
         if not kwargs.get('dry_run', False):
@@ -156,8 +158,8 @@ class Git:
         # print(ref, remote_ref)
 
         remote_repo = self.repo.remotes[remote]
-        credentials = UserPass(username, password)
+        credentials = UserPass(username or self.username, password)
         remote_repo.credentials = credentials
 
         callbacks = RemoteCallbacks(credentials=credentials)
-        remote_repo.push([f'refs/heads/{branch}'], callbacks=callbacks)
+        remote_repo.push([f"refs/heads/{branch}"], callbacks=callbacks)

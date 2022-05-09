@@ -133,11 +133,14 @@ class Config(ConfigManager):
         super().__init__(filepaths=filepaths, separator='.', defaults=defaults)
 
         # load configuration from paths in order or precedence
-        config = self.lookup(
-            '.proman.versioning',
-            '.tool.proman.versioning',
-            '.tool.poetry.versioning',
-        ) or {}
+        config = (
+            self.lookup(
+                '.proman.versioning',
+                '.tool.proman.versioning',
+                '.tool.poetry.versioning',
+            )
+            or {}
+        )
 
         if (
             self.templates == []
