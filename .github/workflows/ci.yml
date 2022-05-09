@@ -34,7 +34,7 @@ jobs:
           else
             poetry run version bump --commit
           fi
-          poetry run version push
+          poetry run version push --password "${{ secrets.GITHUB_TOKEN }}"
           poetry run version info --filepaths | tar -cvzf versioning.tar.gz -T -
       - name: Store versioned files
         uses: actions/upload-artifact@v3
