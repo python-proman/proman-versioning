@@ -31,10 +31,10 @@ jobs:
           poetry run version info
           if [ "${GITHUB_REF##*/}" == "master" ]; then
             poetry run version bump --commit --tag
+            poetry run version push --password "${{ secrets.GITHUB_TOKEN }}"
           else
-            poetry run version bump --commit
+            poetry run version bump
           fi
-          poetry run version push --password "${{ secrets.GITHUB_TOKEN }}"
           poetry run version info --filepaths | tar -cvzf versioning.tar.gz -T -
       - name: Store versioned files
         uses: actions/upload-artifact@v3
