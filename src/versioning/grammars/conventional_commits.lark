@@ -19,7 +19,8 @@ title: [type scope? break? ": "] description
 type: ":"? CNAME ":"?
 break: "!"
 scope: "(" CNAME ")"
-description: DESCRIPTION
+description: TITLE_DESCRIPTION
+TITLE_DESCRIPTION: /[^\r\n]+/
 
 // footer
 breaking_change: "BREAKING CHANGE: " DESCRIPTION
