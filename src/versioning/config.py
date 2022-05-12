@@ -165,7 +165,7 @@ class Config(ConfigManager):
         self.parser = ParserConfig(config=config)
 
         config_version = self.lookup(
-            '.proman.version',
+            '.project.version',
             '.tool.proman.version',
             '.tool.poetry.version',
         )
