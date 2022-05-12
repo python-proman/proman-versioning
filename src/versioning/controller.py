@@ -2,6 +2,7 @@
 # license: LGPL-3.0, see LICENSE.md for more details.
 """Coordinate actions from commit messages."""
 
+import difflib
 import logging
 import os
 import re
@@ -126,7 +127,7 @@ class IntegrationController(CommitMessageParser):
                 log.debug(f"using pattern for source version {match}")
 
                 # substitute the expression in file
-                file_contents = match.sub(
+                file_update = match.sub(
                     Template(pattern).substitute(version=str(new_version)),
                     file_contents,
                 )
@@ -136,14 +137,20 @@ class IntegrationController(CommitMessageParser):
                 try:
                     f.seek(0)
                     f.truncate()
-                    f.write(file_contents)
+                    f.write(file_update)
                     log.info(f"writting file at: '{filepath}'")
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
-                # print the file changes
-                print(file_contents, file=sys.stdout)
                 log.info(f"dry-run skipping file write at: '{filepath}'")
+                # print the file changes
+                deltas = difflib.unified_diff(
+                    file_contents.splitlines(),
+                    file_update.splitlines(),
+                    fromfile=filepath,
+                )
+                for x in deltas:
+                    print(x, file=sys.stdout)
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
