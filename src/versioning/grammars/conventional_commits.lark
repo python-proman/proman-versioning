@@ -11,7 +11,7 @@ message: title [body] [footer]
 
 title: [type scope? break? ": "] description
 
-?body: (_NL | DESCRIPTION)+
+?body: (_NL | "*"? DESCRIPTION)+
 
 ?footer: (_NL [trailer | issue | breaking_change])+
 
