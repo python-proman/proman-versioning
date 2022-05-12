@@ -142,6 +142,7 @@ class IntegrationController(CommitMessageParser):
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
+                log.info(f"dry-run skipping file write at: '{filepath}'")
                 # print the file changes
                 deltas = difflib.unified_diff(
                     file_contents.splitlines(),
@@ -150,7 +151,6 @@ class IntegrationController(CommitMessageParser):
                 )
                 for x in deltas:
                     print(x, file=sys.stdout)
-                log.info(f"dry-run skipping file write at: '{filepath}'")
 
     def update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
