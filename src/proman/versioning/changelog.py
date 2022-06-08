@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple
 
 from mdutils.mdutils import MdUtils
 
-from versioning.grammars.conventional_commits import CommitMessageParser
+from proman.versioning.grammars.conventional_commits import CommitMessageParser
 
 if TYPE_CHECKING:
     from pygit2 import Commit, Repository

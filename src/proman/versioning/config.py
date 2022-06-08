@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
 
-from versioning.exception import PromanVersioningException
-from versioning.version import Version
+from proman.versioning.exception import PromanVersioningException
+from proman.versioning.version import Version
 
 # from urllib.parse import urljoin, urlparse
 
@@ -166,6 +166,7 @@ class Config(ConfigManager):
 
         config_version = self.lookup(
             '.project.version',
+            '.proman.version',
             '.tool.proman.version',
             '.tool.poetry.version',
         )

@@ -16,7 +16,7 @@ from pygit2 import (
     UserPass,
 )
 
-from versioning.exception import PromanVersioningException
+from proman.versioning.exception import PromanVersioningException
 
 
 class Git:

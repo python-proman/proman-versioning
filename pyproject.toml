@@ -1,15 +1,20 @@
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry]
+[project]
 name = "proman-versioning"
 version = "0.6.1a0"
-homepage = "https://github.com/python-proman/proman-versioning"
 description = "Project Management Versioning Tool."
-authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]
-license = "LGPL-3.0"
+authors = [
+    {name="Jesse P. Johnson", email="jpj6652@gmail.com"}
+]
+maintainers = [
+    {name="Jesse P. Johnson", email="jpj6652@gmail.com"}
+]
+license = {file = "LICENSE.md"}
 readme = "README.md"
+requires-python = ">=3.6.2"
 keywords = ["configuration management"]
 classifiers = [
     "Intended Audience :: Developers",
@@ -23,44 +28,65 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Typing :: Typed",
 ]
-packages = [
-    {include = "versioning", from = "src"},
+
+dependencies = [
+    "lark-parser>=0.10.0",
+    "argufy>=0.1.1-alpha.12",
+    "transitions>=0.8.4",
+    "pygit2>=1.6.1",
+    "cffi>=1.15.0",
+    "packaging>=21.3",
+    "compendium>=0.1.1-beta.0",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.6.2"
-lark-parser = "^0.10.0"
-argufy = "^0.1.1-alpha.12"
-transitions = "^0.8.4"
-pygit2 = "^1.6.1"
-cffi = "^1.15.0"
-packaging = "^21.3"
-compendium = "^0.1.1-beta.0"
-proman-workflows = "^0.1.0-alpha.8"
+[project.optional-dependencies]
+# development
+tools = [
+    "invoke>=1.4.1",
+    "tox>=3.25.0",
+    "proman-workflows>=0.1.0-alpha.8",
+]
+build = [
+    "setuptools-pep660",
+    "build>=0.7.0",
+    "proman-versioning>=0.5.0-alpha.2"
+]
+test = [
+    "pytest>=6",
+    "pyfakefs>=4.5.6",
+    "pytest-cov>=2.10.0"
+]
+sca = [
+    "mypy>=0.942",
+    "bandit>=1.6.2",
+    "safety>=1.9.0"
+    # "pylint>=2.9.5"
+]
+style = [
+    "black==22.3.0",
+    "isort>=5.10.1",
+    "flake8>=3.8.3"
+]
 
-[tool.poetry.dev-dependencies]
-flake8 = "^3.8.3"
-docstr-coverage = "^1.2.0"
-pytest-cov = "^2.10.0"
-bandit = "^1.6.2"
-safety = "^1.9.0"
-invoke = "^1.4.1"
-isort = "^5.9.2"
-tox = "^3.24.0"
-mkdocs-material = "^7.2.0"
-mkdocs = "^1.2.2"
-mypy = "^0.910"
-pylint = "^2.9.5"
-black = {version = "^21.11b1", allow-prereleases = true}
-pyfakefs = "^4.5.3"
-mkdocstrings = "^0.16.2"
-pydocstyle = {extras = ["toml"], version = "^6.1.1"}
-pytest = "^6.2.5"
-
-[tool.poetry.extras]
+# documentation
+docs-build = [
+    "mkdocs>=1.2.2",
+    "mkdocs-material>=7.2.0",
+    "mkdocstrings>=0.15.2",
+    "pydocstyle>=6.1.1"
+]
+docs-style = [
+    "pydocstyle[toml]>=6.1.1"
+]
+docs-sca = [
+    "docstr-coverage>=1.2.0"
+]
 changelog = ["mdutils"]
 
-[tool.poetry.scripts]
+[project.urls]
+homepage = "https://github.com/python-proman/proman-versioning"
+
+[project.scripts]
 version = "versioning.__main__:main"
 
 [tool.proman.versioning]
@@ -82,7 +108,6 @@ pattern = "version = \"${version}\""
 ignore = [
     "D203",
     "D213",
-    "D300"
 ]
 
 [tool.isort]

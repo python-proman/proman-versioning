@@ -1,7 +1,7 @@
 # type: ignore
 """Test git hooks pipeline."""
 
-from versioning.grammars.conventional_commits import CommitMessageParser
+from proman.versioning.grammars.conventional_commits import CommitMessageParser
 
 message = """fix(example): test a message
 

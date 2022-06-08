@@ -7,11 +7,11 @@ from typing import Any, List
 
 from pygit2 import Repository
 
-from versioning.config import CONFIG_FILES, REPO_DIR, Config
-from versioning.controller import IntegrationController
-from versioning.exception import PromanVersioningException
-from versioning.vcs import Git
-from versioning.version import Version  # noqa
+from proman.versioning.config import CONFIG_FILES, REPO_DIR, Config
+from proman.versioning.controller import IntegrationController
+from proman.versioning.exception import PromanVersioningException
+from proman.versioning.vcs import Git
+from proman.versioning.version import Version  # noqa
 
 __author__ = 'Jesse P. Johnson'
 __author_email__ = 'jpj6652@gmail.com'

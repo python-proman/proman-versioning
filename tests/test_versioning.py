@@ -1,7 +1,7 @@
 # type: ignore
 """Test versioning capability."""
 
-from versioning.version import Version
+from proman.versioning.version import Version
 
 
 def test_versioning():

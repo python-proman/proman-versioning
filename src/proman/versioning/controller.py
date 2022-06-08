@@ -12,20 +12,20 @@ from string import Template
 from typing import TYPE_CHECKING, Any, Dict
 
 # from transitions import Machine
-from versioning.exception import PromanVersioningException
-from versioning.grammars.conventional_commits import CommitMessageParser
-from versioning.version import Version
+from proman.versioning.exception import PromanVersioningException
+from proman.versioning.grammars.conventional_commits import CommitMessageParser
+from proman.versioning.version import Version
 
 if 'mdutils' not in sys.modules:
     enable_changelog = False
 else:
-    from versioning.changelog import Changelog
+    from proman.versioning.changelog import Changelog
 
     enable_changelog = True
 
 if TYPE_CHECKING:
-    from versioning.config import Config
-    from versioning.vcs import Git
+    from proman.versioning.config import Config
+    from proman.versioning.vcs import Git
 
 # TODO: version comparison against previous version
 # has API spec been modified?
