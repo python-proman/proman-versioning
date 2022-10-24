@@ -65,9 +65,7 @@ class ReleaseConfig:
 
     def __post_init__(self, default_release_type: str) -> None:
         """Initialize versioning config."""
-        self.states = [
-            'dev', 'alpha', 'beta', 'candidate', 'final', 'post'
-        ]
+        self.states = ['dev', 'alpha', 'beta', 'candidate', 'final', 'post']
 
         # XXX: need to calver as alternative first
         # self.transitions.append(
@@ -206,34 +204,34 @@ class ReleaseConfig:
 
         # final release
         self.transitions.append(
-             dict(
-                 trigger='start_release',
-                 source='dev',
-                 dest='final',
-                 before='_finalize_release',
-                 conditions=['enable_devreleases'],
-                 unless=['enable_prereleases'],
-             )
+            dict(
+                trigger='start_release',
+                source='dev',
+                dest='final',
+                before='_finalize_release',
+                conditions=['enable_devreleases'],
+                unless=['enable_prereleases'],
+            )
         )
 
         self.transitions.append(
-             dict(
-                 trigger='start_release',
-                 source='candidate',
-                 dest='final',
-                 before='_finalize_release',
-                 conditions=['enable_prereleases'],
-             )
+            dict(
+                trigger='start_release',
+                source='candidate',
+                dest='final',
+                before='_finalize_release',
+                conditions=['enable_prereleases'],
+            )
         )
         self.transitions.append(
-             dict(
-                 trigger='start_release',
-                 source='post',
-                 dest='final',
-                 before='_finalize_release',
-                 conditions=['enable_postreleases'],
-                 unless=['enable_devreleases', 'enable_prereleases'],
-             )
+            dict(
+                trigger='start_release',
+                source='post',
+                dest='final',
+                before='_finalize_release',
+                conditions=['enable_postreleases'],
+                unless=['enable_devreleases', 'enable_prereleases'],
+            )
         )
 
         # post-releases
@@ -272,14 +270,16 @@ class Version(PackageVersion):
         self.enable_prereleases = kwargs.get('enable_prereleases', True)
         self.enable_postreleases = kwargs.get('enable_postreleases', True)
         self.autostart_default_release = kwargs.get(
-           'autostart_default_release', True
+            'autostart_default_release', True
         )
 
         _release = ReleaseConfig(
             default_release_type=self.default_release_type,
         )
         self.machine = Machine(
-            self, **asdict(_release), initial=self.release_type,
+            self,
+            **asdict(_release),
+            initial=self.release_type,
         )
         self.local_machine = Machine(
             self,
@@ -307,9 +307,7 @@ class Version(PackageVersion):
                 separator = '-'
             else:
                 separator = ''
-            parts.append(
-                f"{separator}{self.pre[0]}{str(self.pre[1])}"
-            )
+            parts.append(f"{separator}{self.pre[0]}{str(self.pre[1])}")
 
         # Post-release
         if self.post is not None:

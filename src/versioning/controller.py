@@ -44,7 +44,7 @@ log = logging.getLogger(__name__)
 
 
 # TODO determine relation with state and git hooks
-class IntegrationController(CommitMessageParser):
+class ReleaseController(CommitMessageParser):
     """Control version releases."""
 
     # workflow_types = ['rolling', 'sustainment']

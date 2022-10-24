@@ -3,12 +3,12 @@
 """Initialize versioning instances."""
 
 import logging
-from typing import Any, List
+from typing import Any
 
 from pygit2 import Repository
 
 from versioning.config import CONFIG_FILES, REPO_DIR, Config
-from versioning.controller import IntegrationController
+from versioning.controller import ReleaseController
 from versioning.exception import PromanVersioningException
 from versioning.vcs import Git
 from versioning.version import Version  # noqa
@@ -21,8 +21,7 @@ __version__ = '0.6.1a0'
 __license__ = 'LGPL-3.0'
 __copyright__ = 'Copyright 2021 Jesse Johnson.'
 __all__ = (
-    'IntegrationController',
-    'get_source_tree',
+    'ReleaseController',
     'get_release_controller',
     'Version',
 )
@@ -30,21 +29,15 @@ __all__ = (
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
-def get_source_tree(config_files: List[str] = CONFIG_FILES) -> Config:
-    """Get source tree from path."""
+def get_release_controller(*args: Any, **kwargs: Any) -> ReleaseController:
+    """Create and return a release controller."""
     try:
+        repo_dir = kwargs.pop('repo_dir', REPO_DIR)
+        repo = Git(Repository(repo_dir))
+
+        config_files = kwargs.pop('config_files', CONFIG_FILES)
         config = Config(filepaths=config_files)
-        return config
+
+        return ReleaseController(config=config, repo=repo, **kwargs)
     except Exception as err:
         raise PromanVersioningException(err)
-
-
-def get_release_controller(*args: Any, **kwargs: Any) -> IntegrationController:
-    """Create and return a release controller."""
-    repo_dir = kwargs.pop('repo_dir', REPO_DIR)
-    repo = Git(Repository(repo_dir))
-
-    config_files = kwargs.pop('config_files', CONFIG_FILES)
-    cfg = get_source_tree(config_files=config_files)
-
-    return IntegrationController(config=cfg, repo=repo, **kwargs)

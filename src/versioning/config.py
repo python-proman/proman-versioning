@@ -129,15 +129,14 @@ class Config(ConfigManager):
         self, filepaths: List[str], defaults: Dict[str, Any]
     ) -> None:
         """Initialize settings from configuration."""
-        # XXX: config_manager is not passing separator
         super().__init__(filepaths=filepaths, separator='.', defaults=defaults)
 
         # load configuration from paths in order or precedence
         config = (
             self.lookup(
-                '.proman.versioning',
-                '.tool.proman.versioning',
-                '.tool.poetry.versioning',
+                'proman.versioning',
+                'tool.proman.versioning',
+                'tool.poetry.versioning',
             )
             or {}
         )
@@ -148,8 +147,8 @@ class Config(ConfigManager):
             and config['files'] != []
         ):
             self.templates = config['files']
-        else:
-            raise PromanVersioningException('no configuration files provided')
+        # else:
+        #     raise PromanVersioningException('no versioned files provided')
 
         if 'types' not in config:
             angular_convention = [
@@ -165,15 +164,16 @@ class Config(ConfigManager):
         self.parser = ParserConfig(config=config)
 
         config_version = self.lookup(
-            '.project.version',
-            '.tool.proman.version',
-            '.tool.poetry.version',
+            'project.version',
+            'proman.version',
+            'tool.proman.version',
+            'tool.poetry.version',
         )
-        if config_version is None:
-            raise PromanVersioningException('no version found in filepaths')
+        # if config_version is None:
+        #     raise PromanVersioningException('no version found in filepaths')
 
         # TODO: use different version based on config
         self.version = Version(
-            version=config_version,
+            version=str(config_version),
             **asdict(ReleaseConfig(config=config)),
         )

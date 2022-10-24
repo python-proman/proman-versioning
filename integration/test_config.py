@@ -6,8 +6,8 @@
 
 import os
 
-from versioning import Version, get_release_controller, get_source_tree
-from versioning.config import GRAMMAR_PATH
+from versioning import Version, get_release_controller
+from versioning.config import GRAMMAR_PATH, Config
 
 VERSIONING_PATH = os.path.abspath(
     os.path.join(
@@ -22,7 +22,6 @@ PYPROJECT_PATH = os.path.abspath(
         'pyproject.toml',
     )
 )
-print(PYPROJECT_PATH)
 
 
 def test_proman_source_tree(fs):
@@ -30,14 +29,14 @@ def test_proman_source_tree(fs):
     version = Version('1.2.3')
     fs.add_real_file(VERSIONING_PATH)
     fs.add_real_file(PYPROJECT_PATH)
-    config = get_source_tree(config_files=[VERSIONING_PATH, PYPROJECT_PATH])
+    config = Config(filepaths=[VERSIONING_PATH, PYPROJECT_PATH])
     assert config.version.enable_devreleases is True
     assert config.version.enable_prereleases is True
     assert config.version.enable_postreleases is True
     assert config.version == version
-    assert Version(config.retrieve('.proman.version')) == version
-    assert Version(config.retrieve('.tool.proman.version')) == version
-    assert Version(config.retrieve('.tool.poetry.version')) == version
+    assert Version(config.lookup('proman.version')) == version
+    assert Version(config.lookup('tool.proman.version')) == version
+    assert Version(config.lookup('tool.poetry.version')) == version
 
 
 def test_proman_release_controller(fs):
@@ -70,10 +69,10 @@ def test_proman_release_controller(fs):
         dry_run=False,
     )
 
-    config = get_source_tree(config_files=[VERSIONING_PATH, PYPROJECT_PATH])
+    config = Config(filepaths=[VERSIONING_PATH, PYPROJECT_PATH])
 
     # TODO: need to compare version with commit
     assert version == Version('1.2.3.post0')
-    assert Version(config.retrieve('.proman.version')) == version
-    assert Version(config.retrieve('.tool.proman.version')) == version
-    assert Version(config.retrieve('.tool.poetry.version')) == version
+    assert Version(config.lookup('proman.version')) == version
+    assert Version(config.lookup('tool.proman.version')) == version
+    assert Version(config.lookup('tool.poetry.version')) == version

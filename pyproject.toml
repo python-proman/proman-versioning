@@ -35,8 +35,7 @@ transitions = "^0.8.4"
 pygit2 = "^1.6.1"
 cffi = "^1.15.0"
 packaging = "^21.3"
-compendium = "^0.1.1-beta.0"
-proman-workflows = "^0.1.0-alpha.8"
+compendium = "^0.1.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
@@ -54,6 +53,7 @@ pylint = "^2.9.5"
 black = {version = "^21.11b1", allow-prereleases = true}
 pyfakefs = "^4.5.3"
 mkdocstrings = "^0.16.2"
+proman-workflows = "^0.1.0-alpha.8"
 pydocstyle = {extras = ["toml"], version = "^6.1.1"}
 pytest = "^6.2.5"
 
@@ -100,8 +100,7 @@ exclude = '''
     | \.git
     | \.mypy_cache
     | \.pytest_cache
-    | \.vagrant
-    | _build
+    | build
     | dist
   )
 )

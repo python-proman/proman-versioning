@@ -4,13 +4,14 @@
 import os
 from unittest.mock import Mock, mock_open, patch
 
-from versioning import IntegrationController, Version
+from versioning import ReleaseController, Version
 from versioning.config import Config
 from versioning.vcs import Git
 
 config = Config(
-    filepaths=['pyproject.toml'],
+    filepaths=[],
     defaults={
+        # 'project': {'version': '1.2.3'},
         'proman': {
             'version': '1.2.3',
             'versioning': {
@@ -38,7 +39,7 @@ config = Config(
 def test_create_devrelease(mock_file):
     """Test development release creation."""
     working_dir = os.path.join(os.sep, 'mock', '.git')
-    controller = IntegrationController(
+    controller = ReleaseController(
         repo=Git(Mock(path=working_dir, head={'name': 'mock'})),
         config=config,
         message='release: create devrelease',
