@@ -163,6 +163,7 @@ class Git:
         remote_repo = self.repo.remotes[remote]
         credentials = UserPass(username or self.username, password)
         remote_repo.credentials = credentials
+        print(branch)
 
         callbacks = RemoteCallbacks(credentials=credentials)
         remote_repo.push([f"refs/heads/{branch}"], callbacks=callbacks)
