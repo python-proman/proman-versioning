@@ -87,6 +87,7 @@ def info(
 
 
 def push(
+    branch: Optional[str] = None,
     remote: str = 'origin',
     remote_branch: Optional[str] = None,
     remote_url: Optional[str] = None,
@@ -97,6 +98,8 @@ def push(
 
     Parameters
     ----------
+    branch: str
+        The name of the local branch to push.
     remote: str
         The reference name of the repository.
     remote_branch: str
@@ -111,6 +114,7 @@ def push(
     """
     # INFO: Helper for when run from containers without git.
     _controller.push_changes(
+        branch=branch,
         remote=remote,
         remote_branch=remote_branch,
         remote_url=remote_url,
