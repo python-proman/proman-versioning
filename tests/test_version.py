@@ -4,4 +4,4 @@ from versioning import __version__
 
 def test_version() -> None:
     """Test project metadata version."""
-    assert __version__ == '0.6.1a0'
+    assert __version__ == '0.6.1a1'
