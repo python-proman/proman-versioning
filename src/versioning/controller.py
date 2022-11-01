@@ -48,7 +48,7 @@ class ReleaseController(CommitMessageParser):
     """Control version releases."""
 
     # workflow_types = ['rolling', 'sustainment']
-    # Trunk Based Development (TBD) - GitHub flow
+    # Trunk Based Development (TBD) - GitLab flow
     # Stage Based Development (SBD) - DTAP
     # Release Branching Strategy (RBS) - PEP440
     # Feature Branching Strategy (FBS) - Agile
@@ -236,6 +236,7 @@ class ReleaseController(CommitMessageParser):
 
     def push_changes(self, **kwargs: Any) -> None:
         """Push changes to repository."""
+        branch = kwargs.pop('branch', self.vcs.branch)
         remote = kwargs.pop('remote', 'origin')
         remote_branch = kwargs.pop('remote_branch', None)
         remote_url = kwargs.pop('remote_url', None)
@@ -252,7 +253,7 @@ class ReleaseController(CommitMessageParser):
                 # password=password,
             )
         self.vcs.push(
-            branch='master',
+            branch=branch,
             remote=remote,
             remote_branch=remote_branch,
             username=username,
