@@ -48,7 +48,7 @@ class ReleaseController(CommitMessageParser):
     """Control version releases."""
 
     # workflow_types = ['rolling', 'sustainment']
-    # Trunk Based Development (TBD) - GitHub flow
+    # Trunk Based Development (TBD) - GitLab flow
     # Stage Based Development (SBD) - DTAP
     # Release Branching Strategy (RBS) - PEP440
     # Feature Branching Strategy (FBS) - Agile
@@ -236,11 +236,12 @@ class ReleaseController(CommitMessageParser):
 
     def push_changes(self, **kwargs: Any) -> None:
         """Push changes to repository."""
-        remote = kwargs.pop('remote', 'origin')
-        remote_branch = kwargs.pop('remote_branch', None)
-        remote_url = kwargs.pop('remote_url', None)
-        username = kwargs.pop('username', None)
-        password = kwargs.pop('password', None)
+        branch = kwargs.pop('branch')
+        remote = kwargs.pop('remote')
+        remote_branch = kwargs.pop('remote_branch')
+        remote_url = kwargs.pop('remote_url')
+        username = kwargs.pop('username')
+        password = kwargs.pop('password')
 
         if remote_url is not None:
             # TODO: feels like it would be smarter to encapsulate
@@ -252,8 +253,8 @@ class ReleaseController(CommitMessageParser):
                 # password=password,
             )
         self.vcs.push(
-            branch='master',
-            remote=remote,
+            branch=branch or self.vcs.branch,
+            remote=remote or 'origin',
             remote_branch=remote_branch,
             username=username,
             password=password,

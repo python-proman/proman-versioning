@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "proman-versioning"
-version = "0.6.1a0"
+version = "0.6.1a2"
 homepage = "https://github.com/python-proman/proman-versioning"
 description = "Project Management Versioning Tool."
 authors = ["Jesse P. Johnson <jpj6652@gmail.com>"]

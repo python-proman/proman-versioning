@@ -32,17 +32,20 @@ class Git:
     def username(self) -> str:
         """Return username from git configuration."""
         try:
-            username = self.repo.config['user.name']
-            return username
+            return self.repo.config['user.name']
         except Exception:
             raise PromanVersioningException('git user.name not configured')
+
+    @property
+    def branch(self) -> str:
+        """Return branch name of current branch."""
+        return self.repo.head.shorthand
 
     @property
     def email(self) -> str:
         """Return email from git configuration."""
         try:
-            email = self.repo.config['user.email']
-            return email
+            return self.repo.config['user.email']
         except Exception:
             raise PromanVersioningException('git user.email not configured')
 
