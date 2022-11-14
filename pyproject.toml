@@ -80,6 +80,9 @@ version = "versioning.__main__:main"
 homepage = "https://github.com/python-proman/proman-versioning"
 repository = "https://github.com/python-proman/proman-versioning"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.proman.versioning]
 enable_devreleases = false
 
