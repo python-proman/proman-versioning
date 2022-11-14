@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proman-versioning"
-version = "0.6.2a1"
+version = "0.6.2a2"
 description = "Project Management Versioning Tool."
 readme = "README.md"
 license = {text = "LGPL-3.0"}
