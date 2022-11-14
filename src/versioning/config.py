@@ -16,7 +16,11 @@ from versioning.version import Version
 
 # TODO check VCS for paths
 CURRENT_DIR = os.getcwd()
-REPO_DIR = discover_repository(CURRENT_DIR)
+REPO_DIR = (
+    f"{CURRENT_DIR}/.git"
+    if os.path.exists(f"{CURRENT_DIR}/.git")
+    else discover_repository(CURRENT_DIR)
+)
 if REPO_DIR is None:
     raise PromanVersioningException('Unable to locate git repository.')
 PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, os.pardir))
