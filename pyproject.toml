@@ -46,6 +46,7 @@ build = [
     "proman-versioning>=0.5.0-alpha.2",
     "proman-workflows>=0.1.0-alpha.8",
     "invoke>=1.4.1",
+    "twine",
 ]
 docs = [
     "docstr-coverage>=1.2.0",
@@ -98,7 +99,7 @@ pattern = "version = \"${version}\""
 ignore = [
     "D203",
     "D213",
-    "D300"
+    "D300",
 ]
 
 [tool.isort]
