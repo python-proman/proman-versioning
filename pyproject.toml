@@ -23,6 +23,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries",
 ]
 
@@ -37,10 +39,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-changelog = [
-    "mdutils",
-]
-
+changelog = ["mdutils"]
 build = [
     "build",
     "proman-versioning>=0.5.0-alpha.2",
