@@ -9,7 +9,7 @@ from pygit2 import Repository
 
 from versioning.config import CONFIG_FILES, REPO_DIR, Config
 from versioning.controller import ReleaseController
-from versioning.exception import PromanVersioningException
+from versioning.exception import VersioningException
 from versioning.vcs import Git
 from versioning.version import Version  # noqa
 
@@ -40,4 +40,4 @@ def get_release_controller(*args: Any, **kwargs: Any) -> ReleaseController:
 
         return ReleaseController(config=config, repo=repo, **kwargs)
     except Exception as err:
-        raise PromanVersioningException(err)
+        raise VersioningException(err)

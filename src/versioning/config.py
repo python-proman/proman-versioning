@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from compendium.config_manager import ConfigManager
 from pygit2 import discover_repository
 
-from versioning.exception import PromanVersioningException
+from versioning.exception import VersioningException
 from versioning.version import Version
 
 # from urllib.parse import urljoin, urlparse
@@ -22,7 +22,7 @@ REPO_DIR = (
     else discover_repository(CURRENT_DIR)
 )
 if REPO_DIR is None:
-    raise PromanVersioningException('Unable to locate git repository.')
+    raise VersioningException('Unable to locate git repository.')
 PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, os.pardir))
 CONFIG_FILES = [
     os.path.join(PROJECT_DIR, '.versioning'),
@@ -152,7 +152,7 @@ class Config(ConfigManager):
         ):
             self.templates = config['files']
         # else:
-        #     raise PromanVersioningException('no versioned files provided')
+        #     raise VersioningException('no versioned files provided')
 
         if 'types' not in config:
             angular_convention = [
@@ -174,7 +174,7 @@ class Config(ConfigManager):
             'tool.poetry.version',
         )
         # if config_version is None:
-        #     raise PromanVersioningException('no version found in filepaths')
+        #     raise VersioningException('no version found in filepaths')
 
         # TODO: use different version based on config
         self.version = Version(

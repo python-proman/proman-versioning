@@ -12,7 +12,7 @@ from string import Template
 from typing import TYPE_CHECKING, Any, Dict
 
 # from transitions import Machine
-from versioning.exception import PromanVersioningException
+from versioning.exception import VersioningException
 from versioning.grammars.conventional_commits import CommitMessageParser
 from versioning.version import Version
 
@@ -191,11 +191,11 @@ class ReleaseController(CommitMessageParser):
                         )
                         log.info(f"applying tag: {str(new_version)}")
             else:
-                raise PromanVersioningException(
+                raise VersioningException(
                     'no version update could be determined'
                 )
         else:
-            raise PromanVersioningException('repository is not clean')
+            raise VersioningException('repository is not clean')
 
     def update_version(self, **kwargs: Any) -> Version:
         """Update the version of the project."""
@@ -224,7 +224,7 @@ class ReleaseController(CommitMessageParser):
                     new_version.bump_release()  # type: ignore
                 else:
                     # TODO: need debug statement here instead
-                    raise PromanVersioningException(
+                    raise VersioningException(
                         'received unsupported commit type'
                     )
 
