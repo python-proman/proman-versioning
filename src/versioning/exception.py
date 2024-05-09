@@ -3,5 +3,5 @@
 """Provide exceptions."""
 
 
-class PromanVersioningException(Exception):
+class VersioningException(Exception):
     """Provide base errors in PackageManager."""

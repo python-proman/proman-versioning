@@ -16,7 +16,7 @@ from pygit2 import (
     UserPass,
 )
 
-from versioning.exception import PromanVersioningException
+from versioning.exception import VersioningException
 
 
 class Git:
@@ -34,7 +34,7 @@ class Git:
         try:
             return self.repo.config['user.name']
         except Exception:
-            raise PromanVersioningException('git user.name not configured')
+            raise VersioningException('git user.name not configured')
 
     @property
     def branch(self) -> str:
@@ -47,7 +47,7 @@ class Git:
         try:
             return self.repo.config['user.email']
         except Exception:
-            raise PromanVersioningException('git user.email not configured')
+            raise VersioningException('git user.email not configured')
 
     @property
     def repo_dir(self) -> str:
