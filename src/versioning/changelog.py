@@ -34,9 +34,7 @@ class Changelog:
         for tag in tags:
             yield self.repo.revparse_single(tag)
 
-    def _categorize_commit(
-        self, commit: 'Commit'
-    ) -> Tuple[str, List[str]]:
+    def _categorize_commit(self, commit: 'Commit') -> Tuple[str, List[str]]:
         """Get changes associated with a release."""
         parser = CommitMessageParser()
         parser.parse(commit.message.rstrip())
@@ -109,10 +107,7 @@ class Changelog:
             title='Changelog',
             # author='Jesse P. Johnson'
         )
-        md.new_header(
-            level=1,
-            title='ProMan Versioning Changelog'
-        )
+        md.new_header(level=1, title='ProMan Versioning Changelog')
         sections = ['commit', 'type', 'description']
 
         for release in reversed(releases):
@@ -120,7 +115,7 @@ class Changelog:
             md.new_header(
                 level=2,
                 # title=f"[v{tag.name}]({url}) - ({dt.strftime('%Y-%m-%d')})"
-                title=f"v{release['name']} - ({dt.strftime('%Y-%m-%d')})"
+                title=f"v{release['name']} - ({dt.strftime('%Y-%m-%d')})",
             )
 
             for k, v in release['changes'].items():

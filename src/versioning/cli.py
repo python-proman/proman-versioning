@@ -8,8 +8,8 @@ from typing import Optional
 
 from versioning import get_release_controller
 
-_log = logging.getLogger(__name__)
-_controller = get_release_controller()
+LOG = logging.getLogger(__name__)
+CONTROLLER = get_release_controller()
 
 
 def bump(
@@ -45,7 +45,7 @@ def bump(
     """
     # sign: bool
     #     Sign commit with PKI signature.
-    version = _controller.update_version(
+    version = CONTROLLER.update_version(
         commit=commit,
         release=release,
         tag=tag,
@@ -76,14 +76,14 @@ def info(
 
     """
     if release:
-        print(_controller.release, file=sys.stdout)
+        print(CONTROLLER.release, file=sys.stdout)
     if filepaths:
-        for x in _controller.config.templates:
+        for x in CONTROLLER.config.templates:
             print(x['filepath'], file=sys.stdout)
     if compat:
         ...
     if not release and not filepaths:
-        print(_controller.config.version, file=sys.stdout)
+        print(CONTROLLER.config.version, file=sys.stdout)
 
 
 def push(
@@ -113,7 +113,7 @@ def push(
 
     """
     # INFO: Helper for when run from containers without git.
-    _controller.push_changes(
+    CONTROLLER.push_changes(
         branch=branch,
         remote=remote,
         remote_branch=remote_branch,
