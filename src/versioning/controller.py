@@ -73,10 +73,10 @@ class ReleaseController(CommitMessageParser):
             head = self.vcs.repo.head
             target = self.vcs.repo[head.target]
             self.parse(target.message)
-            log.debug(f"provided commit message: '{message}'")
+            log.debug('provided commit message: %r', message)
         else:
             self.parse(message)
-            log.debug(f"found commit message: '{message}'")
+            log.debug('found commit message: %r', message)
 
     @property
     def release(self) -> str:
@@ -110,7 +110,7 @@ class ReleaseController(CommitMessageParser):
         filepath = os.path.join(self.vcs.working_dir, config['filepath'])
 
         # TODO: handle when file does not exist
-        with open(filepath, 'r+') as f:
+        with open(filepath, 'r+', encoding='utf-8') as f:
             file_contents = f.read()
 
             if 'patterns' in config:
@@ -124,7 +124,7 @@ class ReleaseController(CommitMessageParser):
                     template,  # re.escape(template),
                     flags=0,
                 )
-                log.debug(f"using pattern for source version {match}")
+                log.debug('using pattern for source version %s', match)
 
                 # substitute the expression in file
                 file_update = match.sub(
@@ -138,11 +138,11 @@ class ReleaseController(CommitMessageParser):
                     f.seek(0)
                     f.truncate()
                     f.write(file_update)
-                    log.info(f"writting file at: '{filepath}'")
+                    log.info('writting file at: %r', filepath)
                 except Exception as err:
                     print(err, file=sys.stderr)
             else:
-                log.info(f"dry-run skipping file write at: '{filepath}'")
+                log.info('dry-run skipping file write at: %r', filepath)
                 # print the file changes
                 deltas = difflib.unified_diff(
                     file_contents.splitlines(),
@@ -180,7 +180,7 @@ class ReleaseController(CommitMessageParser):
                         ),
                         dry_run=dry_run,
                     )
-                    log.info(f"commiting version changes: {str(new_version)}")
+                    log.info('commiting version changes: %s', str(new_version))
 
                     if make_tag:
                         self.vcs.tag(
@@ -189,7 +189,7 @@ class ReleaseController(CommitMessageParser):
                             message=None,
                             dry_run=dry_run,
                         )
-                        log.info(f"applying tag: {str(new_version)}")
+                        log.info('applying tag: %s', str(new_version))
             else:
                 raise VersioningException(
                     'no version update could be determined'

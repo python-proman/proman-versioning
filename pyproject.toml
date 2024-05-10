@@ -123,6 +123,23 @@ exclude = '''
 )
 '''
 
+[tool.pylint]
+fail-under = 9.0
+
+[tool.pylint."FORMAT"]
+max-line-length = 79
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "C0103",
+    "R0903",
+    "W0212",
+    "W0715"
+]
+
+[tool.pylint."MISCELLANEOUS"]
+notes = []
+
 [tool.mypy]
 warn_redundant_casts = true
 warn_unused_ignores = true

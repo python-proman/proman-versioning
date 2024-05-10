@@ -26,32 +26,32 @@ class LocalConfig:
 
         # add build number
         self.transitions.append(
-            dict(
-                trigger='update_local',
-                source='non_local',
-                dest='local',
-                before='_update_local',
-            )
+            {
+                'trigger': 'update_local',
+                'source': 'non_local',
+                'dest': 'local',
+                'before': '_update_local',
+            }
         )
 
         # update build number
         self.transitions.append(
-            dict(
-                trigger='update_local',
-                source='local_local',
-                dest='=',
-                before='_update_local',
-            )
+            {
+                'trigger': 'update_local',
+                'source': 'local_local',
+                'dest': '',
+                'before': '_update_local',
+            }
         )
 
         # remove build number
         self.transitions.append(
-            dict(
-                trigger='update_local',
-                source='local',
-                dest='non_local',
-                before='_update_local',
-            )
+            {
+                'trigger': 'update_local',
+                'source': 'local',
+                'dest': 'non_local',
+                'before': '_update_local',
+            }
         )
 
 
@@ -69,190 +69,190 @@ class ReleaseConfig:
 
         # XXX: need to calver as alternative first
         # self.transitions.append(
-        #     dict(
-        #         trigger='bump_epoch',
-        #         source='*',
-        #         dest=default_release_type,
-        #         before='_bump_epoch',
-        #         after='new_release',
-        #         conditions=['autostart_default_release'],
-        #     )
+        #     {
+        #         'trigger': 'bump_epoch',
+        #         'source': '*',
+        #         'dest': default_release_type,
+        #         'before': '_bump_epoch',
+        #         'after': 'new_release',
+        #         'conditions': ['autostart_default_release'],
+        #     }
         # )
 
         self.transitions.append(
-            dict(
-                trigger='bump_major',
-                source='*',
-                dest=default_release_type,
-                before='_bump_major',
-                after='new_release',
-                conditions=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_major',
+                'source': '*',
+                'dest': default_release_type,
+                'before': '_bump_major',
+                'after': 'new_release',
+                'conditions': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_minor',
-                source='*',
-                dest=default_release_type,
-                before='_bump_minor',
-                after='new_release',
-                conditions=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_minor',
+                'source': '*',
+                'dest': default_release_type,
+                'before': '_bump_minor',
+                'after': 'new_release',
+                'conditions': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_micro',
-                source='*',
-                dest=default_release_type,
-                before='_bump_micro',
-                after='new_release',
-                conditions=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_micro',
+                'source': '*',
+                'dest': default_release_type,
+                'before': '_bump_micro',
+                'after': 'new_release',
+                'conditions': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_epoch',
-                source='*',
-                dest='final',
-                before='_bump_epoch',
-                # unless=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_epoch',
+                'source': '*',
+                'dest': 'final',
+                'before': '_bump_epoch',
+                # 'unless': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_major',
-                source='*',
-                dest='final',
-                before='_bump_major',
-                unless=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_major',
+                'source': '*',
+                'dest': 'final',
+                'before': '_bump_major',
+                'unless': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_minor',
-                source='*',
-                dest='final',
-                before='_bump_minor',
-                unless=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_minor',
+                'source': '*',
+                'dest': 'final',
+                'before': '_bump_minor',
+                'unless': ['autostart_default_release'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='bump_micro',
-                source='*',
-                dest='final',
-                before='_bump_micro',
-                unless=['autostart_default_release'],
-            )
+            {
+                'trigger': 'bump_micro',
+                'source': '*',
+                'dest': 'final',
+                'before': '_bump_micro',
+                'unless': ['autostart_default_release'],
+            }
         )
 
         # development releases
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source=['final', 'post'],
-                dest='dev',
-                before='_new_devrelease',
-                conditions=['enable_devreleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': ['final', 'post'],
+                'dest': 'dev',
+                'before': '_new_devrelease',
+                'conditions': ['enable_devreleases'],
+            }
         )
 
         # pre-releases
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source=['final', 'post'],
-                dest='alpha',
-                before='_new_prerelease',
-                conditions=['enable_prereleases'],
-                unless=['enable_devreleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': ['final', 'post'],
+                'dest': 'alpha',
+                'before': '_new_prerelease',
+                'conditions': ['enable_prereleases'],
+                'unless': ['enable_devreleases'],
+            }
         )
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='dev',
-                dest='alpha',
-                before='_new_prerelease',
-                conditions=['enable_devreleases', 'enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'dev',
+                'dest': 'alpha',
+                'before': '_new_prerelease',
+                'conditions': ['enable_devreleases', 'enable_prereleases'],
+            }
         )
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='alpha',
-                dest='beta',
-                before='_new_prerelease',
-                conditions=['enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'alpha',
+                'dest': 'beta',
+                'before': '_new_prerelease',
+                'conditions': ['enable_prereleases'],
+            }
         )
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='beta',
-                dest='candidate',
-                before='_new_prerelease',
-                conditions=['enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'beta',
+                'dest': 'candidate',
+                'before': '_new_prerelease',
+                'conditions': ['enable_prereleases'],
+            }
         )
 
         # final release
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='dev',
-                dest='final',
-                before='_finalize_release',
-                conditions=['enable_devreleases'],
-                unless=['enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'dev',
+                'dest': 'final',
+                'before': '_finalize_release',
+                'conditions': ['enable_devreleases'],
+                'unless': ['enable_prereleases'],
+            }
         )
 
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='candidate',
-                dest='final',
-                before='_finalize_release',
-                conditions=['enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'candidate',
+                'dest': 'final',
+                'before': '_finalize_release',
+                'conditions': ['enable_prereleases'],
+            }
         )
         self.transitions.append(
-            dict(
-                trigger='start_release',
-                source='post',
-                dest='final',
-                before='_finalize_release',
-                conditions=['enable_postreleases'],
-                unless=['enable_devreleases', 'enable_prereleases'],
-            )
+            {
+                'trigger': 'start_release',
+                'source': 'post',
+                'dest': 'final',
+                'before': '_finalize_release',
+                'conditions': ['enable_postreleases'],
+                'unless': ['enable_devreleases', 'enable_prereleases'],
+            }
         )
 
         # post-releases
         self.transitions.append(
-            dict(
-                trigger='start_postrelease',
-                source='final',
-                dest='post',
-                before='_new_postrelease',
-                conditions=['enable_postreleases'],
-            )
+            {
+                'trigger': 'start_postrelease',
+                'source': 'final',
+                'dest': 'post',
+                'before': '_new_postrelease',
+                'conditions': ['enable_postreleases'],
+            }
         )
 
         # bump release number
         self.transitions.append(
-            dict(
-                trigger='bump_release',
-                source='*',
-                dest=None,
-                before='_bump_release',
-            )
+            {
+                'trigger': 'bump_release',
+                'source': '*',
+                'dest': None,
+                'before': '_bump_release',
+            }
         )
 
 
@@ -339,9 +339,9 @@ class Version(PackageVersion):
         elif self.is_prerelease and self.pre:
             if self.pre[0] == 'a':
                 return 'alpha'
-            elif self.pre[0] == 'b':
+            if self.pre[0] == 'b':
                 return 'beta'
-            elif self.pre[0] == 'rc':
+            if self.pre[0] == 'rc':
                 return 'candidate'
         elif self.is_postrelease:
             state = 'post'
@@ -354,10 +354,9 @@ class Version(PackageVersion):
         """Get the starting release type."""
         if self.enable_devreleases:
             return 'dev'
-        elif self.enable_prereleases:
+        if self.enable_prereleases:
             return 'alpha'
-        else:
-            return 'final'
+        return 'final'
 
     @property
     def query(self) -> str:
@@ -379,11 +378,10 @@ class Version(PackageVersion):
                 candidate = 'c|candidate|rc|release'
                 v = f"{r}[-_\\.]?(?:{candidate})[-_\\.]?{inst or '0?'}"
             return v
-        elif self.post:
+        if self.post:
             v = f"{r}[-_\\.]?(?:post[-_\\.]?)?{self.post}"
             return v
-        else:
-            return str(self)
+        return str(self)
 
     def __update_version(
         self,

@@ -29,7 +29,7 @@ __all__ = (
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
-def get_release_controller(*args: Any, **kwargs: Any) -> ReleaseController:
+def get_release_controller(**kwargs: Any) -> ReleaseController:
     """Create and return a release controller."""
     try:
         repo_dir = kwargs.pop('repo_dir', REPO_DIR)
@@ -40,4 +40,4 @@ def get_release_controller(*args: Any, **kwargs: Any) -> ReleaseController:
 
         return ReleaseController(config=config, repo=repo, **kwargs)
     except Exception as err:
-        raise VersioningException(err)
+        raise VersioningException(err) from err
