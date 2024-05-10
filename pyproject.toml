@@ -40,38 +40,35 @@ dependencies = [
 changelog = [
     "mdutils",
 ]
-
 build = [
     "build",
     "proman-versioning>=0.5.0-alpha.2",
-    "proman-workflows>=0.1.0-alpha.8",
-    "invoke>=1.4.1",
-    "twine",
+    "twine"
 ]
-docs = [
-    "docstr-coverage>=1.2.0",
-    "pydocstyle[toml]>=6.1.1",
-    "mkdocs>=1.2.2",
-    "mkdocs-material>=7.2.0",
-    "mkdocstrings>=0.16.2",
-]
-test = [
-    "pyfakefs>=4.5.3",
+dev = [
+    # test
     "pytest>=6.2.5",
     "pytest-cov>=2.10.0",
     "tox>=3.25.0",
-]
-sca = [
-    "flake8>=3.8.3",
-    "mypy>=0.942",
-    "bandit>=1.6.2",
-    "safety>=1.9.0",
-    # "pylint>=2.9.5"
-]
-style = [
+    # sca
+    "mypy>=1",
+    "pylint>=3",
+    # style
     "black==22.3.0",
     "isort>=5.10.1",
+    "flake8>=3.8.3",
+    # sast
+    "bandit>=1.6.2",
+    "safety>=1.9.0"
 ]
+docs = [
+    "docstr-coverage>=1.2.0",
+    "mkdocs>=1.2.2",
+    "mkdocs-material>=7.2.0",
+    "mkdocstrings[python]>=0.16.2",
+    "pydocstyle[toml]>=6.1.1"
+]
+
 
 [project.scripts]
 version = "versioning.__main__:main"
