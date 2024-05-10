@@ -6,7 +6,7 @@ from collections import deque
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple
 
-from mdutils.mdutils import MdUtils
+from mdutils.mdutils import MdUtils  # pylint: disable=import-error
 
 from versioning.grammars.conventional_commits import CommitMessageParser
 
@@ -34,9 +34,7 @@ class Changelog:
         for tag in tags:
             yield self.repo.revparse_single(tag)
 
-    def _categorize_commit(
-        self, commit: 'Commit'
-    ) -> Tuple[str, List[str]]:
+    def _categorize_commit(self, commit: 'Commit') -> Tuple[str, List[str]]:
         """Get changes associated with a release."""
         parser = CommitMessageParser()
         parser.parse(commit.message.rstrip())
@@ -51,14 +49,8 @@ class Changelog:
             section = 'added'
         elif parser.title['type'] == 'fix':
             section = 'fixed'
-        elif (
-            parser.title['type'] == 'refactor'
-            or parser.title['type'] == 'ci'
-            or parser.title['type'] == 'build'
-            or parser.title['type'] == 'docs'
-            or parser.title['type'] == 'test'
-            or parser.title['type'] == 'style'
-            or parser.title['type'] == 'perf'
+        elif parser.title['type'] in (
+            'refactor' 'ci' 'build' 'docs' 'test' 'style' 'perf'
         ):
             section = 'changed'
         else:
@@ -109,10 +101,7 @@ class Changelog:
             title='Changelog',
             # author='Jesse P. Johnson'
         )
-        md.new_header(
-            level=1,
-            title='ProMan Versioning Changelog'
-        )
+        md.new_header(level=1, title='ProMan Versioning Changelog')
         sections = ['commit', 'type', 'description']
 
         for release in reversed(releases):
@@ -120,7 +109,7 @@ class Changelog:
             md.new_header(
                 level=2,
                 # title=f"[v{tag.name}]({url}) - ({dt.strftime('%Y-%m-%d')})"
-                title=f"v{release['name']} - ({dt.strftime('%Y-%m-%d')})"
+                title=f"v{release['name']} - ({dt.strftime('%Y-%m-%d')})",
             )
 
             for k, v in release['changes'].items():

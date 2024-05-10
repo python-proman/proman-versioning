@@ -33,8 +33,8 @@ class Git:
         """Return username from git configuration."""
         try:
             return self.repo.config['user.name']
-        except Exception:
-            raise VersioningException('git user.name not configured')
+        except Exception as exc:
+            raise VersioningException('git user.name not configured') from exc
 
     @property
     def branch(self) -> str:
@@ -46,8 +46,8 @@ class Git:
         """Return email from git configuration."""
         try:
             return self.repo.config['user.email']
-        except Exception:
-            raise VersioningException('git user.email not configured')
+        except Exception as exc:
+            raise VersioningException('git user.email not configured') from exc
 
     @property
     def repo_dir(self) -> str:
@@ -69,7 +69,7 @@ class Git:
         name: str,
         url: str,
         fetch: Optional[str] = None,
-        **kwargs: Any,
+        # **kwargs: Any,
     ) -> None:
         """Add remote."""
         if name not in [x.name for x in self.repo.remotes]:
@@ -82,7 +82,7 @@ class Git:
     def commit(
         self,
         branch: Optional[str] = None,
-        filepaths: List[str] = [],
+        filepaths: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> Optional[Commit]:
         """Create commit."""
@@ -94,7 +94,7 @@ class Git:
 
         # populate index
         index = self.repo.index
-        if filepaths == []:
+        if not filepaths:
             index.add_all()
         else:
             for filepath in filepaths:
