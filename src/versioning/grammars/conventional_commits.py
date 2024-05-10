@@ -4,15 +4,21 @@
 
 # import logging
 from collections import defaultdict
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from lark import Lark
 
 from versioning.config import GRAMMAR_PATH
 
+if TYPE_CHECKING:
+    from lark import UnexpectedInput
+    from lark.tree import Tree
+
 
 class CommitMessageParser:
     """Parse commit messages."""
+
+    __tree: 'Tree'
 
     def __init__(
         self,
@@ -30,11 +36,11 @@ class CommitMessageParser:
         self,
         text: str,
         start: Optional[str] = None,
-        on_error: Optional[Callable] = None
+        on_error: Optional[Callable[['UnexpectedInput'], bool]] = None,
     ) -> None:
         """Parse commit message."""
-        self.__tree = self.__parser.parse(  # type: ignore
-            text, start=start, on_error=on_error
+        self.__tree = self.__parser.parse(
+            text, start=start, on_error=on_error  # type: ignore
         )
 
     def _get_section(self, name: str) -> Optional[Any]:
@@ -61,8 +67,7 @@ class CommitMessageParser:
         section = self._get_section('body')
         if section:
             return [arg.value for arg in section.children]
-        else:
-            return []
+        return []
 
     @property
     def footer(self) -> Dict[str, Any]:
@@ -88,7 +93,6 @@ class CommitMessageParser:
                     )
                 if arg.data == 'breaking_change':
                     footer['breaking_change'] = next(
-                        (x.value for x in arg.children),
-                        'Unknown'
+                        (x.value for x in arg.children), 'Unknown'
                     )
         return footer

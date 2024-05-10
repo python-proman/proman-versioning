@@ -387,9 +387,9 @@ class Version(PackageVersion):
         self,
         epoch: Optional[int] = None,
         release: Optional[Tuple[Any, ...]] = None,
-        pre: Optional[Tuple[str, Optional[int]]] = None,
-        post: Optional[Tuple[Optional[str], Optional[int]]] = None,
-        dev: Optional[Tuple[str, Optional[int]]] = None,
+        pre: Optional[Tuple[str, int]] = None,
+        post: Optional[Tuple[str, int]] = None,
+        dev: Optional[Tuple[str, int]] = None,
         local: Optional[str] = None,
     ) -> None:
         """Update the internal version state."""
