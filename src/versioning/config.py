@@ -25,8 +25,9 @@ if REPO_DIR is None:
     raise VersioningException('Unable to locate git repository.')
 PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, os.pardir))
 CONFIG_FILES = [
-    os.path.join(PROJECT_DIR, '.versioning'),
-    os.path.join(PROJECT_DIR, 'pyproject.toml'),
+    '.version',
+    '.versioning',
+    'pyproject.toml',
     # TODO: add setup.cfg
 ]
 
@@ -138,21 +139,24 @@ class Config(ConfigManager):
         # load configuration from paths in order or precedence
         config = (
             self.lookup(
-                'proman.versioning',
+                'versioning',
                 'tool.proman.versioning',
                 'tool.poetry.versioning',
             )
             or {}
         )
+        if 'files' in config and config['files'] != []:
+            self.templates += config['files']
 
-        if (
-            self.templates == []
-            and 'files' in config
-            and config['files'] != []
-        ):
-            self.templates = config['files']
-        # else:
-        #     raise VersioningException('no versioned files provided')
+        self.templates += [
+            {
+                'filepath': x,
+                'pattern': "version = \"${version}\"",
+            }
+            for x in CONFIG_FILES
+            if os.path.exists(x)
+            and x not in [x['filepath'] for x in self.templates]
+        ]
 
         if 'types' not in config:
             angular_convention = [
@@ -169,6 +173,7 @@ class Config(ConfigManager):
 
         config_version = self.lookup(
             'project.version',
+            'version',
             'proman.version',
             'tool.proman.version',
             'tool.poetry.version',

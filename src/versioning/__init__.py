@@ -3,11 +3,12 @@
 """Initialize versioning instances."""
 
 import logging
+import os
 from typing import Any
 
 from pygit2 import Repository
 
-from versioning.config import CONFIG_FILES, REPO_DIR, Config
+from versioning.config import CONFIG_FILES, PROJECT_DIR, REPO_DIR, Config
 from versioning.controller import ReleaseController
 from versioning.exception import VersioningException
 from versioning.vcs import Git
@@ -35,7 +36,10 @@ def get_release_controller(**kwargs: Any) -> ReleaseController:
         repo_dir = kwargs.pop('repo_dir', REPO_DIR)
         repo = Git(Repository(repo_dir))
 
-        config_files = kwargs.pop('config_files', CONFIG_FILES)
+        config_files = kwargs.pop(
+            'config_files',
+            [os.path.join(PROJECT_DIR, x) for x in CONFIG_FILES],
+        )
         config = Config(filepaths=config_files)
 
         return ReleaseController(config=config, repo=repo, **kwargs)
