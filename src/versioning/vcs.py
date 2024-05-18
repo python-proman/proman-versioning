@@ -132,7 +132,7 @@ class Git:
         ref = f"refs/heads/{branch}" if branch else self.ref
         commit = self.repo.resolve_refish(ref)[0]
         oid = commit.hex
-        kind = kwargs.get('kind', GIT_OBJ_COMMIT)
+        kind = kwargs.get('kind', GIT_OBJECT_COMMIT)
 
         # tagger = pygit2.Signature('Alice Doe', 'adoe@example.com', 12347, 0)
         tagger = Signature(self.username, self.email)
