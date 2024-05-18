@@ -7,7 +7,7 @@ import os
 from typing import Any, List, Optional
 
 from pygit2 import (
-    GIT_OBJ_COMMIT,
+    GIT_OBJECT_COMMIT,
     Commit,
     RemoteCallbacks,
     Repository,
