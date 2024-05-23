@@ -1,3 +1,12 @@
 0000000000000000000000000000000000000000 97a10b31669f333956fa3404bfff17432d5eac1f Jesse P. Johnson <jpj6652@gmail.com> 1638139982 -0500	commit (initial): build: initial commit
 97a10b31669f333956fa3404bfff17432d5eac1f 189206e0b4097c1bc56472ed8866b201d28dc0ac Jesse P. Johnson <jpj6652@gmail.com> 1638161385 -0500	commit: build: standardize version
 189206e0b4097c1bc56472ed8866b201d28dc0ac e2e4845e6aa1a97cfa9f09fbf81cdbfd5c514211 Jesse P. Johnson <jpj6652@gmail.com> 1638225727 -0500	commit: test: add simple release version
+e2e4845e6aa1a97cfa9f09fbf81cdbfd5c514211 3a1836a9a9631d021992f0cf3be9f09ccb0da15d Jesse P. Johnson <jpj6652@gmail.com> 1716260997 -0500	commit: test: simplify versioning config
+3a1836a9a9631d021992f0cf3be9f09ccb0da15d 93b8c5f93de409ba33e51aec0f5a106e11f51da3 Jesse P. Johnson <jpj6652@gmail.com> 1716261055 -0500	commit: test: simplify versioning config
+93b8c5f93de409ba33e51aec0f5a106e11f51da3 2433d0043f8f3c4b6e80198d1fe7cb25b504e388 Jesse P. Johnson <jpj6652@gmail.com> 1716263064 -0500	commit: test: simplify versioning config
+2433d0043f8f3c4b6e80198d1fe7cb25b504e388 afb3ba8b5dce23a8cd84f8a746d35ea6689d2e86 Jesse P. Johnson <jpj6652@gmail.com> 1716339585 -0500	commit: test: simplify versioning config
+afb3ba8b5dce23a8cd84f8a746d35ea6689d2e86 8dfcff27dfde7559e0c9332c5d21d453957697d3 Jesse P. Johnson <jpj6652@gmail.com> 1716340039 -0500	commit: test: simplify versioning config
+8dfcff27dfde7559e0c9332c5d21d453957697d3 c6e9cd70cc5b371642580dfcca489b71bc77493f Jesse P. Johnson <jpj6652@gmail.com> 1716485190 -0500	commit: test: simplify versioning config
+c6e9cd70cc5b371642580dfcca489b71bc77493f 5eb0a378fc6c511242038ccc29845fdb75ffd387 Jesse P. Johnson <jpj6652@gmail.com> 1716485377 -0500	commit: test: simplify versioning config
+5eb0a378fc6c511242038ccc29845fdb75ffd387 921acffdeb958bf18a8d1ce73d975be0d92281df Jesse P. Johnson <jpj6652@gmail.com> 1716485420 -0500	commit: test: simplify versioning config
+921acffdeb958bf18a8d1ce73d975be0d92281df 647cac34bb99b4e7f0aefd7edeef5c4b908c8e2c Jesse P. Johnson <jpj6652@gmail.com> 1716485430 -0500	commit: test: simplify versioning config
