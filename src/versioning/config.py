@@ -25,9 +25,9 @@ if REPO_DIR is None:
     raise VersioningException('Unable to locate git repository.')
 PROJECT_DIR = os.path.abspath(os.path.join(REPO_DIR, os.pardir))
 CONFIG_FILES = [
-    '.version',
-    '.versioning',
-    'pyproject.toml',
+    os.path.join(PROJECT_DIR, '.version'),
+    os.path.join(PROJECT_DIR, '.versioning'),
+    os.path.join(PROJECT_DIR, 'pyproject.toml'),
     # TODO: add setup.cfg
 ]
 
@@ -137,26 +137,21 @@ class Config(ConfigManager):
         super().__init__(filepaths=filepaths, separator='.', defaults=defaults)
 
         # load configuration from paths in order or precedence
-        config = (
-            self.lookup(
-                'versioning',
-                'tool.proman.versioning',
-                'tool.poetry.versioning',
-            )
-            or {}
-        )
+        config = self.lookup('versioning', 'tool.proman.versioning') or {}
         if 'files' in config and config['files'] != []:
             self.templates += config['files']
 
         self.templates += [
             {
-                'filepath': x,
+                'filepath': os.path.basename(x),
                 'pattern': "version = \"${version}\"",
             }
-            for x in CONFIG_FILES
+            for x in filepaths
             if os.path.exists(x)
-            and x not in [x['filepath'] for x in self.templates]
+            and os.path.basename(x)
+            not in [x['filepath'] for x in self.templates]
         ]
+        # os.path.relpath(CONFIG_FILES[0], start=PROJECT_DIR),
 
         if 'types' not in config:
             angular_convention = [
@@ -172,11 +167,10 @@ class Config(ConfigManager):
         self.parser = ParserConfig(config=config)
 
         config_version = self.lookup(
-            'project.version',
             'version',
+            'project.version',
             'proman.version',
             'tool.proman.version',
-            'tool.poetry.version',
         )
         # if config_version is None:
         #     raise VersioningException('no version found in filepaths')
