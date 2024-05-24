@@ -131,7 +131,7 @@ class Git:
         """Create tag."""
         ref = f"refs/heads/{branch}" if branch else self.ref
         commit = self.repo.resolve_refish(ref)[0]
-        oid = commit.hex
+        oid = str(commit.id)
         kind = kwargs.get('kind', GIT_OBJECT_COMMIT)
 
         # tagger = pygit2.Signature('Alice Doe', 'adoe@example.com', 12347, 0)

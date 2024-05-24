@@ -40,7 +40,7 @@ class Changelog:
         parser.parse(commit.message.rstrip())
         # scope = parser.title['scope']
         row = [
-            commit.hex,
+            str(commit.id),
             parser.title['type'],
             parser.title['description'],
         ]
