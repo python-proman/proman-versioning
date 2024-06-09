@@ -93,21 +93,30 @@ class ReleaseConfig:
     """Configure release operation."""
 
     config: InitVar[Dict[str, Any]] = None
-    enable_devreleases: bool = True
+    compat: str = 'pep440'
     enable_prereleases: bool = True
     enable_postreleases: bool = True
-    compat: str = 'pep440'
+    enable_devreleases: bool = True
 
     def __post_init__(self, config: Dict[str, Any]) -> None:
         """Load configuration for release operation."""
-        if 'enable_devreleases' in config:
-            self.enable_devreleases = config['enable_devreleases']
-        if 'enable_prereleases' in config:
-            self.enable_prereleases = config['enable_prereleases']
-        if 'enable_postreleases' in config:
-            self.enable_postreleases = config['enable_postreleases']
         if 'compat' in config:
             self.compat = config['compat']
+
+        if 'enable_prereleases' in config:
+            self.enable_prereleases = config['enable_prereleases']
+        elif self.compat == 'numeric':
+            self.enable_prereleases = False
+
+        if 'enable_postreleases' in config:
+            self.enable_postreleases = config['enable_postreleases']
+        elif self.compat == 'numeric':
+            self.enable_postreleases = False
+
+        if 'enable_devreleases' in config:
+            self.enable_devreleases = config['enable_devreleases']
+        elif self.compat == 'semver':
+            self.enable_devreleases = False
 
 
 # @dataclass
