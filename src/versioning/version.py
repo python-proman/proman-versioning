@@ -295,13 +295,17 @@ class Version(PackageVersion):
         parts = []
 
         # Epoch
-        if self.compat == 'pep440' and self.epoch != 0:
+        if self.epoch != 0:
             parts.append(f"{self.epoch}!")
 
-        # Core segment
+        # Release segment
         parts.append('.'.join(str(x) for x in self.release))
 
-        if self.pre or self.post or self.dev:
+        if (
+            self.pre is not None
+            or self.post is not None
+            or self.dev is not None
+        ):
             if self.compat == 'semver':
                 parts.append('-')
             if self.compat == 'numeric':
@@ -327,10 +331,7 @@ class Version(PackageVersion):
 
         # Local version segment
         if self.local is not None:
-            prefix = '+'
-            if self.compat == 'numeric':
-                prefix = '.'
-            parts.append(f"{prefix}{self.local}")
+            parts.append(f"+{self.local}")
 
         return ''.join(parts)
 
