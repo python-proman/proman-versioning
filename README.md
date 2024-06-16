@@ -55,9 +55,10 @@ compat = "semver"
 The `.versioning` config is a non-specfile based project file using TOML. This
 is the preferred configuration for non-python projects that may use this tool.
 
+<!--
 Default versioning compatibility for `.version` files is semantic versioning
 (`semver`).
-
+-->
 ```
 version = "1.2.3"
 
@@ -75,8 +76,9 @@ patterns = [
 
 #### Example `pyproject.toml`
 
+<!--
 Default versioning compatibility for `pyproject.toml` is PEP440 (`pep440`).
-
+-->
 ```
 [project]
 name = "example"
