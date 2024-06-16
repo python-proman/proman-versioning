@@ -117,7 +117,6 @@ def test_pyproject_release_controller(fs):
     controller = get_release_controller(
         repo_dir=repo_dir, config_files=[PYPROJECT_PATH]
     )
-    print(controller.config.filepaths)
 
     version = controller.update_version(
         commit=False,

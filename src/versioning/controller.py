@@ -9,7 +9,7 @@ import re
 import sys
 from copy import deepcopy
 from string import Template
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Iterator
 
 # from transitions import Machine
 from versioning.exception import VersioningException
@@ -88,19 +88,9 @@ class ReleaseController(CommitMessageParser):
         config: Dict[str, Any],
         new_version: Version,
         dry_run: bool = False,
-    ) -> None:
+    ) -> Iterator[str]:
         """Update target file with new version."""
-        # handle situations where version modifiers are not used
-        if 'release_only' in config and config['release_only']:
-            current_release = '.'.join(
-                str(x) for x in self.config.version.release
-            )
-            version = Version(current_release)
-
-            release = '.'.join(str(x) for x in new_version.release)
-            new_version = Version(release)
-        else:
-            version = deepcopy(self.config.version)
+        version = deepcopy(self.config.version)
 
         # handle compatiblity with semver
         if 'compat' in config:
@@ -110,21 +100,21 @@ class ReleaseController(CommitMessageParser):
         filepath = os.path.join(self.vcs.working_dir, config['filepath'])
 
         # TODO: handle when file does not exist
-        with open(filepath, 'r+', encoding='utf-8') as f:
-            file_contents = f.read()
+        with open(filepath, 'r+', encoding='utf-8') as file:
+            file_contents = file.read()
 
-            if 'patterns' in config:
-                patterns = config['patterns']
-            else:
-                patterns = [config['pattern']]
-            for pattern in patterns:
+            for pattern in (
+                config['patterns']
+                if 'patterns' in config
+                else [config['pattern']]
+            ):
                 template = Template(pattern).substitute(version=version.query)
                 match = re.compile(
                     # XXX: escape not compiling correctly
                     template,  # re.escape(template),
                     flags=0,
                 )
-                log.debug('using pattern for source version %s', match)
+                log.debug('applying pattern for source version %s', match)
 
                 # substitute the expression in file
                 file_update = match.sub(
@@ -132,38 +122,50 @@ class ReleaseController(CommitMessageParser):
                     file_contents,
                 )
 
+            deltas = difflib.unified_diff(
+                file_contents.splitlines(),
+                file_update.splitlines(),
+                fromfile=filepath,
+            )
+
             if not dry_run:
+                # check version file update is applied
+                if not list(deltas):
+                    raise VersioningException(
+                        f"version update was not applied to {filepath}"
+                    )
                 # save the file
                 try:
-                    f.seek(0)
-                    f.truncate()
-                    f.write(file_update)
+                    file.seek(0)
+                    file.truncate()
+                    file.write(file_update)
                     log.info('writting file at: %r', filepath)
-                except Exception as err:
+                except OSError as err:
                     print(err, file=sys.stderr)
             else:
-                log.info('dry-run skipping file write at: %r', filepath)
-                # print the file changes
-                deltas = difflib.unified_diff(
-                    file_contents.splitlines(),
-                    file_update.splitlines(),
-                    fromfile=filepath,
+                log.info(
+                    'view version update instead of file write at: %r',
+                    filepath,
                 )
+                # diff the file changes
                 for x in deltas:
                     print(x, file=sys.stdout)
+            return deltas
 
-    def update_configs(self, new_version: Version, **kwargs: Any) -> None:
+    def _update_configs(self, new_version: Version, **kwargs: Any) -> None:
         """Update version within config files."""
         dry_run = kwargs.pop('dry_run', False)
-        stats = self.vcs.repo.diff('HEAD').stats
-        if stats.files_changed == 0 or dry_run:
+        if self.vcs.repo.diff('HEAD').stats.files_changed == 0 or dry_run:
             if self.config.version != new_version:
+                # TODO: create tarfile here
                 for config in self.config.templates:
+                    # NOTE: need conditional here to switch update or patch
                     self.__update_config(
                         config=config,
                         new_version=new_version,
                         dry_run=dry_run,
                     )
+                    # TODO: add diffs to tarfile
 
                 self.config.version = new_version
                 make_commit = kwargs.pop('commit', True)
@@ -191,9 +193,7 @@ class ReleaseController(CommitMessageParser):
                         )
                         log.info('applying tag: %s', str(new_version))
             else:
-                raise VersioningException(
-                    'no version update could be determined'
-                )
+                raise VersioningException('version could not be determined')
         else:
             raise VersioningException('repository is not clean')
 
@@ -231,7 +231,7 @@ class ReleaseController(CommitMessageParser):
             # TODO: configure local version handling
             if build is not None:
                 new_version._new_local(local=build)
-        self.update_configs(new_version, **kwargs)
+        self._update_configs(new_version, **kwargs)
         return new_version
 
     def push_changes(self, **kwargs: Any) -> None:
