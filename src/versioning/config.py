@@ -125,7 +125,6 @@ class ReleaseConfig:
 #
 #     filepath: str
 #     pattern: str
-#     release_only: bool = False
 
 
 @dataclass

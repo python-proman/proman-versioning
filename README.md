@@ -16,7 +16,7 @@ versions using conventional commits.
 ## Setup
 
 This tool is designed to work with any textfile using a templating pattern and
- path to the file.
+path to the file.
 
 ### Configuring versions
 
@@ -50,34 +50,23 @@ Use different version compatibiliy type:
 compat = "semver"
 ```
 
-Update only the release version for a configuration:
-```
-release_only = true
-```
+#### Example `.version` configuration
 
-#### Example `.versioning`
+The `.versioning` config is a non-specfile based project file using TOML. This
+is the preferred configuration for non-python projects that may use this tool.
 
-The `.versioning` config is a non-specfile based project file using TOML. This is the
-preferred configuration for non-python projects that may use this tool.
+Default versioning compatibility for `.version` files is semantic versioning
+(`semver`).
 
 ```
-[proman]
 version = "1.2.3"
 
-[proman.versioning]
-disable_devreleases = true
-
-[[proman.versioning.files]]
-filepath = "pyproject.toml"
-pattern = "version = \"${version}\""
-
-[[proman.versioning.files]]
+[[versioning.files]]
 filepath = "example/__init__.py"
 pattern = "__version__ = '${version}'"
 
-[[tool.proman.versioning.files]]
+[[versioning.files]]
 filepath = "chart/Chart.yaml"
-compat = "semver"
 patterns = [
   "version = \"${version}\"",
   "appVersion = \"${version}\""
@@ -86,15 +75,15 @@ patterns = [
 
 #### Example `pyproject.toml`
 
+Default versioning compatibility for `pyproject.toml` is PEP440 (`pep440`).
+
 ```
-[tool.proman]
+[project]
+name = "example"
 version = "1.2.3"
 
 [tool.proman.versioning]
-
-[[tool.proman.versioning.files]]
-filepath = "pyproject.toml"
-pattern = "version = \"${version}\""
+compat = "semver"
 
 [[tool.proman.versioning.files]]
 filepath = "example/__init__.py"
@@ -102,7 +91,6 @@ pattern = "__version__ = '${version}'"
 
 [[tool.proman.versioning.files]]
 filepath = "chart/Chart.yaml"
-compat = "semver"
 patterns = [
   "version = \"${version}\"",
   "appVersion = \"${version}\""
