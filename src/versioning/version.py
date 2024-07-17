@@ -301,33 +301,38 @@ class Version(PackageVersion):
         # Release segment
         parts.append('.'.join(str(x) for x in self.release))
 
-        if (
-            self.pre is not None
-            or self.post is not None
-            or self.dev is not None
-        ):
+        # Pre-release
+        if self.pre is not None:
             if self.compat == 'semver':
-                parts.append('-')
-            if self.compat == 'numeric':
-                parts.append('.')
-
-            # Pre-release
-            if self.pre is not None:
-                parts.append(f"{self.pre[0]}{str(self.pre[1])}")
-
-            # Post-release
-            if self.post is not None:
+                prefix = '-'
+            elif self.compat == 'pep440':
                 prefix = ''
-                if self.compat == 'pep440':
-                    prefix = '.post'
-                parts.append(f"{prefix}{self.post}")
+            elif self.compat == 'numeric':
+                prefix = '.'
+            parts.append(f"{prefix}{self.pre[0]}{str(self.pre[1])}")
 
-            # Development release
-            if self.dev is not None:
+        # Post-release
+        elif self.post is not None:
+            if self.compat == 'pep440':
+                prefix = '.post'
+            elif self.compat == 'semver':
+                prefix = '-'
+            elif self.compat == 'numeric':
+                prefix = '.'
+            parts.append(f"{prefix}{self.post}")
+
+        # Development release
+        if self.dev is not None:
+            if self.compat == 'pep440' or (
+                self.compat == 'semver'
+                and (self.pre is not None or self.post is not None)
+            ):
                 prefix = '.dev'
-                if self.compat == 'numeric':
-                    prefix = ''
-                parts.append(f"{prefix}{self.dev}")
+            elif self.compat == 'semver':
+                prefix = '-dev'
+            elif self.compat == 'numeric':
+                prefix = '.'
+            parts.append(f"{prefix}{self.dev}")
 
         # Local version segment
         if self.local is not None:
