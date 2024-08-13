@@ -20,12 +20,12 @@ path to the file.
 
 ### Configuring versions
 
-Configuration can be performed with either the `version', `.versioning`, or
+Configuration can be performed with either the `.version', `.versioning`, or
 `pyproject.toml` files.
 
 #### Global configuration settings:
 
-Use different version compatibiliy type (pep440, semver, numeric):
+Use different version compatibiliy type (`pep440`, `semver`, `numeric`):
 ```
 compat = "semver"
 ```
@@ -50,7 +50,7 @@ enable_postreleases = false
 
 #### Example `.version` configuration
 
-The `.versioning` config is a non-specfile based project file using TOML. This
+The `.version` config is a non-specfile based project file using TOML. This
 is the preferred configuration for non-python projects that may use this tool.
 
 <!--
