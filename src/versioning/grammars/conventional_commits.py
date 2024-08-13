@@ -58,7 +58,9 @@ class CommitMessageParser:
         section = self._get_section('title')
         if section:
             for arg in section.children:
-                title[arg.data] = next((x.value for x in arg.children), True)
+                title[arg.data] = next(
+                    (x.value.strip() for x in arg.children), True
+                )
         return title
 
     @property
@@ -66,7 +68,7 @@ class CommitMessageParser:
         """Get body section of commit message."""
         section = self._get_section('body')
         if section:
-            return [arg.value for arg in section.children]
+            return [arg.value.strip() for arg in section.children]
         return []
 
     @property
@@ -78,21 +80,30 @@ class CommitMessageParser:
         section = self._get_section('footer')
         if section:
             for arg in section.children:
+                if arg.data == 'breaking_change':
+                    footer['breaking_change'] = next(
+                        (x.value.strip() for x in arg.children), 'Unknown'
+                    )
+                if arg.data == 'issue':
+                    # Refs
+                    # Fix
+                    footer['issues'].append(
+                        {arg.children[0].value: arg.children[1].value.strip()}
+                    )
                 if arg.data == 'trailer':
                     footer['trailer'] = {}
                     for x, y in enumerate(arg.children):
                         if x == 0:
-                            footer['trailer']['token'] = y.value
+                            # Acked-by
+                            # Cc
+                            # Helped-by
+                            # Reviewed-by
+                            # Reported-by
+                            # Signed-off-by
+                            # Tested-by
+                            footer['trailer']['token'] = y.value.strip()
                         if x == 1:
-                            footer['trailer']['name'] = y.value
+                            footer['trailer']['name'] = y.value.strip()
                         if x == 2:
-                            footer['trailer']['email'] = y.value
-                if arg.data == 'issue':
-                    footer['issues'].append(
-                        {arg.children[0].value: arg.children[1].value}
-                    )
-                if arg.data == 'breaking_change':
-                    footer['breaking_change'] = next(
-                        (x.value for x in arg.children), 'Unknown'
-                    )
+                            footer['trailer']['email'] = y.value.strip()
         return footer

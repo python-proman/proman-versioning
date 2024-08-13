@@ -3,7 +3,8 @@
 
 from versioning.grammars.conventional_commits import CommitMessageParser
 
-message = """fix: test a message
+message = """\
+fix: test a message
 
 test body of comment test
 test body of comment 2 test

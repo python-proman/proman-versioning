@@ -36,6 +36,18 @@ GRAMMAR_PATH: str = os.path.join(
 )
 # 'versioning/templates/gitmessage.j2'
 
+COMMIT_TYPES = [
+    'build',
+    'chore',
+    'ci',
+    'docs',
+    'perf',
+    'refactor',
+    'revert',
+    'style',
+    'test',
+]
+SCOPES = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
 
 # @dataclass
 # class GitConfig:
@@ -162,16 +174,7 @@ class Config(ConfigManager):
         # os.path.relpath(CONFIG_FILES[0], start=PROJECT_DIR),
 
         if 'types' not in config:
-            angular_convention = [
-                'build',
-                'ci',
-                'docs',
-                'perf',
-                'refactor',
-                'style',
-                'test',
-            ]
-            config['types'] = angular_convention
+            config['types'] = COMMIT_TYPES
         self.parser = ParserConfig(config=config)
 
         config_version = self.lookup(
