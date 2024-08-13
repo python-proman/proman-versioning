@@ -20,10 +20,15 @@ path to the file.
 
 ### Configuring versions
 
-Configuration can be performed with either the `.versioning` or `pyproject.toml`
-files.
+Configuration can be performed with either the `version', `.versioning`, or
+`pyproject.toml` files.
 
 #### Global configuration settings:
+
+Use different version compatibiliy type (pep440, semver, numeric):
+```
+compat = "semver"
+```
 
 Specific types of releases can be disabled by setting the respective release to
 false.
@@ -41,13 +46,6 @@ enable_prereleases = false
 Disable post-releases:
 ```
 enable_postreleases = false
-```
-
-#### File specific settings:
-
-Use different version compatibiliy type:
-```
-compat = "semver"
 ```
 
 #### Example `.version` configuration
@@ -68,13 +66,10 @@ pattern = "__version__ = '${version}'"
 
 [[versioning.files]]
 filepath = "chart/Chart.yaml"
-patterns = [
-  "version = \"${version}\"",
-  "appVersion = \"${version}\""
-]
+pattern = "version: \"${version}\""
 ```
 
-#### Example `pyproject.toml`
+#### Example `pyproject.toml` configuration
 
 <!--
 Default versioning compatibility for `pyproject.toml` is PEP440 (`pep440`).
@@ -93,10 +88,7 @@ pattern = "__version__ = '${version}'"
 
 [[tool.proman.versioning.files]]
 filepath = "chart/Chart.yaml"
-patterns = [
-  "version = \"${version}\"",
-  "appVersion = \"${version}\""
-]
+pattern = "version: \"${version}\""
 ```
 
 #### Example `setup.cfg`
