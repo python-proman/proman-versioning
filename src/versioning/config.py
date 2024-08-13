@@ -47,7 +47,8 @@ COMMIT_TYPES = [
     'style',
     'test',
 ]
-SCOPES = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
+SCOPES = ['added', 'changed', 'deprecated', 'fixed', 'removed', 'security']
+
 
 # @dataclass
 # class GitConfig:
