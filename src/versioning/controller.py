@@ -220,6 +220,8 @@ class ReleaseController(CommitMessageParser):
                 elif self.title['type'] == 'fix':
                     new_version.bump_micro()  # type: ignore
                 elif self.title['type'] in self.config.parser.types:
+                    # XXX: should bump post instead
+                    # XXX: release should span multiple changes
                     # new_version = self.__bump_release(new_version)
                     new_version.bump_release()  # type: ignore
                 else:

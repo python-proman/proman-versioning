@@ -8,14 +8,13 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple
 
 from mdutils.mdutils import MdUtils  # pylint: disable=import-error
 
+from versioning.config import COMMIT_TYPES  # SCOPES
 from versioning.grammars.conventional_commits import CommitMessageParser
 
 if TYPE_CHECKING:
     from pygit2 import Commit, Repository
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
-
-SCOPES = ['added', 'changed', 'deprecated', 'removed', 'fixed', 'security']
 
 
 class Changelog:
@@ -49,9 +48,7 @@ class Changelog:
             section = 'added'
         elif parser.title['type'] == 'fix':
             section = 'fixed'
-        elif parser.title['type'] in (
-            'refactor' 'ci' 'build' 'docs' 'test' 'style' 'perf'
-        ):
+        elif parser.title['type'] in COMMIT_TYPES:
             section = 'changed'
         else:
             section = 'misc'
