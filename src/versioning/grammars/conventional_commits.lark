@@ -33,7 +33,18 @@ SUBDOMAIN: LETTER (LETTER | "-" | INT)+ (LETTER | INT)
 TLD: LETTER+
 
 // body
-MESSAGE: (CNAME | WS_INLINE | NUMBER | SPECIAL_CHAR | "@" | "," | ".")+
+MESSAGE: (CNAME
+    | WS_INLINE
+    | NUMBER
+    | SPECIAL_CHAR
+    | "@"
+    | "("
+    | ")"
+    | "["
+    | "]"
+    | ","
+    | "."
+    | ":")+
 
 SPECIAL_CHAR: "!"
     | "#"
