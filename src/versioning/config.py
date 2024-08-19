@@ -30,6 +30,15 @@ CONFIG_FILES = [
     os.path.join(PROJECT_DIR, 'pyproject.toml'),
     # TODO: add setup.cfg
 ]
+CLASSIFIERS = {
+    1: 'Planning',
+    2: 'Pre-Alpha',
+    3: 'Alpha',
+    4: 'Beta',
+    5: 'Production/Stable',
+    6: 'Mature',
+    7: 'Inactive',
+}
 
 GRAMMAR_PATH: str = os.path.join(
     os.path.dirname(__file__), 'grammars', 'conventional_commits.lark'
